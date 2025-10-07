@@ -7,9 +7,181 @@ editor: visual
 
 ```{r, message=FALSE}
 library(tidyverse)
+library(boot)
+library(MASS)
 ```
 
 ```{r}
 pedestrian_df <- read.csv(here::here("data/pedestrians.csv"))
+```
+
+```{r, EDA_plots}
+pedestrian_long <- pedestrian_df %>%
+  mutate(obs = row_number()) %>%
+  pivot_longer(-obs, names_to = "crossing", values_to = "count") %>%
+  mutate(crossing = factor(crossing,
+                           levels = c("southern_cross","flinders_street","qv_melbourne")))
+
+# Box + jitter (great manager slide)
+ggplot(pedestrian_long, aes(x = crossing, y = count, fill = crossing)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.8) +
+  geom_jitter(width = 0.15, alpha = 0.5, size = 1.6) +
+  labs(title = "Pedestrian counts by crossing", x = NULL, y = "Count per interval") +
+  theme_minimal() + theme(legend.position = "none")
+
+# Density (shape of distributions)
+ggplot(pedestrian_long, aes(x = count, fill = crossing)) +
+  geom_density(alpha = 0.35) +
+  facet_wrap(~ crossing, scales = "fixed") +
+  labs(title = "Distribution (density) per crossing", x = "Count", y = "Density") +
+  theme_minimal()
+
+```
+
+```{r, EDA_summaries}
+t_cis <- pedestrian_long %>%
+  group_by(crossing) %>%
+  summarise(
+    n    = n(),
+    mean = mean(count),
+    sd   = sd(count),
+    se   = sd / sqrt(n),
+    tcrit = qt(0.975, df = n - 1),
+    ci_lo_t = mean - tcrit * se,
+    ci_hi_t = mean + tcrit * se,
+    .groups = "drop"
+  )
+
+```
+
+```{r, t.test&bootstrap}
+
+t.test(pedestrian_df$qv_melbourne, pedestrian_df$southern_cross,  paired = TRUE)  # QV - SC
+t.test(pedestrian_df$qv_melbourne, pedestrian_df$flinders_street, paired = TRUE)  # QV - FL
+t.test(pedestrian_df$southern_cross, pedestrian_df$flinders_street, paired = TRUE) # SC - FL
+
+set.seed(123); B <- 5000
+boot_stat_diff_paired <- function(d, idx){
+  dd <- d[idx, , drop = FALSE]
+  mean(dd[,1] - dd[,2])                 
+}
+
+boot_pair <- function(x, y, B = 5000, conf = 0.95){
+  b  <- boot(data = cbind(x, y), statistic = boot_stat_diff_paired, R = B)
+  ci <- boot.ci(b, conf = conf, type = "perc")
+  tibble(
+    est_diff = b$t0,
+    se_boot  = sd(b$t),
+    lo_perc  = unname(ci$percent[4]),
+    hi_perc  = unname(ci$percent[5]))
+}
+
+paired_boot_table <- bind_rows(
+  boot_pair(pedestrian_df$qv_melbourne,    pedestrian_df$southern_cross)  |> dplyr::mutate(contrast = "QV - SC"),
+  boot_pair(pedestrian_df$qv_melbourne,    pedestrian_df$flinders_street) |> dplyr::mutate(contrast = "QV - FL"),
+  boot_pair(pedestrian_df$southern_cross,  pedestrian_df$flinders_street) |> dplyr::mutate(contrast = "SC - FL")) |>
+  relocate(contrast)
+paired_boot_table
+```
+
+```{r, MLE}
+# Southern Cross
+sc <- pedestrian_df$southern_cross
+fit_sc_norm <- fitdistr(sc, "normal")
+fit_sc_logn <- fitdistr(sc, "lognormal")
+sc_models <- tibble::tibble(
+  crossing = "southern_cross",
+  model    = c("normal","lognormal"),
+  logLik   = c(logLik(fit_sc_norm)[1], logLik(fit_sc_logn)[1]),
+  AIC      = c(AIC(fit_sc_norm),       AIC(fit_sc_logn)),
+  mean_est = c(
+    unname(fit_sc_norm$estimate["mean"]),
+    exp(fit_sc_logn$estimate["meanlog"] + 0.5*fit_sc_logn$estimate["sdlog"]^2)
+  ),
+  sd_est   = c(
+    unname(fit_sc_norm$estimate["sd"]),
+    sqrt((exp(fit_sc_logn$estimate["sdlog"]^2) - 1) *
+         exp(2*fit_sc_logn$estimate["meanlog"] + fit_sc_logn$estimate["sdlog"]^2))
+  ),
+  p90 = c(qnorm(0.90, fit_sc_norm$estimate["mean"], fit_sc_norm$estimate["sd"]),
+          qlnorm(0.90, fit_sc_logn$estimate["meanlog"], fit_sc_logn$estimate["sdlog"])),
+  p95 = c(qnorm(0.95, fit_sc_norm$estimate["mean"], fit_sc_norm$estimate["sd"]),
+          qlnorm(0.95, fit_sc_logn$estimate["meanlog"], fit_sc_logn$estimate["sdlog"]))
+)
+
+# Flinders Street
+fl <- pedestrian_df$flinders_street
+fit_fl_norm <- fitdistr(fl, "normal")
+fit_fl_logn <- fitdistr(fl, "lognormal")
+fl_models <- tibble::tibble(
+  crossing = "flinders_street",
+  model    = c("normal","lognormal"),
+  logLik   = c(logLik(fit_fl_norm)[1], logLik(fit_fl_logn)[1]),
+  AIC      = c(AIC(fit_fl_norm),       AIC(fit_fl_logn)),
+  mean_est = c(
+    unname(fit_fl_norm$estimate["mean"]),
+    exp(fit_fl_logn$estimate["meanlog"] + 0.5*fit_fl_logn$estimate["sdlog"]^2)
+  ),
+  sd_est   = c(
+    unname(fit_fl_norm$estimate["sd"]),
+    sqrt((exp(fit_fl_logn$estimate["sdlog"]^2) - 1) *
+         exp(2*fit_fl_logn$estimate["meanlog"] + fit_fl_logn$estimate["sdlog"]^2))
+  ),
+  p90 = c(qnorm(0.90, fit_fl_norm$estimate["mean"], fit_fl_norm$estimate["sd"]),
+          qlnorm(0.90, fit_fl_logn$estimate["meanlog"], fit_fl_logn$estimate["sdlog"])),
+  p95 = c(qnorm(0.95, fit_fl_norm$estimate["mean"], fit_fl_norm$estimate["sd"]),
+          qlnorm(0.95, fit_fl_logn$estimate["meanlog"], fit_fl_logn$estimate["sdlog"]))
+)
+
+# QV Melbourne
+qv <- pedestrian_df$qv_melbourne
+fit_qv_norm <- fitdistr(qv, "normal")
+fit_qv_logn <- fitdistr(qv, "lognormal")
+qv_models <- tibble::tibble(
+  crossing = "qv_melbourne",
+  model    = c("normal","lognormal"),
+  logLik   = c(logLik(fit_qv_norm)[1], logLik(fit_qv_logn)[1]),
+  AIC      = c(AIC(fit_qv_norm),       AIC(fit_qv_logn)),
+  mean_est = c(
+    unname(fit_qv_norm$estimate["mean"]),
+    exp(fit_qv_logn$estimate["meanlog"] + 0.5*fit_qv_logn$estimate["sdlog"]^2)
+  ),
+  sd_est   = c(
+    unname(fit_qv_norm$estimate["sd"]),
+    sqrt((exp(fit_qv_logn$estimate["sdlog"]^2) - 1) *
+         exp(2*fit_qv_logn$estimate["meanlog"] + fit_qv_logn$estimate["sdlog"]^2))
+  ),
+  p90 = c(qnorm(0.90, fit_qv_norm$estimate["mean"], fit_qv_norm$estimate["sd"]),
+          qlnorm(0.90, fit_qv_logn$estimate["meanlog"], fit_qv_logn$estimate["sdlog"])),
+  p95 = c(qnorm(0.95, fit_qv_norm$estimate["mean"], fit_qv_norm$estimate["sd"]),
+          qlnorm(0.95, fit_qv_logn$estimate["meanlog"], fit_qv_logn$estimate["sdlog"]))
+)
+mle_fits <- bind_rows(sc_models, fl_models, qv_models) |>
+  arrange(crossing, AIC)
+mle_fits
+```
+
+```{r}
+par(mfrow = c(1,2))
+
+# Southern Cross
+qqnorm( (sc - fit_sc_norm$estimate["mean"]) / fit_sc_norm$estimate["sd"],
+        main = "Southern Cross: QQ vs Normal"); qqline((sc - mean(sc))/sd(sc))
+qqnorm( (log(sc) - fit_sc_logn$estimate["meanlog"]) / fit_sc_logn$estimate["sdlog"],
+        main = "Southern Cross: QQ of log(count)"); qqline( (log(sc) - mean(log(sc)))/sd(log(sc)) )
+
+# Flinders
+qqnorm( (fl - fit_fl_norm$estimate["mean"]) / fit_fl_norm$estimate["sd"],
+        main = "Flinders: QQ vs Normal"); qqline((fl - mean(fl))/sd(fl))
+qqnorm( (log(fl) - fit_fl_logn$estimate["meanlog"]) / fit_fl_logn$estimate["sdlog"],
+        main = "Flinders: QQ of log(count)"); qqline( (log(fl) - mean(log(fl)))/sd(log(fl)) )
+
+# QV
+qqnorm( (qv - fit_qv_norm$estimate["mean"]) / fit_qv_norm$estimate["sd"],
+        main = "QV: QQ vs Normal"); qqline((qv - mean(qv))/sd(qv))
+qqnorm( (log(qv) - fit_qv_logn$estimate["meanlog"]) / fit_qv_logn$estimate["sdlog"],
+        main = "QV: QQ of log(count)"); qqline( (log(qv) - mean(log(qv)))/sd(log(qv)) )
+
+par(mfrow = c(1,1))
 ```
 
