@@ -1,0 +1,15 @@
+---
+title: "ETC5242 Assignment 2"
+author: "Jyovika Aswale, Siddhi Jadhav, Sia Chawla"
+format: html
+editor: visual
+---
+
+```{r, message=FALSE}
+library(tidyverse)
+```
+
+```{r}
+pedestrian_df <- read.csv(here::here("data/pedestrians.csv"))
+```
+
