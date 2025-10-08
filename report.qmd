@@ -290,7 +290,6 @@ tt
 qqnorm(scale(d), main = "QQ of differences: SC − FL"); abline(0,1)
 ```
 
-
 ## Task 4
 
 ```{r}
@@ -312,5 +311,41 @@ mean_ci <- pedestrian_long |>
 
 mean_ci
 
+```
+
+
+## Task 5 
+
+```{r}
+THRESH  <- 1000
+BASE    <- 10000
+BONUS   <- 5000
+LEVEL   <- 0.95
+
+# Binomial proportion + Wilson CI via prop.test (built-in)
+rev_ci <- pedestrian_long %>%
+  mutate(over_1000 = count > THRESH) %>%
+  group_by(crossing) %>%
+  summarise(
+    n = n(),
+    k = sum(over_1000),
+    .groups = "drop"
+  ) %>%
+  rowwise() %>%
+  mutate(
+    # prop.test returns Wilson (score) CI with continuity correction
+    pt   = list(prop.test(k, n, conf.level = LEVEL, correct = TRUE)),
+    phat = pt$estimate[[1]],
+    lo_p = pt$conf.int[1],
+    hi_p = pt$conf.int[2],
+    # map proportion -> revenue
+    rev_hat = BASE + BONUS * phat,
+    rev_lo  = BASE + BONUS * lo_p,
+    rev_hi  = BASE + BONUS * hi_p
+  ) %>%
+  ungroup() %>%
+  select(crossing, n, k, phat, lo_p, hi_p, rev_hat, rev_lo, rev_hi)
+
+rev_ci
 ```
 
