@@ -314,3 +314,52 @@ mean_ci
 
 ```
 
+
+
+
+## Sia task 4
+
+```{r}
+# Southern Cross
+t.test(pedestrian_df$southern_cross, conf.level = 0.95)
+
+# Flinders Street
+t.test(pedestrian_df$flinders_street, conf.level = 0.95)
+
+# QV
+t.test(pedestrian_df$qv, conf.level = 0.95)
+
+library(dplyr)
+library(broom)
+library(purrr)
+
+ci_table <- list(
+  "Southern Cross" = t.test(pedestrian_df$southern_cross),
+  "Flinders Street" = t.test(pedestrian_df$flinders_street),
+  "QV" = t.test(pedestrian_df$qv)
+) %>%
+  map_dfr(~ tidy(.x), .id = "Location") %>%
+  dplyr::select(Location, estimate, conf.low, conf.high)
+
+ci_table
+
+
+```
+
+
+
+
+
+```{r}
+ggplot(ci_table, aes(x = Location, y = estimate)) +
+  geom_segment(aes(xend = Location, y = 0, yend = estimate), color = "grey60") +
+  geom_point(size = 4, color = "tomato") +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high), width = 0.15, color = "tomato") +
+  labs(
+    title = "Pedestrian Traffic with 95% Confidence Intervals",
+    y = "Mean pedestrians per hour",
+    x = "Location"
+  ) +
+  theme_minimal(base_size = 14)
+
+```
