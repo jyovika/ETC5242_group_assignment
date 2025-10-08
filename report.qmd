@@ -4,6 +4,7 @@ author: "Jyovika Aswale, Siddhi Jadhav, Sia Chawla"
 format: html
 editor: visual
 ---
+
 ```{r}
 #| label: setup
 #| include: false
@@ -64,6 +65,7 @@ desc <- pedestrian_long |>
 )
 
 ```
+
 ## task 1
 
 ```{r, MLE}
@@ -154,9 +156,6 @@ qqnorm((log(qv) - fit_qv_logn$estimate["meanlog"]) / fit_qv_logn$estimate["sdlog
 
 ```
 
-
-
-
 ```{r}
 fit_sc_nb <- fitdistr(sc, "Negative Binomial")
 fit_fl_nb <- fitdistr(fl, "Negative Binomial")
@@ -179,18 +178,6 @@ qq_nb(qv, fit_qv_nb$estimate["size"], fit_qv_nb$estimate["mu"], "QV: QQ vs NB")
 par(mfrow = c(1,1))
 
 ```
-
-
-
-
-
-
-
-
-
-
-
-
 
 ```{r, t.test&bootstrap}
 
@@ -222,30 +209,39 @@ paired_boot_table
 ```
 
 ## task 2
+
 ### appraoch 1
+
 ```{r}
-# Bootstrap statistic: empirical 90th percentile 
-boot_stat_q90_emp <- function(x, idx) {
-  quantile(x[idx], probs = 0.90, type = 7, names = FALSE)
-}
+pedestrian_long %>%
+  group_by(crossing) %>%
+  summarise(q90 = quantile(count, 0.9))
 
-boot_ci_emp <- function(x, B = 5000, conf = 0.95){
-  b  <- boot(x, statistic = boot_stat_q90_emp, R = B)
-  ci <- boot.ci(b, conf = conf, type = "perc")
-  tibble(
-    q90_hat = quantile(x, 0.90, type = 7, names = FALSE),
-    lo      = unname(ci$percent[4]),
-    hi      = unname(ci$percent[5]),
-    method  = "Empirical (bootstrap percentile)"
-  )
-}
+```
 
-emp_tbl <- bind_rows(
-  boot_ci_emp(pedestrian_df$southern_cross)  |> mutate(crossing = "southern_cross"),
-  boot_ci_emp(pedestrian_df$flinders_street) |> mutate(crossing = "flinders_street"),
-  boot_ci_emp(pedestrian_df$qv_melbourne)    |> mutate(crossing = "qv_melbourne")
-) |> relocate(crossing)
-emp_tbl
+```{r}
+library(boot)
+
+# function to calculate 90th percentile
+q90_fn <- function(data, i) quantile(data[i], 0.9)
+
+# example for Flinders
+fl_boot <- boot(pedestrian_df$flinders_street, q90_fn, R = 1000)
+ci_fl <- boot.ci(fl_boot, type = "perc")
+round(ci_fl$percent[4:5], 2)
+
+# Southern Cross
+sc_boot <- boot(pedestrian_df$southern_cross, q90_fn, R = 1000)
+ci_sc <- boot.ci(sc_boot, type = "perc")
+round(ci_sc$percent[4:5], 2)
+
+
+# QV
+qv_boot <- boot(pedestrian_df$qv, q90_fn, R = 1000)
+ci_qv <- boot.ci(qv_boot, type = "perc")
+round(ci_qv$percent[4:5], 2)
+
+
 ```
 
 ### approach 2
@@ -296,4 +292,3 @@ mod_tbl <- bind_rows(
 ) |> relocate(crossing)
 mod_tbl
 ```
-
