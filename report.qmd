@@ -220,7 +220,6 @@ pedestrian_long %>%
 ```
 
 ```{r}
-library(boot)
 
 # function to calculate 90th percentile
 q90_fn <- function(data, i) quantile(data[i], 0.9)
@@ -244,51 +243,4 @@ round(ci_qv$percent[4:5], 2)
 
 ```
 
-### approach 2
 
-```{r}
-set.seed(123)
-boot_stat_q90_model <- function(dist = c("normal","lognormal")){
-  dist <- match.arg(dist)
-  function(x, idx){
-    xx <- x[idx]
-    if (dist == "normal"){
-      fit <- fitdistr(xx, "normal")
-      qnorm(0.90, fit$estimate["mean"], fit$estimate["sd"])
-    } else {
-      fit <- fitdistr(xx, "lognormal")
-      qlnorm(0.90, fit$estimate["meanlog"], fit$estimate["sdlog"])
-    }
-  }
-}
-
-boot_ci_model <- function(x, dist, B = 5000, conf = 0.95){
-  statfun <- boot_stat_q90_model(dist)
-  b  <- boot(x, statistic = statfun, R = B)
-
-  if (dist == "normal"){
-    fit <- fitdistr(x, "normal")
-    qhat <- qnorm(0.90, fit$estimate["mean"], fit$estimate["sd"])
-    lab  <- "Model (Normal)"
-  } else {
-    fit <- fitdistr(x, "lognormal")
-    qhat <- qlnorm(0.90, fit$estimate["meanlog"], fit$estimate["sdlog"])
-    lab  <- "Model (Lognormal)"
-  }
-
-  ci <- boot.ci(b, conf = conf, type = "perc")
-  tibble(
-    q90_hat = qhat,
-    lo      = unname(ci$percent[4]),
-    hi      = unname(ci$percent[5]),
-    method  = lab
-  )
-}
-
-mod_tbl <- bind_rows(
-  boot_ci_model(pedestrian_df$southern_cross,  dist = "normal",    B = B) |> mutate(crossing = "southern_cross"),
-  boot_ci_model(pedestrian_df$flinders_street, dist = "lognormal", B = B) |> mutate(crossing = "flinders_street"),
-  boot_ci_model(pedestrian_df$qv_melbourne,    dist = "lognormal", B = B) |> mutate(crossing = "qv_melbourne")
-) |> relocate(crossing)
-mod_tbl
-```
