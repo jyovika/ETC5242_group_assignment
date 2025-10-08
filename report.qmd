@@ -71,7 +71,7 @@ desc <- pedestrian_long |>
 sc <- pedestrian_df$southern_cross
 fit_sc_norm  <- fitdistr(sc, "normal")
 fit_sc_logn  <- fitdistr(sc, "lognormal")
-fit_sc_gamma <- fitdistr(sc, "gamma")   # shape, rate
+fit_sc_gamma <- fitdistr(sc, "gamma")   
 
 sc_models <- tibble(
   crossing = "southern_cross",
@@ -82,15 +82,13 @@ sc_models <- tibble(
   mean_est = c(
     unname(fit_sc_norm$estimate["mean"]),
     exp(fit_sc_logn$estimate["meanlog"] + 0.5*fit_sc_logn$estimate["sdlog"]^2),
-    unname(fit_sc_gamma$estimate["shape"] / fit_sc_gamma$estimate["rate"])
-  ),
+    unname(fit_sc_gamma$estimate["shape"] / fit_sc_gamma$estimate["rate"])),
+  
   sd_est   = c(
     unname(fit_sc_norm$estimate["sd"]),
     sqrt((exp(fit_sc_logn$estimate["sdlog"]^2) - 1) *
          exp(2*fit_sc_logn$estimate["meanlog"] + fit_sc_logn$estimate["sdlog"]^2)),
-    sqrt(unname(fit_sc_gamma$estimate["shape"]) / (unname(fit_sc_gamma$estimate["rate"])^2))
-  )
-)
+    sqrt(unname(fit_sc_gamma$estimate["shape"]) / (unname(fit_sc_gamma$estimate["rate"])^2))))
 
 # Flinders Street
 fl <- pedestrian_df$flinders_street
@@ -107,15 +105,13 @@ fl_models <- tibble(
   mean_est = c(
     unname(fit_fl_norm$estimate["mean"]),
     exp(fit_fl_logn$estimate["meanlog"] + 0.5*fit_fl_logn$estimate["sdlog"]^2),
-    unname(fit_fl_gamma$estimate["shape"] / fit_fl_gamma$estimate["rate"])
-  ),
+    unname(fit_fl_gamma$estimate["shape"] / fit_fl_gamma$estimate["rate"])),
+  
   sd_est   = c(
     unname(fit_fl_norm$estimate["sd"]),
     sqrt((exp(fit_fl_logn$estimate["sdlog"]^2) - 1) *
          exp(2*fit_fl_logn$estimate["meanlog"] + fit_fl_logn$estimate["sdlog"]^2)),
-    sqrt(unname(fit_fl_gamma$estimate["shape"]) / (unname(fit_fl_gamma$estimate["rate"])^2))
-  )
-)
+    sqrt(unname(fit_fl_gamma$estimate["shape"]) / (unname(fit_fl_gamma$estimate["rate"])^2))))
 
 # QV Melbourne
 qv <- pedestrian_df$qv_melbourne
@@ -132,15 +128,13 @@ qv_models <- tibble(
   mean_est = c(
     unname(fit_qv_norm$estimate["mean"]),
     exp(fit_qv_logn$estimate["meanlog"] + 0.5*fit_qv_logn$estimate["sdlog"]^2),
-    unname(fit_qv_gamma$estimate["shape"] / fit_qv_gamma$estimate["rate"])
-  ),
+    unname(fit_qv_gamma$estimate["shape"] / fit_qv_gamma$estimate["rate"])),
+  
   sd_est   = c(
     unname(fit_qv_norm$estimate["sd"]),
     sqrt((exp(fit_qv_logn$estimate["sdlog"]^2) - 1) *
          exp(2*fit_qv_logn$estimate["meanlog"] + fit_qv_logn$estimate["sdlog"]^2)),
-    sqrt(unname(fit_qv_gamma$estimate["shape"]) / (unname(fit_qv_gamma$estimate["rate"])^2))
-  )
-)
+    sqrt(unname(fit_qv_gamma$estimate["shape"]) / (unname(fit_qv_gamma$estimate["rate"])^2))))
 
 mle_fits <- bind_rows(sc_models, fl_models, qv_models) |>
   arrange(crossing, AIC)
@@ -149,134 +143,39 @@ mle_fits
 ```
 
 ```{r}
-par(mfrow = c(1,2))
+par(mfrow = c(1,3), mar = c(4,4,2,1))
 
-# Southern Cross
-qqnorm((sc - fit_sc_norm$estimate["mean"])/fit_sc_norm$estimate["sd"],
-       main="Southern Cross: QQ vs Normal"); abline(0,1)
-qqnorm((log(sc) - fit_sc_logn$estimate["meanlog"])/fit_sc_logn$estimate["sdlog"],
-       main="Southern Cross: QQ of log(count)"); abline(0,1)
+## Southern Cross 
+x <- sort(sc); n <- length(x); p <- (seq_len(n)-0.5)/n
+qN <- qnorm(p,  mean = fit_sc_norm$estimate["mean"],    sd    = fit_sc_norm$estimate["sd"])
+qL <- qlnorm(p, meanlog = fit_sc_logn$estimate["meanlog"], sdlog = fit_sc_logn$estimate["sdlog"])
+qG <- qgamma(p, shape = fit_sc_gamma$estimate["shape"], rate = fit_sc_gamma$estimate["rate"])
+plot(qN, x, xlab="Theoretical quantiles", ylab="Empirical quantiles", main="Southern Cross",
+     pch=1, col="red"); points(qL, x, pch=1, col="forestgreen"); points(qG, x, pch=1, col="blue"); abline(0,1)
 
-## Flinders
-qqnorm((fl - fit_fl_norm$estimate["mean"]) / fit_fl_norm$estimate["sd"],
-       main = "Flinders: QQ vs Normal"); abline(0, 1)
+# Flinders Street
+x <- sort(fl); n <- length(x); p <- (seq_len(n)-0.5)/n
+qN <- qnorm(p,  mean = fit_fl_norm$estimate["mean"],    sd    = fit_fl_norm$estimate["sd"])
+qL <- qlnorm(p, meanlog = fit_fl_logn$estimate["meanlog"], sdlog = fit_fl_logn$estimate["sdlog"])
+qG <- qgamma(p, shape = fit_fl_gamma$estimate["shape"], rate = fit_fl_gamma$estimate["rate"])
+plot(qN, x, xlab="Theoretical quantiles", ylab="Empirical quantiles", main="Flinders Street",
+     pch=1, col="red"); points(qL, x, pch=1, col="forestgreen"); points(qG, x, pch=1, col="blue"); abline(0,1)
 
-qqnorm((log(fl) - fit_fl_logn$estimate["meanlog"]) / fit_fl_logn$estimate["sdlog"],
-       main = "Flinders: QQ of log(count)"); abline(0, 1)
+# QV Melbourne 
+x <- sort(qv); n <- length(x); p <- (seq_len(n)-0.5)/n
+qN <- qnorm(p,  mean = fit_qv_norm$estimate["mean"],    sd    = fit_qv_norm$estimate["sd"])
+qL <- qlnorm(p, meanlog = fit_qv_logn$estimate["meanlog"], sdlog = fit_qv_logn$estimate["sdlog"])
+qG <- qgamma(p, shape = fit_qv_gamma$estimate["shape"], rate = fit_qv_gamma$estimate["rate"])
+plot(qN, x, xlab="Theoretical quantiles", ylab="Empirical quantiles", main="QV Melbourne",
+     pch=1, col="red"); points(qL, x, pch=1, col="forestgreen"); points(qG, x, pch=1, col="blue"); abline(0,1)
 
+par(mfrow = c(1,1))
 
-## QV
-qqnorm((qv - fit_qv_norm$estimate["mean"]) / fit_qv_norm$estimate["sd"],
-       main = "QV: QQ vs Normal"); abline(0, 1)
-
-qqnorm((log(qv) - fit_qv_logn$estimate["meanlog"]) / fit_qv_logn$estimate["sdlog"],
-       main = "QV: QQ of log(count)"); abline(0, 1)
 
 
 ```
 
-```{r, t.test&bootstrap}
 
-t.test(pedestrian_df$qv_melbourne, pedestrian_df$southern_cross,  paired = TRUE)  # QV - SC
-t.test(pedestrian_df$qv_melbourne, pedestrian_df$flinders_street, paired = TRUE)  # QV - FL
-t.test(pedestrian_df$southern_cross, pedestrian_df$flinders_street, paired = TRUE) # SC - FL
 
-boot_stat_diff_paired <- function(d, idx){
-  dd <- d[idx, , drop = FALSE]
-  mean(dd[,1] - dd[,2])                 
-}
 
-boot_pair <- function(x, y, B = 5000, conf = 0.95){
-  b  <- boot(data = cbind(x, y), statistic = boot_stat_diff_paired, R = B)
-  ci <- boot.ci(b, conf = conf, type = "perc")
-  tibble(
-    est_diff = b$t0,
-    se_boot  = sd(b$t),
-    lo_perc  = unname(ci$percent[4]),
-    hi_perc  = unname(ci$percent[5]))
-}
-
-paired_boot_table <- bind_rows(
-  boot_pair(pedestrian_df$qv_melbourne,    pedestrian_df$southern_cross)  |> dplyr::mutate(contrast = "QV - SC"),
-  boot_pair(pedestrian_df$qv_melbourne,    pedestrian_df$flinders_street) |> dplyr::mutate(contrast = "QV - FL"),
-  boot_pair(pedestrian_df$southern_cross,  pedestrian_df$flinders_street) |> dplyr::mutate(contrast = "SC - FL")) |>
-  relocate(contrast)
-paired_boot_table
-```
-
-## task 2
-### appraoch 1
-```{r}
-# Bootstrap statistic: empirical 90th percentile 
-boot_stat_q90_emp <- function(x, idx) {
-  quantile(x[idx], probs = 0.90, type = 7, names = FALSE)
-}
-
-boot_ci_emp <- function(x, B = 5000, conf = 0.95){
-  b  <- boot(x, statistic = boot_stat_q90_emp, R = B)
-  ci <- boot.ci(b, conf = conf, type = "perc")
-  tibble(
-    q90_hat = quantile(x, 0.90, type = 7, names = FALSE),
-    lo      = unname(ci$percent[4]),
-    hi      = unname(ci$percent[5]),
-    method  = "Empirical (bootstrap percentile)"
-  )
-}
-
-emp_tbl <- bind_rows(
-  boot_ci_emp(pedestrian_df$southern_cross)  |> mutate(crossing = "southern_cross"),
-  boot_ci_emp(pedestrian_df$flinders_street) |> mutate(crossing = "flinders_street"),
-  boot_ci_emp(pedestrian_df$qv_melbourne)    |> mutate(crossing = "qv_melbourne")
-) |> relocate(crossing)
-emp_tbl
-```
-
-### approach 2
-
-```{r}
-set.seed(123)
-boot_stat_q90_model <- function(dist = c("normal","lognormal")){
-  dist <- match.arg(dist)
-  function(x, idx){
-    xx <- x[idx]
-    if (dist == "normal"){
-      fit <- fitdistr(xx, "normal")
-      qnorm(0.90, fit$estimate["mean"], fit$estimate["sd"])
-    } else {
-      fit <- fitdistr(xx, "lognormal")
-      qlnorm(0.90, fit$estimate["meanlog"], fit$estimate["sdlog"])
-    }
-  }
-}
-
-boot_ci_model <- function(x, dist, B = 5000, conf = 0.95){
-  statfun <- boot_stat_q90_model(dist)
-  b  <- boot(x, statistic = statfun, R = B)
-
-  if (dist == "normal"){
-    fit <- fitdistr(x, "normal")
-    qhat <- qnorm(0.90, fit$estimate["mean"], fit$estimate["sd"])
-    lab  <- "Model (Normal)"
-  } else {
-    fit <- fitdistr(x, "lognormal")
-    qhat <- qlnorm(0.90, fit$estimate["meanlog"], fit$estimate["sdlog"])
-    lab  <- "Model (Lognormal)"
-  }
-
-  ci <- boot.ci(b, conf = conf, type = "perc")
-  tibble(
-    q90_hat = qhat,
-    lo      = unname(ci$percent[4]),
-    hi      = unname(ci$percent[5]),
-    method  = lab
-  )
-}
-
-mod_tbl <- bind_rows(
-  boot_ci_model(pedestrian_df$southern_cross,  dist = "normal",    B = B) |> mutate(crossing = "southern_cross"),
-  boot_ci_model(pedestrian_df$flinders_street, dist = "lognormal", B = B) |> mutate(crossing = "flinders_street"),
-  boot_ci_model(pedestrian_df$qv_melbourne,    dist = "lognormal", B = B) |> mutate(crossing = "qv_melbourne")
-) |> relocate(crossing)
-mod_tbl
-```
 
