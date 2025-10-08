@@ -34,14 +34,12 @@ pedestrian_long <- pedestrian_df %>%
   mutate(crossing = factor(crossing,
                            levels = c("southern_cross","flinders_street","qv_melbourne")))
 
-# Box + jitter (great manager slide)
 ggplot(pedestrian_long, aes(x = crossing, y = count, fill = crossing)) +
   geom_boxplot(outlier.shape = NA, alpha = 0.8) +
   geom_jitter(width = 0.15, alpha = 0.5, size = 1.6) +
   labs(title = "Pedestrian counts by crossing", x = NULL, y = "Count per interval") +
   theme_minimal() + theme(legend.position = "none")
 
-# Density (shape of distributions)
 ggplot(pedestrian_long, aes(x = count, fill = crossing)) +
   geom_density(alpha = 0.35) +
   facet_wrap(~ crossing, scales = "fixed") +
@@ -290,5 +288,29 @@ tt <- t.test(sc, fl, paired = TRUE, conf.level = 0.95)
 tt
 
 qqnorm(scale(d), main = "QQ of differences: SC − FL"); abline(0,1)
+```
+
+
+## Task 4
+
+```{r}
+mean_ci <- pedestrian_long |>
+  group_by(crossing) |>
+  summarise(
+    n    = n(),
+    mean = mean(count, na.rm = TRUE),
+    sd   = sd(count,   na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  mutate(
+    se    = sd / sqrt(n),
+    tcrit = qt(0.975, df = n - 1),
+    lo    = mean - tcrit * se,
+    hi    = mean + tcrit * se
+  ) |>
+  arrange(desc(mean))
+
+mean_ci
+
 ```
 
