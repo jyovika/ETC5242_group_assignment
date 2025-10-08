@@ -244,6 +244,8 @@ round(ci_qv$percent[4:5], 2)
 
 ```
 
+**justify this method choice**
+
 ### approach 2
 
 ```{r}
