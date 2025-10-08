@@ -276,3 +276,19 @@ q90_model_ci <- function(fit, dist, n, B = 2000) {
 
 ```
 
+
+## Task 3
+
+```{r}
+df  <- na.omit(pedestrian_df[, c("southern_cross","flinders_street")])
+sc  <- df$southern_cross
+fl  <- df$flinders_street
+d   <- sc - fl                 
+
+# 95% CI for the mean difference 
+tt <- t.test(sc, fl, paired = TRUE, conf.level = 0.95)
+tt
+
+qqnorm(scale(d), main = "QQ of differences: SC − FL"); abline(0,1)
+```
+
