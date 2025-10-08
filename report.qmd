@@ -211,10 +211,68 @@ round(ci_qv$percent[4:5], 2)
 
 ```
 
-<<<<<<< HEAD
+
 **justify this method choice**
 
-### approach 2
-=======
->>>>>>> 8d8bf26db2411132d7b7def8b9024a45092ef21a
+### Approach 2
+
+```{r}
+
+library(fitdistrplus)
+
+set.seed(30)
+n_fl <- length(pedestrian_df$flinders_street)
+n_sc <- length(pedestrian_df$southern_cross)
+n_qv <- length(pedestrian_df$qv)
+
+
+# Flinders & QV: Lognormal
+fl_fit <- fitdist(pedestrian_df$flinders_street, "lnorm")
+qv_fit <- fitdist(pedestrian_df$qv, "lnorm")
+
+# Southern Cross: Normal
+sc_fit <- fitdist(pedestrian_df$southern_cross, "norm")
+
+fl_fit$estimate; sc_fit$estimate; qv_fit$estimate
+
+```
+
+
+
+```{r}
+q90_model_ci <- function(fit, dist, n, B = 2000) {
+  # Point estimate from the fitted distribution
+  q90_hat <- switch(
+    dist,
+    "lnorm" = qlnorm(0.9,
+                     meanlog = fit$estimate["meanlog"],
+                     sdlog   = fit$estimate["sdlog"]),
+    "norm"  = qnorm(0.9,
+                    mean = fit$estimate["mean"],
+                    sd   = fit$estimate["sd"])
+  )
+
+  # Parametric bootstrap: simulate datasets of size n from the fitted model
+  boot_q90 <- replicate(B, {
+    sim <- switch(
+      dist,
+      "lnorm" = rlnorm(n,
+                       meanlog = fit$estimate["meanlog"],
+                       sdlog   = fit$estimate["sdlog"]),
+      "norm"  = rnorm(n,
+                      mean = fit$estimate["mean"],
+                      sd   = fit$estimate["sd"])
+    )
+    as.numeric(quantile(sim, 0.9))
+  })
+
+  ci <- quantile(boot_q90, c(0.025, 0.975))
+  tibble(
+    q90_model = round(q90_hat, 2),
+    ci_low    = round(ci[1], 2),
+    ci_high   = round(ci[2], 2)
+  )
+}
+
+```
 
