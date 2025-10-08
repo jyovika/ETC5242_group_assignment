@@ -154,6 +154,44 @@ qqnorm((log(qv) - fit_qv_logn$estimate["meanlog"]) / fit_qv_logn$estimate["sdlog
 
 ```
 
+
+
+
+```{r}
+fit_sc_nb <- fitdistr(sc, "Negative Binomial")
+fit_fl_nb <- fitdistr(fl, "Negative Binomial")
+fit_qv_nb <- fitdistr(qv, "Negative Binomial")
+
+qq_nb <- function(x, size, mu, main = "QQ vs Negative Binomial"){
+  n  <- length(x)
+  xs <- sort(x)
+  p  <- (seq_len(n) - 0.5) / n
+  qt <- qnbinom(p, size = size, mu = mu)
+  plot(qt, xs, xlab = "Theoretical quantiles (NB)",
+       ylab = "Sample quantiles", main = main)
+  abline(0, 1)
+}
+
+par(mfrow = c(1,3))
+qq_nb(sc, fit_sc_nb$estimate["size"], fit_sc_nb$estimate["mu"], "SC: QQ vs NB")
+qq_nb(fl, fit_fl_nb$estimate["size"], fit_fl_nb$estimate["mu"], "FL: QQ vs NB")
+qq_nb(qv, fit_qv_nb$estimate["size"], fit_qv_nb$estimate["mu"], "QV: QQ vs NB")
+par(mfrow = c(1,1))
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```{r, t.test&bootstrap}
 
 t.test(pedestrian_df$qv_melbourne, pedestrian_df$southern_cross,  paired = TRUE)  # QV - SC
