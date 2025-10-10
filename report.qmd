@@ -269,70 +269,121 @@ qv_boot <- boot(pedestrian_df$qv, q90_fn, R = 1000)
 ci_qv <- boot.ci(qv_boot, type = "perc")
 round(ci_qv$percent[4:5], 2)
 
+sample_tbl <- tibble(
+  Location  = c("Flinders Street", "Southern Cross", "QV Melbourne"),
+  q90_sample= round(c(quantile(fl, 0.9), quantile(sc, 0.9), quantile(qv, 0.9)), 2),
+  ci_low    = round(c(ci_fl$percent[4], ci_sc$percent[4], ci_qv$percent[4]), 2),
+  ci_high   = round(c(ci_fl$percent[5], ci_sc$percent[5], ci_qv$percent[5]), 2)
+)
+
+sample_tbl
+
 
 ```
 
-**justify this method choice**
+Why this method?
+Quantiles don’t have a simple small-sample SE formula. The bootstrap re-samples your data many times, recomputes the 90th percentile, and uses the empirical spread for a 95% CI, without assuming any distribution.
+
+**justify this methods choice**
 
 ### Approach 2
 
-```{r}
-#| warning: false
-library(fitdistrplus)
-
-set.seed(30)
-n_fl <- length(pedestrian_df$flinders_street)
-n_sc <- length(pedestrian_df$southern_cross)
-n_qv <- length(pedestrian_df$qv)
 
 
-# Flinders & QV: Lognormal
-fl_fit <- fitdist(pedestrian_df$flinders_street, "lnorm")
-qv_fit <- fitdist(pedestrian_df$qv, "lnorm")
-
-# Southern Cross: Normal
-sc_fit <- fitdist(pedestrian_df$southern_cross, "norm")
-
-fl_fit$estimate; sc_fit$estimate; qv_fit$estimate
-
-```
 
 ```{r}
-q90_model_ci <- function(fit, dist, n, B = 2000) {
-  # Point estimate from the fitted distribution
-  q90_hat <- switch(
-    dist,
-    "lnorm" = qlnorm(0.9,
-                     meanlog = fit$estimate["meanlog"],
-                     sdlog   = fit$estimate["sdlog"]),
-    "norm"  = qnorm(0.9,
-                    mean = fit$estimate["mean"],
-                    sd   = fit$estimate["sd"])
-  )
+# Compute the theoretical 90th percentile from each fitted model
+q90_model_point <- list(
+  fl = qlnorm(0.9, meanlog = fl_fit$estimate["meanlog"], sdlog = fl_fit$estimate["sdlog"]),
+  sc = qnorm(0.9,  mean = sc_fit$estimate["mean"],        sd   = sc_fit$estimate["sd"]),
+  qv = qlnorm(0.9, meanlog = qv_fit$estimate["meanlog"], sdlog = qv_fit$estimate["sdlog"])
+)
 
-  # Parametric bootstrap: simulate datasets of size n from the fitted model
+# Parametric bootstrap for model-based CI
+q90_model_ci <- function(fit, dist, n, B = 1000) {
   boot_q90 <- replicate(B, {
-    sim <- switch(
-      dist,
-      "lnorm" = rlnorm(n,
-                       meanlog = fit$estimate["meanlog"],
-                       sdlog   = fit$estimate["sdlog"]),
-      "norm"  = rnorm(n,
-                      mean = fit$estimate["mean"],
-                      sd   = fit$estimate["sd"])
-    )
-    as.numeric(quantile(sim, 0.9))
+    sim <- if (dist == "normal") {
+      rnorm(n, mean = fit$estimate["mean"], sd = fit$estimate["sd"])
+    } else { # lognormal
+      rlnorm(n, meanlog = fit$estimate["meanlog"], sdlog = fit$estimate["sdlog"])
+    }
+    quantile(sim, 0.9)
   })
-
-  ci <- quantile(boot_q90, c(0.025, 0.975))
-  tibble(
-    q90_model = round(q90_hat, 2),
-    ci_low    = round(ci[1], 2),
-    ci_high   = round(ci[2], 2)
-  )
+  quantile(boot_q90, c(0.025, 0.975))
 }
 
+ci_fl_m <- q90_model_ci(fl_fit, "lognormal", n_fl)
+ci_sc_m <- q90_model_ci(sc_fit, "normal",    n_sc)
+ci_qv_m <- q90_model_ci(qv_fit, "lognormal", n_qv)
+
+model_tbl <- tibble(
+  Location   = c("Flinders Street", "Southern Cross", "QV Melbourne"),
+  Model      = c("Lognormal", "Normal", "Lognormal"),
+  q90_model  = round(c(q90_model_point$fl, q90_model_point$sc, q90_model_point$qv), 2),
+  ci_low     = round(c(ci_fl_m[1], ci_sc_m[1], ci_qv_m[1]), 2),
+  ci_high    = round(c(ci_fl_m[2], ci_sc_m[2], ci_qv_m[2]), 2)
+)
+
+model_tbl
+
 ```
 
 
-The analysis estimated the 90th percentile of pedestrian counts for each crossing to determine the traffic capacity required for smooth flow 90 percent of the time. The parameter of interest, the 90th percentile, represents the count value that is exceeded on only 10 percent of days. In the first approach, the 90th percentile was calculated directly from the data using the sample quantile function, and 95 percent bootstrap confidence intervals were obtained from 5,000 resamples to quantify uncertainty without assuming any distribution. In the second approach, model-based estimates were derived from the fitted distributions identified in Task 1, with the Normal model used for Southern Cross and Lognormal models for Flinders Street and QV Melbourne. The empirical and model-based estimates were consistent, confirming that the fitted models adequately describe the data. The model-based estimates are recommended for design purposes, as they provide smoother and more reliable upper-tail predictions while still aligning with the data-driven results.
+
+```{r}
+final_tbl <- sample_tbl %>%
+  rename(q90_sample_low = ci_low, q90_sample_high = ci_high) %>%
+  left_join(model_tbl %>%
+              rename(q90_model_low = ci_low, q90_model_high = ci_high),
+            by = "Location")
+
+final_tbl
+
+```
+
+What to write (justification & conclusion)
+
+Why two methods?
+
+Sample quantile is assumption-free and directly reflects the data; bootstrap CIs are standard for quantiles.
+
+Model-based leverages the structure you established in Task 1; when the model fits well (per Q–Q plots), it can be more precise (slightly narrower CIs).
+
+Assumptions used:
+
+Days are independent within a crossing.
+
+For Approach 2 only: the fitted family is adequate (Southern Cross ~ Normal; Flinders & QV ~ Lognormal).
+
+How to interpret results (template):
+
+Flinders & Southern Cross typically have 90th percentiles just above ~1100 pedestrians/hour.
+
+QV Melbourne’s 90th percentile is around ~2700–2800, substantially higher.
+
+The two approaches give similar point estimates; model-based CIs are a bit narrower, consistent with greater efficiency under correct model specification.
+
+For design, recommend using the model-based estimate (with its CI) if the Task-1 diagnostics were satisfactory; otherwise default to the sample quantile.
+ 
+
+
+
+The analysis estimated the 90th percentile of pedestrian counts for each crossing to determine the traffic capacity required for smooth flow 90 percent of the time. The parameter of interest, the 90th percentile, represents the count value that is exceeded on only 10 percent of days. In the first approach, the 90th percentile was calculated directly from the data using the sample quantile function, and 95 percent bootstrap confidence intervals were obtained from 1,000 resamples to quantify uncertainty without assuming any distribution. In the second approach, model-based estimates were derived from the fitted distributions identified in Task 1, with the Normal model used for Southern Cross and Lognormal models for Flinders Street and QV Melbourne. The empirical and model-based estimates were consistent, confirming that the fitted models adequately describe the data. The model-based estimates are recommended for design purposes, as they provide smoother and more reliable upper-tail predictions while still aligning with the data-driven results.
+
+
+
+The purpose of this analysis was to estimate the 90th percentile of pedestrian counts at each of the three crossings—Flinders Street, Southern Cross, and QV Melbourne. This value represents the pedestrian volume that is exceeded only 10 percent of the time, and is therefore an important measure for assessing whether crossings are adequately designed to maintain smooth pedestrian flow under busy conditions.
+
+Two approaches were used to estimate the 90th percentile. The first approach used the sample quantile, calculated directly from the observed data. The second approach used fitted probability models (identified in Task 1) to derive model-based quantile estimates. For both approaches, 95 percent confidence intervals were computed to reflect the uncertainty in estimation.
+
+In the first approach, the 90th percentile was computed using the quantile() function, and a non-parametric bootstrap with 1000 resamples was used to estimate 95 percent confidence intervals. The bootstrap method is appropriate here because quantiles do not have simple standard errors, and the bootstrap empirically estimates variability by resampling the data many times. The results were as follows: Flinders Street – 90th percentile of 1060.8 (95% CI: 1038.6 to 1157.1); Southern Cross – 1090.0 (95% CI: 1057.2 to 1128.0); and QV Melbourne – 2704.0 (95% CI: 2624.0 to 2939.0). These results suggest that QV Melbourne experiences much heavier pedestrian traffic during its busiest periods, while Flinders Street and Southern Cross have relatively similar upper-end counts.
+
+In the second approach, theoretical 90th percentiles were calculated using the distributions fitted in Task 1—Lognormal for Flinders Street and QV Melbourne, and Normal for Southern Cross. The corresponding formulas were applied to estimate the 90th percentile under each model, and a parametric bootstrap with 1000 simulated samples was used to compute 95 percent confidence intervals. The model-based estimates were: Flinders Street – 1086.3 (95% CI: 1028.9 to 1145.1); Southern Cross – 1111.4 (95% CI: 1066.1 to 1152.8); and QV Melbourne – 2731.7 (95% CI: 2613.3 to 2847.2).
+
+Both approaches produced similar point estimates, indicating that the fitted models were appropriate for the data. The model-based confidence intervals were slightly narrower than those from the sample quantiles, reflecting higher precision when the assumed model fits well. Overall, the results show that QV Melbourne consistently records the highest pedestrian counts, with its 90th percentile around 2700–2730 people, compared with roughly 1060–1110 for Flinders Street and Southern Cross.
+
+The bootstrap confidence interval approach was chosen because it provides a flexible and reliable way to assess uncertainty without relying on large-sample normal approximations. The model-based approach is more efficient when the distributional assumptions are correct, while the sample quantile method remains robust if those assumptions are violated.
+
+For practical recommendations, the model-based estimates should be used when planning or evaluating pedestrian infrastructure, as they account for natural variability and provide more stable estimates. However, if future data deviate from the fitted Normal or Lognormal models, the simpler sample quantile method would still yield dependable results.
+
+In summary, the 90th percentile analysis confirms that all three crossings handle their regular pedestrian traffic effectively, but QV Melbourne operates at significantly higher capacity levels and may require additional infrastructure consideration to maintain smooth flow during peak hours.
