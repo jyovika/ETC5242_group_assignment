@@ -20,7 +20,6 @@ library(MASS)
 
 set.seed(355435)  
 
-B <- 5000
 ```
 
 ```{r}
@@ -28,11 +27,15 @@ pedestrian_df <- read.csv(here::here("data/pedestrians.csv"))
 ```
 
 ```{r, EDA_plots}
+
 pedestrian_long <- pedestrian_df %>%
-  mutate(obs = row_number()) %>%
-  pivot_longer(-obs, names_to = "crossing", values_to = "count") %>%
-  mutate(crossing = factor(crossing,
-                           levels = c("southern_cross","flinders_street","qv_melbourne")))
+  pivot_longer(
+    cols = c(southern_cross, flinders_street, qv_melbourne),
+    names_to = "crossing",
+    values_to = "count"
+  )
+
+
 
 # Box + jitter (great manager slide)
 ggplot(pedestrian_long, aes(x = crossing, y = count, fill = crossing)) +
@@ -44,8 +47,10 @@ ggplot(pedestrian_long, aes(x = crossing, y = count, fill = crossing)) +
 # Density (shape of distributions)
 ggplot(pedestrian_long, aes(x = count, fill = crossing)) +
   geom_density(alpha = 0.35) +
+  
   facet_wrap(~ crossing, scales = "fixed") +
-  labs(title = "Distribution (density) per crossing", x = "Count", y = "Density") +
+  labs(title = "Distribution (density) per crossing", x = "Count", y = 
+         "Density") +
   theme_minimal()
 
 ```
@@ -62,123 +67,175 @@ desc <- pedestrian_long |>
     max   = max(count),
     iqr   = IQR(count),
     .groups = "drop"
-)
+) 
+desc
 
-```
 
-## task 1
-
-```{r, MLE}
-# Southern Cross
-sc <- pedestrian_df$southern_cross
-fit_sc_norm  <- fitdistr(sc, "normal")
-fit_sc_logn  <- fitdistr(sc, "lognormal")
-fit_sc_gamma <- fitdistr(sc, "gamma")   
-
-sc_models <- tibble(
-  crossing = "southern_cross",
-  model    = c("normal","lognormal","gamma"),
-  logLik   = c(logLik(fit_sc_norm)[1],  logLik(fit_sc_logn)[1],  logLik(fit_sc_gamma)[1]),
-  AIC      = c(AIC(fit_sc_norm),        AIC(fit_sc_logn),        AIC(fit_sc_gamma)),
-
-  mean_est = c(
-    unname(fit_sc_norm$estimate["mean"]),
-    exp(fit_sc_logn$estimate["meanlog"] + 0.5*fit_sc_logn$estimate["sdlog"]^2),
-    unname(fit_sc_gamma$estimate["shape"] / fit_sc_gamma$estimate["rate"])),
-  
-  sd_est   = c(
-    unname(fit_sc_norm$estimate["sd"]),
-    sqrt((exp(fit_sc_logn$estimate["sdlog"]^2) - 1) *
-         exp(2*fit_sc_logn$estimate["meanlog"] + fit_sc_logn$estimate["sdlog"]^2)),
-    sqrt(unname(fit_sc_gamma$estimate["shape"]) / (unname(fit_sc_gamma$estimate["rate"])^2))))
-
-# Flinders Street
-fl <- pedestrian_df$flinders_street
-fit_fl_norm  <- fitdistr(fl, "normal")
-fit_fl_logn  <- fitdistr(fl, "lognormal")
-fit_fl_gamma <- fitdistr(fl, "gamma")
-
-fl_models <- tibble(
-  crossing = "flinders_street",
-  model    = c("normal","lognormal","gamma"),
-  logLik   = c(logLik(fit_fl_norm)[1],  logLik(fit_fl_logn)[1],  logLik(fit_fl_gamma)[1]),
-  AIC      = c(AIC(fit_fl_norm),        AIC(fit_fl_logn),        AIC(fit_fl_gamma)),
-
-  mean_est = c(
-    unname(fit_fl_norm$estimate["mean"]),
-    exp(fit_fl_logn$estimate["meanlog"] + 0.5*fit_fl_logn$estimate["sdlog"]^2),
-    unname(fit_fl_gamma$estimate["shape"] / fit_fl_gamma$estimate["rate"])),
-  
-  sd_est   = c(
-    unname(fit_fl_norm$estimate["sd"]),
-    sqrt((exp(fit_fl_logn$estimate["sdlog"]^2) - 1) *
-         exp(2*fit_fl_logn$estimate["meanlog"] + fit_fl_logn$estimate["sdlog"]^2)),
-    sqrt(unname(fit_fl_gamma$estimate["shape"]) / (unname(fit_fl_gamma$estimate["rate"])^2))))
-
-# QV Melbourne
-qv <- pedestrian_df$qv_melbourne
-fit_qv_norm  <- fitdistr(qv, "normal")
-fit_qv_logn  <- fitdistr(qv, "lognormal")
-fit_qv_gamma <- fitdistr(qv, "gamma")
-
-qv_models <- tibble(
-  crossing = "qv_melbourne",
-  model    = c("normal","lognormal","gamma"),
-  logLik   = c(logLik(fit_qv_norm)[1],  logLik(fit_qv_logn)[1],  logLik(fit_qv_gamma)[1]),
-  AIC      = c(AIC(fit_qv_norm),        AIC(fit_qv_logn),        AIC(fit_qv_gamma)),
-
-  mean_est = c(
-    unname(fit_qv_norm$estimate["mean"]),
-    exp(fit_qv_logn$estimate["meanlog"] + 0.5*fit_qv_logn$estimate["sdlog"]^2),
-    unname(fit_qv_gamma$estimate["shape"] / fit_qv_gamma$estimate["rate"])),
-  
-  sd_est   = c(
-    unname(fit_qv_norm$estimate["sd"]),
-    sqrt((exp(fit_qv_logn$estimate["sdlog"]^2) - 1) *
-         exp(2*fit_qv_logn$estimate["meanlog"] + fit_qv_logn$estimate["sdlog"]^2)),
-    sqrt(unname(fit_qv_gamma$estimate["shape"]) / (unname(fit_qv_gamma$estimate["rate"])^2))))
-
-mle_fits <- bind_rows(sc_models, fl_models, qv_models) |>
-  arrange(crossing, AIC)
-
-mle_fits
 ```
 
 ```{r}
+# sample sizes
+n_fl <- sum(pedestrian_long$crossing == "flinders_street")
+n_sc <- sum(pedestrian_long$crossing == "southern_cross")
+n_qv <- sum(pedestrian_long$crossing == "qv_melbourne")
+
+# split vectors (wide data is handy here)
+x_fl <- pedestrian_df$flinders_street
+x_sc <- pedestrian_df$southern_cross
+x_qv <- pedestrian_df$qv
+
+# Fit with MASS::fitdistr
+fl_fit <- fitdistr(x_fl, "lognormal")  # returns meanlog, sdlog
+sc_fit <- fitdistr(x_sc, "normal")     # returns mean, sd
+qv_fit <- fitdistr(x_qv, "lognormal")
+
+fl_fit; sc_fit; qv_fit
+
+
+library(tibble)
+library(dplyr)
+
+tidy_fit <- function(fit, location, model) {
+  est <- fit$estimate
+  se  <- sqrt(diag(fit$vcov))
+  tibble(
+    Location  = location,
+    Model     = model,
+    Parameter = names(est),
+    Estimate  = round(as.numeric(est), 4),
+    SE        = round(as.numeric(se), 4)
+  )
+}
+
+param_tbl <- bind_rows(
+  tidy_fit(fl_fit, "Flinders Street",   "Lognormal"),
+  tidy_fit(sc_fit, "Southern Cross",    "Normal"),
+  tidy_fit(qv_fit, "QV Melbourne",      "Lognormal")
+)
+
+param_tbl
+
+```
+
+
+```{r}
 #| label: fig-qqplots
-#| fig-cap: "QQ plots comparing empirical and theoretical quantiles for the fitted models at each crossing."
+#| fig-cap: "Q–Q plots comparing empirical and theoretical quantiles for fitted models at each crossing."
+#| echo: true
 
-par(mfrow = c(1,3), mar = c(4,4,2,1))
+# set plotting layout
+par(mfrow = c(1, 3), mar = c(4, 4, 2, 1))
+# --- Extract site vectors (from your wide df) ---
+fl <- pedestrian_df$flinders_street
+sc <- pedestrian_df$southern_cross
+qv <- pedestrian_df$qv
 
-## Southern Cross 
-x <- sort(sc); n <- length(x); p <- (seq_len(n)-0.5)/n
-qN <- qnorm(p,  mean = fit_sc_norm$estimate["mean"],    sd    = fit_sc_norm$estimate["sd"])
-qL <- qlnorm(p, meanlog = fit_sc_logn$estimate["meanlog"], sdlog = fit_sc_logn$estimate["sdlog"])
-qG <- qgamma(p, shape = fit_sc_gamma$estimate["shape"], rate = fit_sc_gamma$estimate["rate"])
-plot(qN, x, xlab="Theoretical quantiles", ylab="Empirical quantiles", main="Southern Cross",
-     pch=1, col="red"); points(qL, x, pch=1, col="forestgreen"); points(qG, x, pch=1, col="blue"); abline(0,1)
+# --- Helper: safe Gamma fit (gives starts if MASS::fitdistr complains) ---
+safe_gamma_fit <- function(x){
+  m <- mean(x); v <- var(x)
+  shape0 <- m^2 / v
+  rate0  <- m / v
+  tryCatch(
+    MASS::fitdistr(x, "gamma"),
+    error = function(e) MASS::fitdistr(x, "gamma", start = list(shape = shape0, rate = rate0))
+  )
+}
 
-# Flinders Street
-x <- sort(fl); n <- length(x); p <- (seq_len(n)-0.5)/n
-qN <- qnorm(p,  mean = fit_fl_norm$estimate["mean"],    sd    = fit_fl_norm$estimate["sd"])
-qL <- qlnorm(p, meanlog = fit_fl_logn$estimate["meanlog"], sdlog = fit_fl_logn$estimate["sdlog"])
-qG <- qgamma(p, shape = fit_fl_gamma$estimate["shape"], rate = fit_fl_gamma$estimate["rate"])
-plot(qN, x, xlab="Theoretical quantiles", ylab="Empirical quantiles", main="Flinders Street",
-     pch=1, col="red"); points(qL, x, pch=1, col="forestgreen"); points(qG, x, pch=1, col="blue"); abline(0,1)
+# --- SOUTHERN CROSS: Normal, Lognormal, Gamma ---
+fit_sc_norm <- MASS::fitdistr(sc, "normal")
+fit_sc_logn <- MASS::fitdistr(sc, "lognormal")
+fit_sc_gamma <- safe_gamma_fit(sc)
 
-# QV Melbourne 
-x <- sort(qv); n <- length(x); p <- (seq_len(n)-0.5)/n
-qN <- qnorm(p,  mean = fit_qv_norm$estimate["mean"],    sd    = fit_qv_norm$estimate["sd"])
-qL <- qlnorm(p, meanlog = fit_qv_logn$estimate["meanlog"], sdlog = fit_qv_logn$estimate["sdlog"])
-qG <- qgamma(p, shape = fit_qv_gamma$estimate["shape"], rate = fit_qv_gamma$estimate["rate"])
-plot(qN, x, xlab="Theoretical quantiles", ylab="Empirical quantiles", main="QV Melbourne",
-     pch=1, col="red"); points(qL, x, pch=1, col="forestgreen"); points(qG, x, pch=1, col="blue"); abline(0,1)
+# --- FLINDERS STREET: Normal, Lognormal, Gamma ---
+fit_fl_norm <- MASS::fitdistr(fl, "normal")
+fit_fl_logn <- MASS::fitdistr(fl, "lognormal")
+fit_fl_gamma <- safe_gamma_fit(fl)
 
+# --- QV MELBOURNE: Normal, Lognormal, Gamma ---
+fit_qv_norm <- MASS::fitdistr(qv, "normal")
+fit_qv_logn <- MASS::fitdistr(qv, "lognormal")
+fit_qv_gamma <- safe_gamma_fit(qv)
+
+
+# ---------- SOUTHERN CROSS ----------
+x <- sort(sc)
+n <- length(x)
+p <- (seq_len(n) - 0.5) / n
+
+q_norm <- qnorm(p, mean = fit_sc_norm$estimate["mean"], sd = fit_sc_norm$estimate["sd"])
+q_logn <- qlnorm(p, meanlog = fit_sc_logn$estimate["meanlog"], sdlog = fit_sc_logn$estimate["sdlog"])
+q_gamma <- qgamma(p, shape = fit_sc_gamma$estimate["shape"], rate = fit_sc_gamma$estimate["rate"])
+
+plot(q_norm, x, xlab = "Theoretical quantiles", ylab = "Empirical quantiles",
+     main = "Southern Cross", pch = 16, col = "firebrick", cex = 0.8)
+points(q_logn, x, pch = 16, col = "forestgreen", cex = 0.8)
+points(q_gamma, x, pch = 16, col = "royalblue", cex = 0.8)
+abline(0, 1, lty = 2)
+legend("topleft", legend = c("Normal", "Lognormal", "Gamma"),
+       col = c("firebrick", "forestgreen", "royalblue"), pch = 16, bty = "n", cex = 0.8)
+
+# ---------- FLINDERS STREET ----------
+x <- sort(fl)
+n <- length(x)
+p <- (seq_len(n) - 0.5) / n
+
+q_norm <- qnorm(p, mean = fit_fl_norm$estimate["mean"], sd = fit_fl_norm$estimate["sd"])
+q_logn <- qlnorm(p, meanlog = fit_fl_logn$estimate["meanlog"], sdlog = fit_fl_logn$estimate["sdlog"])
+q_gamma <- qgamma(p, shape = fit_fl_gamma$estimate["shape"], rate = fit_fl_gamma$estimate["rate"])
+
+plot(q_norm, x, xlab = "Theoretical quantiles", ylab = "Empirical quantiles",
+     main = "Flinders Street", pch = 16, col = "firebrick", cex = 0.8)
+points(q_logn, x, pch = 16, col = "forestgreen", cex = 0.8)
+points(q_gamma, x, pch = 16, col = "royalblue", cex = 0.8)
+abline(0, 1, lty = 2)
+
+# ---------- QV MELBOURNE ----------
+x <- sort(qv)
+n <- length(x)
+p <- (seq_len(n) - 0.5) / n
+
+q_norm <- qnorm(p, mean = fit_qv_norm$estimate["mean"], sd = fit_qv_norm$estimate["sd"])
+q_logn <- qlnorm(p, meanlog = fit_qv_logn$estimate["meanlog"], sdlog = fit_qv_logn$estimate["sdlog"])
+q_gamma <- qgamma(p, shape = fit_qv_gamma$estimate["shape"], rate = fit_qv_gamma$estimate["rate"])
+
+plot(q_norm, x, xlab = "Theoretical quantiles", ylab = "Empirical quantiles",
+     main = "QV Melbourne", pch = 16, col = "firebrick", cex = 0.8)
+points(q_logn, x, pch = 16, col = "forestgreen", cex = 0.8)
+points(q_gamma, x, pch = 16, col = "royalblue", cex = 0.8)
+abline(0, 1, lty = 2)
+
+# reset plotting area
 par(mfrow = c(1,1))
 
 ```
 
-The analysis investigated pedestrian counts at the Southern Cross, Flinders Street, and QV Melbourne crossings to understand the distribution and variability of daily pedestrian flow. Boxplots and density plots were produced to visualise the centre, spread, and skewness of the data. All three crossings displayed unimodal distributions, with Southern Cross approximately symmetric and both Flinders Street and QV Melbourne clearly right-skewed. Descriptive statistics, including the mean, median, standard deviation, and inter-quartile range, quantified central tendency and variability. Three candidate probability models (Normal, Lognormal, and Gamma) were fitted using maximum-likelihood estimation. Model adequacy was assessed through density overlays and Q–Q plots comparing empirical and theoretical quantiles (@fig-qqplots). In these plots, the Normal model aligned closely with the data for Southern Cross, while the Lognormal model followed the data more accurately for the skewed Flinders Street and QV Melbourne crossings. Overall, the fitted models capture the key distributional features of pedestrian counts and provide a foundation for estimating 90th percentile design capacities in Task 2.
+
+
+
+
+
+
+
+## Task 1 — Distribution of pedestrian counts (12–1pm)
+
+### Purpose and approach
+The aim was to describe how lunchtime pedestrian counts vary at the three crossings (Flinders Street, Southern Cross, QV Melbourne) and to fit probability models that summarise these patterns for design and planning. I began with exploratory graphics (histograms/densities and boxplots; see Figures X–Y) and computed descriptive statistics per site (mean, median, sd, min–max, variance; see Table A). These summaries show QV Melbourne has the largest flows and greater day-to-day variation, while Flinders Street and Southern Cross have lower, tighter distributions.
+
+### Model fitting and resulting estimates
+Guided by the shapes in the graphics and Q–Q diagnostics, I fitted simple parametric models via maximum likelihood. Southern Cross is approximately symmetric on the original scale, so a **Normal** model was used. Flinders Street and QV Melbourne display mild right-skew and near-normality on the log scale, so **Lognormal** models were used. The resulting parameter estimates (estimate ± SE) were:
+
+- **Flinders Street (Lognormal):** meanlog = 6.7813 (0.0166), sdlog = 0.1633 (0.0117)  
+- **Southern Cross (Normal):** mean = 941.78 (13.44), sd = 132.34 (9.50)  
+- **QV Melbourne (Lognormal):** meanlog = 7.7482 (0.0130), sdlog = 0.1283 (0.0092)
+
+These are the fitted model parameters that mathematically characterise each site’s distribution.
+
+### Adequacy checks and assumptions
+Adequacy was assessed with  Q–Q plots. For Southern Cross, points lie close to the 45° line under a Normal reference; for Flinders and QV, log(count) aligns well with a Normal reference (supporting Lognormal on the count scale), with only small upper-tail deviations. Alternative count models (e.g., Poisson/Negative Binomial) were considered; Poisson was rejected due to over-dispersion, and although a Negative Binomial can also fit over-dispersed counts, the large counts make continuous approximations (Normal/Lognormal) adequate and visually superior here. Assumptions: observations are independent across days within a site; the fitted family (Normal or Lognormal) is a reasonable approximation for lunchtime variability.
+
+### Summary for the manager (plain language)
+In short, **QV Melbourne** is by far the busiest and most variable crossing at lunchtime, typically handling **well over 2,000** people per hour, whereas **Flinders Street** and **Southern Cross** each handle **around 900–950** on average with tighter day-to-day variation. The simple statistical models above accurately capture these patterns and will be used in Task 2 to estimate “busy-day thresholds” (the level we must design for so flow is smooth 90% of the time).
+
 
 ## task 2
 
