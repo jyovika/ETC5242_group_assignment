@@ -14,11 +14,14 @@ editor: visual
 
 knitr::opts_chunk$set(fig.align = "center", fig.width = 8, fig.height = 5, dpi = 150)
 
-library(tidyverse)
+
 library(boot)
 library(MASS)
+library(tidyverse)
 library(knitr)
 library(kableExtra)
+library(broom)
+library(purrr)
 
 set.seed(355435)  
 
@@ -27,8 +30,7 @@ B <- 5000
 cross_cols <- c(
   flinders_street = "#766153",
   qv_melbourne    = "#718f94",
-  southern_cross  = "#717744"
-)
+  southern_cross  = "#717744")
 ```
 
 ## Task 1 - Distribution and Models
@@ -424,19 +426,69 @@ Based on these results, we can be 95% confident that the true mean difference in
 
 ## Task 4 - Marketing Value Comparison
 
-Purpose
+### Purpose
 
 The purpose of this task was to estimate and compare the average hourly pedestrian counts at three major Melbourne crossings: Southern Cross, Flinders Street, and QV Melbourne. The aim was to help the marketing team evaluate which locations offer the highest advertising value for billboard placements. Pedestrian flow directly represents potential audience exposure, so understanding the mean number of people passing through each site is crucial for assessing advertising reach. Constructing 95 percent confidence intervals around these means provides insight into both the central tendency and the uncertainty of the estimates. This information allows the marketing team to make data-driven decisions about which sites are most likely to deliver the best visibility and return on investment for advertising campaigns.
 
-Results Table
+```{r}
+# Southern Cross
+t.test(pedestrian_df$southern_cross, conf.level = 0.95)
+
+# Flinders Street
+t.test(pedestrian_df$flinders_street, conf.level = 0.95)
+
+# QV
+t.test(pedestrian_df$qv, conf.level = 0.95)
+
+ci_table <- list(
+  "southern_cross" = t.test(pedestrian_df$southern_cross),
+  "flinders_street" = t.test(pedestrian_df$flinders_street),
+  "qv_melbourne" = t.test(pedestrian_df$qv)
+) %>%
+  map_dfr(~ tidy(.x), .id = "Location") 
+
+ci_table <- ci_table[, c("Location", "estimate", "conf.low", "conf.high")]
+
+ci_table %>%
+  kable(
+    caption = "Younger vs Older: Average Per-capita Online Leisure Minutes",
+    digits = 1,
+    align = rep("c", ncol(final_tbl))  
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE,
+    position = "center"
+  ) %>%
+  row_spec(0, bold = TRUE, color = "#FFFFFF", background = "#598392") %>%
+  column_spec(1, bold = TRUE, color = "#004D40")
+
+```
+
+### Results Table
 
 The table shows that QV Melbourne has a much higher mean pedestrian count than the other two locations, while Southern Cross and Flinders Street have similar average flows.
 
-Visualisation
+### Visualisation
 
-A dot plot with 95 percent confidence intervals (@fig-trafficCI) was created to visually compare the mean pedestrian traffic at each site. Each dot represents the estimated mean, and the vertical error bars show the confidence intervals for those estimates. The intervals for Southern Cross and Flinders Street overlap considerably, suggesting that their mean pedestrian flows are statistically similar. The interval for QV Melbourne, however, is clearly separated from the others and positioned much higher, indicating that this site consistently experiences greater pedestrian movement. The visualisation provides an immediate and intuitive comparison, helping the marketing team to identify the most valuable advertising locations based on both the magnitude and the reliability of foot traffic estimates.
+A lolipop plot with 95 percent confidence intervals (@fig-trafficCI) was created to visually compare the mean pedestrian traffic at each site. Each dot represents the estimated mean, and the vertical error bars show the confidence intervals for those estimates. The intervals for Southern Cross and Flinders Street overlap considerably, suggesting that their mean pedestrian flows are statistically similar. The interval for QV Melbourne, however, is clearly separated from the others and positioned much higher, indicating that this site consistently experiences greater pedestrian movement. The visualisation provides an immediate and intuitive comparison, helping the marketing team to identify the most valuable advertising locations based on both the magnitude and the reliability of foot traffic estimates.
 
-Interpretation
+```{r}
+ggplot(ci_table, aes(x = Location, y = estimate, color = Location)) +
+  geom_point(size = 4) +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high), width = 0.15, linewidth = 1) +
+  geom_segment(aes(xend = Location, y = 0, yend = estimate), color = "grey80") +
+  scale_color_manual(values = cross_cols) +
+  labs(
+    title = "Pedestrian Traffic with 95% Confidence Intervals",
+    y = "Mean pedestrians per hour",
+    x = "Location"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "none")
+```
+
+### Interpretation
 
 QV Melbourne recorded the highest average pedestrian flow of about 2300 people per hour, approximately double that of Southern Cross and Flinders Street. This indicates that QV Melbourne offers the strongest advertising potential and the highest likelihood of exposure for billboard campaigns. Southern Cross and Flinders Street have mean flows below 1000 people per hour and are therefore suited for mid-level advertising opportunities.
 
