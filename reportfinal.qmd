@@ -242,15 +242,14 @@ In short, **QV Melbourne** is by far the busiest and most variable crossing at l
 
 ### Purpose
 
-The purpose of this task was to estimate the 90th percentile pedestrian flow for each crossing in order to check whether they meet the regulation that crossings should operate with smooth pedestrian flow 90 percent of the time. This means that on 90 percent of the days, the pedestrian count should be below a certain value so that congestion is avoided. The 90th percentile therefore represents the upper limit of typical daily usage and provides an important benchmark for infrastructure design. A crossing that can handle this level of flow without delays can be considered adequately sized  
-
+The purpose of this task was to estimate the 90th percentile pedestrian flow for each crossing in order to check whether they meet the regulation that crossings should operate with smooth pedestrian flow 90 percent of the time. This means that on 90 percent of the days, the pedestrian count should be below a certain value so that congestion is avoided. The 90th percentile therefore represents the upper limit of typical daily usage and provides an important benchmark for infrastructure design. A crossing that can handle this level of flow without delays can be considered adequately sized
 
 Approach 1: Sample Quantile
 
 In the first approach, the 90th percentile was calculated directly from the observed data using the quantile() function. To account for sampling uncertainty, 95 percent bootstrap confidence intervals were constructed using 1,000 resamples. The bootstrap method was chosen because it does not assume any particular distributional form and is appropriate for moderately sized datasets.
 
 ```{r}
-pedestrian_long %>%
+pedestrian_q90 %>%
   group_by(crossing) %>%
   summarise(q90 = quantile(count, 0.9))
 
@@ -258,11 +257,9 @@ pedestrian_long %>%
 
 These results indicate that the busiest 10 percent of days have counts exceeding approximately 1,000 pedestrians per hour for the two station crossings and around 2,700 for QV Melbourne.
 
-
 Approach 2: Model-Based Estimation
 
 In the second approach, the fitted probability models from Task 1 were used to estimate theoretical 90th percentiles. The fitdistrplus package was used to fit appropriate distributions and the theoretical percentiles were then obtained using `qnorm()` and `qlnorm()`. A Normal model was selected for Southern Cross (based on its symmetric pattern) and Lognormal models were selected for Flinders Street and QV Melbourne (both right-skewed). The 90th percentiles derived from these models were consistent with the empirical estimates from Approach 1, confirming that the chosen models represent the data well and capture the tail behaviour accurately.
-
 
 Discussion and Recommendation
 
