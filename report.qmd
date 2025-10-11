@@ -34,14 +34,12 @@ pedestrian_long <- pedestrian_df %>%
   mutate(crossing = factor(crossing,
                            levels = c("southern_cross","flinders_street","qv_melbourne")))
 
-# Box + jitter (great manager slide)
 ggplot(pedestrian_long, aes(x = crossing, y = count, fill = crossing)) +
   geom_boxplot(outlier.shape = NA, alpha = 0.8) +
   geom_jitter(width = 0.15, alpha = 0.5, size = 1.6) +
   labs(title = "Pedestrian counts by crossing", x = NULL, y = "Count per interval") +
   theme_minimal() + theme(legend.position = "none")
 
-# Density (shape of distributions)
 ggplot(pedestrian_long, aes(x = count, fill = crossing)) +
   geom_density(alpha = 0.35) +
   facet_wrap(~ crossing, scales = "fixed") +
@@ -353,7 +351,73 @@ The analysis found that Southern Cross had, on average, 48.75 more pedestrians p
 
 Based on these results, we can be 95% confident that the true mean difference in pedestrian counts between the two crossings is less than 80 people per hour. This indicates that while Southern Cross tends to be slightly busier, the difference is not large enough to justify separate designs. Therefore, the engineers can safely use the same design and materials for both crossings, achieving cost savings without compromising on performance or pedestrian safety. The analysis and results are statistically sound and provide a clear, evidence-based recommendation for the engineering team.
 
-task 4
+## Task 4
+
+```{r}
+mean_ci <- pedestrian_long |>
+  group_by(crossing) |>
+  summarise(
+    n    = n(),
+    mean = mean(count, na.rm = TRUE),
+    sd   = sd(count,   na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  mutate(
+    se    = sd / sqrt(n),
+    tcrit = qt(0.975, df = n - 1),
+    lo    = mean - tcrit * se,
+    hi    = mean + tcrit * se
+  ) |>
+  arrange(desc(mean))
+
+mean_ci
+
+```
+
+## Sia task 4
+
+```{r}
+# Southern Cross
+t.test(pedestrian_df$southern_cross, conf.level = 0.95)
+
+# Flinders Street
+t.test(pedestrian_df$flinders_street, conf.level = 0.95)
+
+# QV
+t.test(pedestrian_df$qv, conf.level = 0.95)
+
+library(dplyr)
+library(broom)
+library(purrr)
+
+ci_table <- list(
+  "Southern Cross" = t.test(pedestrian_df$southern_cross),
+  "Flinders Street" = t.test(pedestrian_df$flinders_street),
+  "QV" = t.test(pedestrian_df$qv)
+) %>%
+  map_dfr(~ tidy(.x), .id = "Location") %>%
+  dplyr::select(Location, estimate, conf.low, conf.high)
+
+ci_table
+
+
+```
+
+```{r}
+#| label: fig-trafficCI
+#| fig-cap: "Pedestrian traffic with 95% confidence intervals at each location."
+ggplot(ci_table, aes(x = Location, y = estimate)) +
+  geom_segment(aes(xend = Location, y = 0, yend = estimate), color = "grey60") +
+  geom_point(size = 4, color = "tomato") +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high), width = 0.15, color = "tomato") +
+  labs(
+    title = "Pedestrian Traffic with 95% Confidence Intervals",
+    y = "Mean pedestrians per hour",
+    x = "Location"
+  ) +
+  theme_minimal(base_size = 14)
+
+```
 
 Purpose
 
@@ -419,3 +483,11 @@ These results suggest that QV Melbourne is by far the most attractive location f
 
 
 
+The analysis compared the mean pedestrian counts between Southern Cross and Flinders Street to determine whether a single crossing design could accommodate both sites. A paired t-test was used to estimate a 95 percent confidence interval for the mean difference in pedestrian counts (Southern Cross minus Flinders Street). The mean difference was approximately 49 people per hour, with a 95 percent confidence interval from 21 to 77. The QQ plot of the paired differences indicated that the data were approximately normal, supporting the validity of the Central Limit Theorem and the t-based confidence interval. Although the difference is statistically significant (p = 0.0008), it is not practically large enough to exceed the engineering threshold of 80 people per hour. Therefore, the engineers can confidently use the same design and materials for both crossings while maintaining safe pedestrian flow and cost efficiency.
+
+
+
+The analysis estimated the average hourly pedestrian count at each crossing to inform the marketing team about potential advertising value. One-sample t-tests produced 95 percent confidence intervals for the mean number of pedestrians at Southern Cross, Flinders Street, and QV Melbourne. The mean counts were approximately 942, 893, and 2 337 people per hour, respectively. The corresponding confidence intervals showed that QV Melbourne experiences substantially higher pedestrian traffic than the two station crossings, whose intervals overlap, indicating comparable average flow. The visual summary ( @fig-trafficCI) highlights the wide gap between QV Melbourne and the other locations. Based on these results, QV Melbourne offers the greatest exposure and advertising potential, while Southern Cross and Flinders Street represent similar mid-range opportunities.
+
+
+The confidence intervals were constructed using the one-sample t-distribution, which is appropriate because the true population standard deviations are unknown and the sample sizes are reasonably large. The t-interval method relies on the assumption that the pedestrian counts are approximately normally distributed or that the Central Limit Theorem applies. Since each site includes around 97 observations, the CLT ensures that the sampling distribution of the sample mean is approximately normal even if the original data show mild skewness. Therefore, the 95 percent confidence intervals provide valid and reliable estimates of the average pedestrian traffic at each location. The relatively narrow intervals at Southern Cross and Flinders Street indicate stable traffic levels, while the wider but clearly higher interval at QV Melbourne reflects its substantially greater footfall.
