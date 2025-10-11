@@ -317,6 +317,23 @@ task 3
 
 task 4 
 
+Purpose
 
+The purpose of this task was to estimate and compare the average hourly pedestrian counts at three major Melbourne crossings: Southern Cross, Flinders Street, and QV Melbourne. The aim was to help the marketing team evaluate which locations offer the highest advertising value for billboard placements. Pedestrian flow directly represents potential audience exposure, so understanding the mean number of people passing through each site is crucial for assessing advertising reach. Constructing 95 percent confidence intervals around these means provides insight into both the central tendency and the uncertainty of the estimates. This information allows the marketing team to make data-driven decisions about which sites are most likely to deliver the best visibility and return on investment for advertising campaigns.
+
+
+Results Table
+
+The table shows that QV Melbourne has a much higher mean pedestrian count than the other two locations, while Southern Cross and Flinders Street have similar average flows.
+
+Visualisation
+
+A dot plot with 95 percent confidence intervals (@fig-trafficCI) was created to visually compare the mean pedestrian traffic at each site. Each dot represents the estimated mean, and the vertical error bars show the confidence intervals for those estimates. The intervals for Southern Cross and Flinders Street overlap considerably, suggesting that their mean pedestrian flows are statistically similar. The interval for QV Melbourne, however, is clearly separated from the others and positioned much higher, indicating that this site consistently experiences greater pedestrian movement. The visualisation provides an immediate and intuitive comparison, helping the marketing team to identify the most valuable advertising locations based on both the magnitude and the reliability of foot traffic estimates.
+
+Interpretation
+
+QV Melbourne recorded the highest average pedestrian flow of about 2300 people per hour, approximately double that of Southern Cross and Flinders Street. This indicates that QV Melbourne offers the strongest advertising potential and the highest likelihood of exposure for billboard campaigns. Southern Cross and Flinders Street have mean flows below 1000 people per hour and are therefore suited for mid-level advertising opportunities.
+
+The confidence intervals were computed using one-sample t-tests, which are appropriate when the population standard deviation is unknown. With 97 observations at each location, the Central Limit Theorem ensures that the sampling distribution of the mean is approximately normal, even if the underlying data are slightly skewed. The narrower intervals at the two station crossings indicate stable and predictable pedestrian traffic, while the wider interval at QV Melbourne reflects greater variability that naturally accompanies higher volumes.
 
 task 5 
