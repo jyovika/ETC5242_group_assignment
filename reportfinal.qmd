@@ -31,7 +31,7 @@ cross_cols <- c(
 )
 ```
 
-## Task 1 — Distribution and Models
+## Task 1 - Distribution and Models
 
 ```{r}
 pedestrian_df <- read.csv(here::here("data/pedestrians.csv"))
@@ -238,7 +238,7 @@ Adequacy was assessed with Q–Q plots. For Southern Cross, points lie close to 
 
 In short, **QV Melbourne** is by far the busiest and most variable crossing at lunchtime, typically handling **well over 2,000** people per hour, whereas **Flinders Street** and **Southern Cross** each handle **around 900–950** on average with tighter day-to-day variation. The simple statistical models above accurately capture these patterns and will be used in Task 2 to estimate “busy-day thresholds” (the level we must design for so flow is smooth 90% of the time).
 
-## Task 2 — 90th Percentile Flow
+## Task 2 - 90th Percentile Flow
 
 ### Purpose
 
@@ -356,7 +356,7 @@ final_tbl %>%
 
 Both the sample based and model based approaches produced very similar estimates of the 90th percentile, showing that the fitted models are appropriate for these datasets. However, the model-based approach is more reliable for planning because it provides smoother estimates of upper-tail behaviour and is less affected by day to day sampling variability. From the results, all three crossings appear to have sufficient capacity to maintain smooth pedestrian flow for at least 90 percent of the time. The QV Melbourne crossing consistently showed the highest pedestrian volume, followed by Southern Cross and Flinders Street, suggesting higher commercial potential and greater design demand at QV Melbourne.
 
-## Task 3 — Engineering Design Comparison
+## Task 3 - Engineering Design Comparison
 
 The purpose of this analysis was to determine whether the Flinders Street and Southern Cross crossings can use the same design and materials. The engineers specified that the average difference in hourly pedestrian flow between the two locations should not exceed 80 people per hour for the design to be considered interchangeable.
 
@@ -421,3 +421,23 @@ ggplot(ci) +
 ```
 
 Based on these results, we can be 95% confident that the true mean difference in pedestrian counts between the two crossings is less than 80 people per hour. This indicates that while Southern Cross tends to be slightly busier, the difference is not large enough to justify separate designs. Therefore, the engineers can safely use the same design and materials for both crossings, achieving cost savings without compromising on performance or pedestrian safety. The analysis and results are statistically sound and provide a clear, evidence-based recommendation for the engineering team.
+
+## Task 4 - Marketing Value Comparison
+
+Purpose
+
+The purpose of this task was to estimate and compare the average hourly pedestrian counts at three major Melbourne crossings: Southern Cross, Flinders Street, and QV Melbourne. The aim was to help the marketing team evaluate which locations offer the highest advertising value for billboard placements. Pedestrian flow directly represents potential audience exposure, so understanding the mean number of people passing through each site is crucial for assessing advertising reach. Constructing 95 percent confidence intervals around these means provides insight into both the central tendency and the uncertainty of the estimates. This information allows the marketing team to make data-driven decisions about which sites are most likely to deliver the best visibility and return on investment for advertising campaigns.
+
+Results Table
+
+The table shows that QV Melbourne has a much higher mean pedestrian count than the other two locations, while Southern Cross and Flinders Street have similar average flows.
+
+Visualisation
+
+A dot plot with 95 percent confidence intervals (@fig-trafficCI) was created to visually compare the mean pedestrian traffic at each site. Each dot represents the estimated mean, and the vertical error bars show the confidence intervals for those estimates. The intervals for Southern Cross and Flinders Street overlap considerably, suggesting that their mean pedestrian flows are statistically similar. The interval for QV Melbourne, however, is clearly separated from the others and positioned much higher, indicating that this site consistently experiences greater pedestrian movement. The visualisation provides an immediate and intuitive comparison, helping the marketing team to identify the most valuable advertising locations based on both the magnitude and the reliability of foot traffic estimates.
+
+Interpretation
+
+QV Melbourne recorded the highest average pedestrian flow of about 2300 people per hour, approximately double that of Southern Cross and Flinders Street. This indicates that QV Melbourne offers the strongest advertising potential and the highest likelihood of exposure for billboard campaigns. Southern Cross and Flinders Street have mean flows below 1000 people per hour and are therefore suited for mid-level advertising opportunities.
+
+The confidence intervals were computed using one-sample t-tests, which are appropriate when the population standard deviation is unknown. With 97 observations at each location, the Central Limit Theorem ensures that the sampling distribution of the mean is approximately normal, even if the underlying data are slightly skewed. The narrower intervals at the two station crossings indicate stable and predictable pedestrian traffic, while the wider interval at QV Melbourne reflects greater variability that naturally accompanies higher volumes.
