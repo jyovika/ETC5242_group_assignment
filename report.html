@@ -565,6 +565,157 @@ Figure&nbsp;1: Pedestrian traffic with 95% confidence intervals at each location
 </div>
 <p>The analysis estimated the average hourly pedestrian count at each crossing to inform the marketing team about potential advertising value. One-sample t-tests produced 95 percent confidence intervals for the mean number of pedestrians at Southern Cross, Flinders Street, and QV Melbourne. The mean counts were approximately 942, 893, and 2 337 people per hour, respectively. The corresponding confidence intervals showed that QV Melbourne experiences substantially higher pedestrian traffic than the two station crossings, whose intervals overlap, indicating comparable average flow. The visual summary ( <a href="#fig-trafficCI" class="quarto-xref">Figure&nbsp;1</a>) highlights the wide gap between QV Melbourne and the other locations. Based on these results, QV Melbourne offers the greatest exposure and advertising potential, while Southern Cross and Flinders Street represent similar mid-range opportunities.</p>
 <p>The confidence intervals were constructed using the one-sample t-distribution, which is appropriate because the true population standard deviations are unknown and the sample sizes are reasonably large. The t-interval method relies on the assumption that the pedestrian counts are approximately normally distributed or that the Central Limit Theorem applies. Since each site includes around 97 observations, the CLT ensures that the sampling distribution of the sample mean is approximately normal even if the original data show mild skewness. Therefore, the 95 percent confidence intervals provide valid and reliable estimates of the average pedestrian traffic at each location. The relatively narrow intervals at Southern Cross and Flinders Street indicate stable traffic levels, while the wider but clearly higher interval at QV Melbourne reflects its substantially greater footfall.</p>
+<p>#task 5</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scales)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'scales'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:purrr':
+
+    discard</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:readr':
+
+    col_factor</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>threshold <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>sites   <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Southern Cross"</span>,<span class="st">"Flinders Street"</span>,<span class="st">"QV Melbourne"</span>)</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>vectors <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>  pedestrian_df<span class="sc">$</span>southern_cross,</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>  pedestrian_df<span class="sc">$</span>flinders_street,</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>  pedestrian_df<span class="sc">$</span>qv_melbourne</span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>get_p <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="at">thr =</span> <span class="dv">1000</span>) {</span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>  n <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(x))</span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>  k <span class="ot">&lt;-</span> <span class="fu">sum</span>(x <span class="sc">&gt;</span> thr, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>  pt <span class="ot">&lt;-</span> <span class="fu">prop.test</span>(k, n, <span class="at">conf.level =</span> <span class="fl">0.95</span>)</span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="at">p_hat =</span> k<span class="sc">/</span>n, <span class="at">low =</span> <span class="fu">unname</span>(pt<span class="sc">$</span>conf.int[<span class="dv">1</span>]), <span class="at">high =</span> <span class="fu">unname</span>(pt<span class="sc">$</span>conf.int[<span class="dv">2</span>]))</span>
+<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb44-16"><a href="#cb44-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-17"><a href="#cb44-17" aria-hidden="true" tabindex="-1"></a>mat <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">sapply</span>(vectors, get_p, <span class="at">thr =</span> threshold))</span>
+<span id="cb44-18"><a href="#cb44-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-19"><a href="#cb44-19" aria-hidden="true" tabindex="-1"></a>task5_tbl <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb44-20"><a href="#cb44-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">Location =</span> sites,</span>
+<span id="cb44-21"><a href="#cb44-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">p_hat    =</span> mat[, <span class="st">"p_hat"</span>],</span>
+<span id="cb44-22"><a href="#cb44-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">p_low    =</span> mat[, <span class="st">"low"</span>],</span>
+<span id="cb44-23"><a href="#cb44-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">p_high   =</span> mat[, <span class="st">"high"</span>]</span>
+<span id="cb44-24"><a href="#cb44-24" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb44-25"><a href="#cb44-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb44-26"><a href="#cb44-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">Revenue     =</span> <span class="dv">10000</span> <span class="sc">+</span> <span class="dv">5000</span> <span class="sc">*</span> p_hat,</span>
+<span id="cb44-27"><a href="#cb44-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">Rev_low     =</span> <span class="dv">10000</span> <span class="sc">+</span> <span class="dv">5000</span> <span class="sc">*</span> p_low,</span>
+<span id="cb44-28"><a href="#cb44-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">Rev_high    =</span> <span class="dv">10000</span> <span class="sc">+</span> <span class="dv">5000</span> <span class="sc">*</span> p_high</span>
+<span id="cb44-29"><a href="#cb44-29" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb44-30"><a href="#cb44-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-31"><a href="#cb44-31" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(task5_tbl,</span>
+<span id="cb44-32"><a href="#cb44-32" aria-hidden="true" tabindex="-1"></a>             <span class="at">digits =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb44-33"><a href="#cb44-33" aria-hidden="true" tabindex="-1"></a>             <span class="at">caption =</span> <span class="st">"Proportion of days above 1000 and expected revenue with 95% CIs."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in attr(x, "align"): 'xfun::attr()' is deprecated.
+Use 'xfun::attr2()' instead.
+See help("Deprecated")</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in attr(x, "format"): 'xfun::attr()' is deprecated.
+Use 'xfun::attr2()' instead.
+See help("Deprecated")</code></pre>
+</div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Proportion of days above 1000 and expected revenue with 95% CIs.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Location</th>
+<th style="text-align: right;">p_hat</th>
+<th style="text-align: right;">p_low</th>
+<th style="text-align: right;">p_high</th>
+<th style="text-align: right;">Revenue</th>
+<th style="text-align: right;">Rev_low</th>
+<th style="text-align: right;">Rev_high</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Southern Cross</td>
+<td style="text-align: right;">0.320</td>
+<td style="text-align: right;">0.231</td>
+<td style="text-align: right;">0.423</td>
+<td style="text-align: right;">11598</td>
+<td style="text-align: right;">11153</td>
+<td style="text-align: right;">12115</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Flinders Street</td>
+<td style="text-align: right;">0.227</td>
+<td style="text-align: right;">0.150</td>
+<td style="text-align: right;">0.325</td>
+<td style="text-align: right;">11134</td>
+<td style="text-align: right;">10752</td>
+<td style="text-align: right;">11626</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">QV Melbourne</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: right;">0.953</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: right;">15000</td>
+<td style="text-align: right;">14763</td>
+<td style="text-align: right;">15000</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(task5_tbl, <span class="fu">aes</span>(<span class="at">x =</span> Location, <span class="at">y =</span> Revenue)) <span class="sc">+</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">xend =</span> Location, <span class="at">y =</span> <span class="dv">0</span>, <span class="at">yend =</span> Revenue),</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">color =</span> <span class="st">"grey60"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> Rev_low, <span class="at">ymax =</span> Rev_high),</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">width =</span> <span class="fl">0.1</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">linewidth =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> <span class="fu">dollar_format</span>(<span class="at">accuracy =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Estimated Billboard Revenue with 95% Confidence Intervals"</span>,</span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>,</span>
+<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Expected revenue ($)"</span></span>
+<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">13</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-task5-plot" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-task5-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="report_files/figure-html/fig-task5-plot-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1200">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-task5-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Estimated billboard revenue with 95% confidence intervals.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(task5_tbl, <span class="fu">aes</span>(<span class="at">x =</span> Location, <span class="at">y =</span> Revenue)) <span class="sc">+</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">width =</span> <span class="fl">0.6</span>, <span class="at">fill =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> Rev_low, <span class="at">ymax =</span> Rev_high), <span class="at">width =</span> <span class="fl">0.15</span>, <span class="at">linewidth =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> <span class="fu">dollar_format</span>(<span class="at">accuracy =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Expected revenue ($)"</span>) <span class="sc">+</span></span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">13</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="report_files/figure-html/task5-plot-1.png" class="img-fluid figure-img" width="1200"></p>
+<figcaption>Estimated billboard revenue with 95% confidence intervals.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><a href="#fig-task5-plot" class="quarto-xref">Figure&nbsp;2</a> shows the estimated billboard revenue and 95 % confidence intervals for each crossing. The results indicate that QV Melbourne generates the highest expected revenue (around $15,000), reflecting its consistently high pedestrian traffic. Southern Cross and Flinders Street yield similar expected revenues of approximately $11,000 – $12,000. The narrow confidence intervals suggest that these estimates are stable across days. Therefore, QV Melbourne represents the most valuable advertising location, while the two railway stations provide moderate but reliable exposure opportunities.</p>
 </section>
 
 </main>

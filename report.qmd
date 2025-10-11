@@ -373,3 +373,82 @@ The analysis estimated the average hourly pedestrian count at each crossing to i
 
 
 The confidence intervals were constructed using the one-sample t-distribution, which is appropriate because the true population standard deviations are unknown and the sample sizes are reasonably large. The t-interval method relies on the assumption that the pedestrian counts are approximately normally distributed or that the Central Limit Theorem applies. Since each site includes around 97 observations, the CLT ensures that the sampling distribution of the sample mean is approximately normal even if the original data show mild skewness. Therefore, the 95 percent confidence intervals provide valid and reliable estimates of the average pedestrian traffic at each location. The relatively narrow intervals at Southern Cross and Flinders Street indicate stable traffic levels, while the wider but clearly higher interval at QV Melbourne reflects its substantially greater footfall.
+
+
+#task 5
+
+```{r}
+
+library(tidyverse)
+library(scales)
+
+threshold <- 1000
+
+sites   <- c("Southern Cross","Flinders Street","QV Melbourne")
+vectors <- list(
+  pedestrian_df$southern_cross,
+  pedestrian_df$flinders_street,
+  pedestrian_df$qv_melbourne
+)
+
+get_p <- function(x, thr = 1000) {
+  n <- sum(!is.na(x))
+  k <- sum(x > thr, na.rm = TRUE)
+  pt <- prop.test(k, n, conf.level = 0.95)
+  c(p_hat = k/n, low = unname(pt$conf.int[1]), high = unname(pt$conf.int[2]))
+}
+
+mat <- t(sapply(vectors, get_p, thr = threshold))
+
+task5_tbl <- tibble(
+  Location = sites,
+  p_hat    = mat[, "p_hat"],
+  p_low    = mat[, "low"],
+  p_high   = mat[, "high"]
+) |>
+  mutate(
+    Revenue     = 10000 + 5000 * p_hat,
+    Rev_low     = 10000 + 5000 * p_low,
+    Rev_high    = 10000 + 5000 * p_high
+  )
+
+knitr::kable(task5_tbl,
+             digits = c(NA, 3, 3, 3, 0, 0, 0),
+             caption = "Proportion of days above 1000 and expected revenue with 95% CIs.")
+
+```
+```{r}
+#| label: fig-task5-plot
+#| fig-cap: "Estimated billboard revenue with 95% confidence intervals."
+
+ggplot(task5_tbl, aes(x = Location, y = Revenue)) +
+  geom_segment(aes(xend = Location, y = 0, yend = Revenue),
+               color = "grey60", linewidth = 1) +
+  geom_point(size = 2, color = "steelblue") +
+  geom_errorbar(aes(ymin = Rev_low, ymax = Rev_high),
+                width = 0.1, color = "black", linewidth = 0.7) +
+  scale_y_continuous(labels = dollar_format(accuracy = 1)) +
+  labs(
+    title = "Estimated Billboard Revenue with 95% Confidence Intervals",
+    x = NULL,
+    y = "Expected revenue ($)"
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+
+```{r}
+#| label: task5-plot
+#| fig-cap: "Estimated billboard revenue with 95% confidence intervals."
+ggplot(task5_tbl, aes(x = Location, y = Revenue)) +
+  geom_col(width = 0.6, fill = "steelblue") +
+  geom_errorbar(aes(ymin = Rev_low, ymax = Rev_high), width = 0.15, linewidth = 0.7) +
+  scale_y_continuous(labels = dollar_format(accuracy = 1)) +
+  labs(x = NULL, y = "Expected revenue ($)") +
+  theme_minimal(base_size = 13)
+
+```
+
+
+
+@fig-task5-plot shows the estimated billboard revenue and 95 % confidence intervals for each crossing. The results indicate that QV Melbourne generates the highest expected revenue (around $15,000), reflecting its consistently high pedestrian traffic. Southern Cross and Flinders Street yield similar expected revenues of approximately $11,000 – $12,000. The narrow confidence intervals suggest that these estimates are stable across days. Therefore, QV Melbourne represents the most valuable advertising location, while the two railway stations provide moderate but reliable exposure opportunities.
