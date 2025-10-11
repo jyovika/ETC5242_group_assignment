@@ -306,6 +306,45 @@ Both the sample based and model based approaches produced very similar estimates
 
 **Task 3 — Engineering Design Comparison (16 marks)**
 
+## Task 3
+
+```{r}
+df  <- na.omit(pedestrian_df[, c("southern_cross","flinders_street")])
+sc  <- df$southern_cross
+fl  <- df$flinders_street
+d   <- sc - fl                 
+
+# 95% CI for the mean difference 
+tt <- t.test(sc, fl, paired = TRUE, conf.level = 0.95)
+tt
+
+qqnorm(scale(d), main = "QQ of differences: SC − FL"); abline(0,1)
+```
+```{r}
+ci <- tibble(
+  estimate = tt$estimate, 
+  lower = tt$conf.int[1],
+  upper = tt$conf.int[2]
+)
+
+ggplot(ci) +
+  geom_rect(aes(xmin = -Inf, xmax = Inf, ymin = -80, ymax = 80),
+            fill = "lightblue", alpha = 0.2) +
+  geom_errorbar(aes(x = 1, ymin = lower, ymax = upper),
+                width = 0.08, linewidth = 1) +
+  geom_point(aes(x = 1, y = estimate), size = 3, color = "red") +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  coord_cartesian(ylim = c(-120, 120)) +
+  scale_x_continuous(limits = c(0.5, 1.5), breaks = NULL) +
+  labs(
+    title = "95% CI for Mean Difference: Southern Cross − Flinders (paired)",
+    subtitle = "Shaded zone = ±80 people/hour (design tolerance)",
+    y = "Difference in mean counts (SC − FL)", x = NULL
+  ) +
+  theme_minimal(base_size = 13)
+
+```
+
 The purpose of this analysis was to determine whether the Flinders Street and Southern Cross crossings can use the same design and materials. The engineers specified that the average difference in hourly pedestrian flow between the two locations should not exceed 80 people per hour for the design to be considered interchangeable.
 
 To test this, a paired t-test was used to compare hourly pedestrian counts recorded simultaneously at both sites. This method was chosen because it accounts for shared conditions such as time of day and weather, which could affect pedestrian flow. A 95% confidence interval for the mean difference in pedestrian counts between Southern Cross and Flinders Street was calculated. The assumption of approximate normality required for the paired t-test was checked using a QQ plot of the differences. The points on the plot closely followed a straight line, confirming that the distribution of differences was approximately normal. Given the relatively large sample size of 97 paired observations, the Central Limit Theorem ensures that the sampling distribution of the mean difference is approximately normal, even if the underlying data are not perfectly so. Therefore, it is valid to use the CLT in this context, and the paired t-test provides a reliable confidence interval.
@@ -375,3 +414,8 @@ Interpretation
 The analysis indicates that QV Melbourne would generate the highest expected revenue, reaching the full amount of $15,000, since it consistently experiences pedestrian flows above the 1,000-person threshold. Southern Cross and Flinders Street would yield similar revenues, both around $11,000, due to their lower proportions of days above the threshold.
 
 These results suggest that QV Melbourne is by far the most attractive location for billboard placement under the bank’s offer, offering both the highest guaranteed visibility and the lowest revenue uncertainty. The two station crossings provide steady but moderate exposure and may still be valuable for lower-cost or secondary advertising campaigns. Overall, the use of the Wilson interval method provides reliable and interpretable confidence bounds that clearly distinguish the three locations in terms of expected financial `returns.`
+
+
+
+
+
