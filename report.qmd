@@ -278,6 +278,8 @@ q90_model_ci <- function(fit, dist, n, B = 2000) {
 ```
 
 
+Task 2 
+
 
 Purpose
 
@@ -308,3 +310,13 @@ Discussion and Recommendation
 Both the sample based and model based approaches produced very similar estimates of the 90th percentile, showing that the fitted models are appropriate for these datasets. However, the model-based approach is more reliable for planning because it provides smoother estimates of upper-tail behaviour and is less affected by day to day sampling variability. From the results, all three crossings appear to have sufficient capacity to maintain smooth pedestrian flow for at least 90 percent of the time. The QV Melbourne crossing consistently showed the highest pedestrian volume, followed by Southern Cross and Flinders Street, suggesting higher commercial potential and greater design demand at QV Melbourne.
 
 
+
+task 3 
+
+
+
+task 4 
+
+
+
+task 5 
