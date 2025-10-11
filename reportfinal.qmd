@@ -16,10 +16,18 @@ knitr::opts_chunk$set(fig.align = "center", fig.width = 8, fig.height = 5, dpi =
 library(tidyverse)
 library(boot)
 library(MASS)
+library(knitr)
+library(kableExtra)
 
 set.seed(355435)  
 
 B <- 5000
+
+cross_cols <- c(
+  flinders_street = "#766153",
+  qv_melbourne    = "#718f94",
+  southern_cross  = "#717744"
+)
 ```
 
 ## Task 1 — Distribution and Models
@@ -38,15 +46,19 @@ pedestrian_long <- pedestrian_df %>%
   mutate(crossing = factor(crossing,
                            levels = c("southern_cross","flinders_street","qv_melbourne")))
 
+# Boxplot
 ggplot(pedestrian_long, aes(x = crossing, y = count, fill = crossing)) +
   geom_boxplot(outlier.shape = NA, alpha = 0.8) +
+  scale_fill_manual(values = cross_cols) +
   labs(title = "Pedestrian counts by crossing", x = NULL, y = "Count per interval") +
-  theme_minimal() + theme(legend.position = "none")
+  theme_minimal() +
+  theme(legend.position = "none")
 
-
+# Density (faceted)
 ggplot(pedestrian_long, aes(x = count, fill = crossing)) +
   geom_density(alpha = 0.35) +
   facet_wrap(~ crossing, scales = "fixed") +
+  scale_fill_manual(values = cross_cols, guide = "none") +
   labs(title = "Distribution (density) per crossing", x = "Count", y = "Density") +
   theme_minimal()
 
@@ -215,3 +227,10 @@ Adequacy was assessed with  Q–Q plots. For Southern Cross, points lie close to
 
 ### Summary for the manager (plain language)
 In short, **QV Melbourne** is by far the busiest and most variable crossing at lunchtime, typically handling **well over 2,000** people per hour, whereas **Flinders Street** and **Southern Cross** each handle **around 900–950** on average with tighter day-to-day variation. The simple statistical models above accurately capture these patterns and will be used in Task 2 to estimate “busy-day thresholds” (the level we must design for so flow is smooth 90% of the time).
+
+## Task 2 — 90th Percentile Flow
+
+```{r}
+
+```
+
