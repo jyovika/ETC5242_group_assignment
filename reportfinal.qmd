@@ -333,7 +333,6 @@ model_tbl <- tibble(
 
 ```
 
-
 #### Discussion and Recommendation
 
 ```{r}
@@ -359,5 +358,12 @@ Both the sample based and model based approaches produced very similar estimates
 
 ## Task 3 — Engineering Design Comparison
 
+**Task 3 — Engineering Design Comparison (16 marks)**
 
+The purpose of this analysis was to determine whether the Flinders Street and Southern Cross crossings can use the same design and materials. The engineers specified that the average difference in hourly pedestrian flow between the two locations should not exceed 80 people per hour for the design to be considered interchangeable.
 
+To test this, a paired t-test was used to compare hourly pedestrian counts recorded simultaneously at both sites. This method was chosen because it accounts for shared conditions such as time of day and weather, which could affect pedestrian flow. A 95% confidence interval for the mean difference in pedestrian counts between Southern Cross and Flinders Street was calculated. The assumption of approximate normality required for the paired t-test was checked using a QQ plot of the differences. The points on the plot closely followed a straight line, confirming that the distribution of differences was approximately normal. Given the relatively large sample size of 97 paired observations, the Central Limit Theorem ensures that the sampling distribution of the mean difference is approximately normal, even if the underlying data are not perfectly so. Therefore, it is valid to use the CLT in this context, and the paired t-test provides a reliable confidence interval.
+
+The analysis found that Southern Cross had, on average, 48.75 more pedestrians per hour than Flinders Street, with a 95% confidence interval ranging from approximately 21 to 77 people per hour. This range lies entirely within the ±80 threshold defined by the engineering team. The QQ plot supported the reliability of the interval estimate by confirming that the differences were approximately normally distributed.
+
+Based on these results, we can be 95% confident that the true mean difference in pedestrian counts between the two crossings is less than 80 people per hour. This indicates that while Southern Cross tends to be slightly busier, the difference is not large enough to justify separate designs. Therefore, the engineers can safely use the same design and materials for both crossings, achieving cost savings without compromising on performance or pedestrian safety. The analysis and results are statistically sound and provide a clear, evidence-based recommendation for the engineering team.
