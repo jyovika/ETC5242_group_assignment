@@ -289,6 +289,15 @@ tt
 
 qqnorm(scale(d), main = "QQ of differences: SC − FL"); abline(0,1)
 ```
+Purpose
+
+The engineering team must determine whether Flinders Street and Southern Cross crossings can use the same design and materials.
+According to project requirements, the average difference in hourly pedestrian flow between the two sites must be no more than 80 people per hour.
+
+
+
+
+
 
 ## Task 4
 
@@ -311,6 +320,27 @@ mean_ci <- pedestrian_long |>
 
 mean_ci
 
+```
+```{r}
+
+
+library(ggplot2)
+library(scales)
+
+ggplot(mean_ci, aes(x = reorder(crossing, mean), y = mean)) +
+  geom_col(width = 0.6, fill = "steelblue") +
+  geom_errorbar(aes(ymin = lo, ymax = hi), width = 0.2) +
+  coord_flip() +
+  scale_y_continuous(labels = comma) +
+  labs(
+    title = "Average pedestrians per hour (95% CI)",
+    x = NULL, y = "Mean count",
+    caption = "Intervals are t-based: mean ± t_{0.975, n-1} * sd / sqrt(n)"
+  ) +
+  theme_minimal(base_size = 12)
+
+
+```
 ```
 
 
@@ -343,9 +373,11 @@ rev_ci <- pedestrian_long %>%
     rev_lo  = BASE + BONUS * lo_p,
     rev_hi  = BASE + BONUS * hi_p
   ) %>%
-  ungroup() %>%
-  select(crossing, n, k, phat, lo_p, hi_p, rev_hat, rev_lo, rev_hi)
-
+  ungroup() 
 rev_ci
 ```
+
+
+
+
 
