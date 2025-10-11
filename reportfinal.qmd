@@ -1,0 +1,217 @@
+---
+title: "Pedestrian Crossings Data Analysis Report (ETC5242 Assignment 2)"
+author: "Jyovika Aswale, Sia Chawla, Siddhi Jadhav"
+format: html
+editor: visual
+---
+```{r}
+#| label: setup
+#| include: false
+#| echo: false
+#| message: false
+#| warning: false
+
+knitr::opts_chunk$set(fig.align = "center", fig.width = 8, fig.height = 5, dpi = 150)
+
+library(tidyverse)
+library(boot)
+library(MASS)
+
+set.seed(355435)  
+
+B <- 5000
+```
+
+## Task 1 — Distribution and Models
+
+```{r}
+pedestrian_df <- read.csv(here::here("data/pedestrians.csv"))
+```
+
+### Purpose and approach
+The aim was to describe how lunchtime pedestrian counts vary at the three crossings (Flinders Street, Southern Cross, QV Melbourne) and to fit probability models that summarise these patterns for design and planning. I began with exploratory graphics (histograms/densities and boxplots; see Figures X–Y) and computed descriptive statistics per site (mean, median, sd, min–max, variance; see Table A). These summaries show QV Melbourne has the largest flows and greater day-to-day variation, while Flinders Street and Southern Cross have lower, tighter distributions.
+
+```{r, EDA_plots,fig:EDA_plots}
+pedestrian_long <- pedestrian_df %>%
+  mutate(obs = row_number()) %>%
+  pivot_longer(-obs, names_to = "crossing", values_to = "count") %>%
+  mutate(crossing = factor(crossing,
+                           levels = c("southern_cross","flinders_street","qv_melbourne")))
+
+ggplot(pedestrian_long, aes(x = crossing, y = count, fill = crossing)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.8) +
+  labs(title = "Pedestrian counts by crossing", x = NULL, y = "Count per interval") +
+  theme_minimal() + theme(legend.position = "none")
+
+
+ggplot(pedestrian_long, aes(x = count, fill = crossing)) +
+  geom_density(alpha = 0.35) +
+  facet_wrap(~ crossing, scales = "fixed") +
+  labs(title = "Distribution (density) per crossing", x = "Count", y = "Density") +
+  theme_minimal()
+
+```
+
+As shown in @fig:EDA_plots, pedestrian activity differs clearly across the three crossings.
+The boxplots indicate that QV Melbourne consistently records the highest pedestrian counts, with a median around 2.3–2.5 k per interval and the widest spread—showing both heavy usage and large fluctuations.
+Southern Cross and Flinders Street have lower medians (roughly 900–1,000 and 800–900 respectively) and narrower boxes, suggesting steadier, lighter flows.
+
+The density curves in @fig:EDA_plots confirm that all three distributions are unimodal and right-skewed, reflecting occasional high-traffic bursts.
+QV Melbourne’s distribution sits furthest to the right, while Southern Cross and Flinders overlap slightly, with Flinders trending marginally lower.
+
+Overall, @fig:EDA_plots highlights that QV Melbourne is the busiest and most variable crossing—prioritise it for any infrastructure or timing upgrades—while Southern Cross and Flinders Street appear relatively stable and would need only minor adjustments.
+```{r, EDA_summaries, tbl:crossing_summary}
+desc <- pedestrian_long |>
+  group_by(crossing) |>
+  summarise(
+    n     = n(),
+    mean  = mean(count),
+    median= median(count),
+    sd    = sd(count),
+    min   = min(count),
+    max   = max(count),
+    iqr   = IQR(count),
+    .groups = "drop"
+)
+```
+
+Table @tbl:crossing_summary provides summary statistics for pedestrian counts at each crossing (n = 97 per site). Results align with the distributional patterns in @fig:EDA_plots.
+
+**QV Melbourne.** Mean 2,336.7 and median 2,310 indicate the highest sustained demand. Dispersion is largest in absolute terms (sd ≈305, IQR 462; range 1,773–3,122), confirming substantial variability and frequent high-traffic intervals.
+
+**Southern Cross.** Central tendency is lower (mean 941.8, median 955) with comparatively tight spread (sd ≈133, IQR 143; range 494–1,256). This suggests a steady, moderate flow with fewer extreme peaks.
+
+**Flinders Street.** Typical load is slightly below Southern Cross (mean 893.0, median 887), but variability through the middle of the distribution is higher (IQR 202, sd ≈148; range 590–1,282), indicating more fluctuation around a lower centre.
+
+Skew. For all sites, the mean exceeds the median, consistent with right-skew seen in @fig:EDA_plots, i.e., occasional upper-tail surges.
+
+- **Implications for design and operations.**
+
+  - Prioritise QV Melbourne for capacity and signal-timing upgrades; plan to the upper percentiles rather than the mean.
+
+  - Southern Cross appears operationally stable; targeted, lighter interventions are likely sufficient.
+
+  - Flinders Street runs slightly lighter than Southern Cross but shows greater mid-spread variability; monitor and manage for intermittent congestion.
+
+### Model fitting and resulting estimates
+
+```{r, MLE}
+# Southern Cross
+sc <- pedestrian_df$southern_cross
+fit_sc_norm  <- fitdistr(sc, "normal")
+fit_sc_logn  <- fitdistr(sc, "lognormal")
+fit_sc_gamma <- fitdistr(sc, "gamma")   
+
+sc_models <- tibble(
+  crossing = "southern_cross",
+  model    = c("normal","lognormal","gamma"),
+  logLik   = c(logLik(fit_sc_norm)[1],  logLik(fit_sc_logn)[1],  logLik(fit_sc_gamma)[1]),
+  AIC      = c(AIC(fit_sc_norm),        AIC(fit_sc_logn),        AIC(fit_sc_gamma)),
+
+  mean_est = c(
+    unname(fit_sc_norm$estimate["mean"]),
+    exp(fit_sc_logn$estimate["meanlog"] + 0.5*fit_sc_logn$estimate["sdlog"]^2),
+    unname(fit_sc_gamma$estimate["shape"] / fit_sc_gamma$estimate["rate"])),
+  
+  sd_est   = c(
+    unname(fit_sc_norm$estimate["sd"]),
+    sqrt((exp(fit_sc_logn$estimate["sdlog"]^2) - 1) *
+         exp(2*fit_sc_logn$estimate["meanlog"] + fit_sc_logn$estimate["sdlog"]^2)),
+    sqrt(unname(fit_sc_gamma$estimate["shape"]) / (unname(fit_sc_gamma$estimate["rate"])^2))))
+
+# Flinders Street
+fl <- pedestrian_df$flinders_street
+fit_fl_norm  <- fitdistr(fl, "normal")
+fit_fl_logn  <- fitdistr(fl, "lognormal")
+fit_fl_gamma <- fitdistr(fl, "gamma")
+
+fl_models <- tibble(
+  crossing = "flinders_street",
+  model    = c("normal","lognormal","gamma"),
+  logLik   = c(logLik(fit_fl_norm)[1],  logLik(fit_fl_logn)[1],  logLik(fit_fl_gamma)[1]),
+  AIC      = c(AIC(fit_fl_norm),        AIC(fit_fl_logn),        AIC(fit_fl_gamma)),
+
+  mean_est = c(
+    unname(fit_fl_norm$estimate["mean"]),
+    exp(fit_fl_logn$estimate["meanlog"] + 0.5*fit_fl_logn$estimate["sdlog"]^2),
+    unname(fit_fl_gamma$estimate["shape"] / fit_fl_gamma$estimate["rate"])),
+  
+  sd_est   = c(
+    unname(fit_fl_norm$estimate["sd"]),
+    sqrt((exp(fit_fl_logn$estimate["sdlog"]^2) - 1) *
+         exp(2*fit_fl_logn$estimate["meanlog"] + fit_fl_logn$estimate["sdlog"]^2)),
+    sqrt(unname(fit_fl_gamma$estimate["shape"]) / (unname(fit_fl_gamma$estimate["rate"])^2))))
+
+# QV Melbourne
+qv <- pedestrian_df$qv_melbourne
+fit_qv_norm  <- fitdistr(qv, "normal")
+fit_qv_logn  <- fitdistr(qv, "lognormal")
+fit_qv_gamma <- fitdistr(qv, "gamma")
+
+qv_models <- tibble(
+  crossing = "qv_melbourne",
+  model    = c("normal","lognormal","gamma"),
+  logLik   = c(logLik(fit_qv_norm)[1],  logLik(fit_qv_logn)[1],  logLik(fit_qv_gamma)[1]),
+  AIC      = c(AIC(fit_qv_norm),        AIC(fit_qv_logn),        AIC(fit_qv_gamma)),
+
+  mean_est = c(
+    unname(fit_qv_norm$estimate["mean"]),
+    exp(fit_qv_logn$estimate["meanlog"] + 0.5*fit_qv_logn$estimate["sdlog"]^2),
+    unname(fit_qv_gamma$estimate["shape"] / fit_qv_gamma$estimate["rate"])),
+  
+  sd_est   = c(
+    unname(fit_qv_norm$estimate["sd"]),
+    sqrt((exp(fit_qv_logn$estimate["sdlog"]^2) - 1) *
+         exp(2*fit_qv_logn$estimate["meanlog"] + fit_qv_logn$estimate["sdlog"]^2)),
+    sqrt(unname(fit_qv_gamma$estimate["shape"]) / (unname(fit_qv_gamma$estimate["rate"])^2))))
+
+mle_fits <- bind_rows(sc_models, fl_models, qv_models) |>
+  arrange(crossing, AIC)
+
+mle_fits
+```
+
+Guided by the shapes in the graphics and Q–Q diagnostics, I fitted simple parametric models via maximum likelihood. Southern Cross is approximately symmetric on the original scale, so a **Normal** model was used. Flinders Street and QV Melbourne display mild right-skew and near-normality on the log scale, so **Lognormal** models were used. The resulting parameter estimates (estimate ± SE) were:
+
+- **Flinders Street (Lognormal):** meanlog = 6.7813 (0.0166), sdlog = 0.1633 (0.0117)  
+- **Southern Cross (Normal):** mean = 941.78 (13.44), sd = 132.34 (9.50)  
+- **QV Melbourne (Lognormal):** meanlog = 7.7482 (0.0130), sdlog = 0.1283 (0.0092)
+
+These are the fitted model parameters that mathematically characterise each site’s distribution.
+
+```{r, qqplots}
+par(mfrow = c(1,3), mar = c(4,4,2,1))
+
+## Southern Cross 
+x <- sort(sc); n <- length(x); p <- (seq_len(n)-0.5)/n
+qN <- qnorm(p,  mean = fit_sc_norm$estimate["mean"],    sd    = fit_sc_norm$estimate["sd"])
+qL <- qlnorm(p, meanlog = fit_sc_logn$estimate["meanlog"], sdlog = fit_sc_logn$estimate["sdlog"])
+qG <- qgamma(p, shape = fit_sc_gamma$estimate["shape"], rate = fit_sc_gamma$estimate["rate"])
+plot(qN, x, xlab="Theoretical quantiles", ylab="Empirical quantiles", main="Southern Cross",
+     pch=1, col="red"); points(qL, x, pch=1, col="forestgreen"); points(qG, x, pch=1, col="blue"); abline(0,1)
+
+# Flinders Street
+x <- sort(fl); n <- length(x); p <- (seq_len(n)-0.5)/n
+qN <- qnorm(p,  mean = fit_fl_norm$estimate["mean"],    sd    = fit_fl_norm$estimate["sd"])
+qL <- qlnorm(p, meanlog = fit_fl_logn$estimate["meanlog"], sdlog = fit_fl_logn$estimate["sdlog"])
+qG <- qgamma(p, shape = fit_fl_gamma$estimate["shape"], rate = fit_fl_gamma$estimate["rate"])
+plot(qN, x, xlab="Theoretical quantiles", ylab="Empirical quantiles", main="Flinders Street",
+     pch=1, col="red"); points(qL, x, pch=1, col="forestgreen"); points(qG, x, pch=1, col="blue"); abline(0,1)
+
+# QV Melbourne 
+x <- sort(qv); n <- length(x); p <- (seq_len(n)-0.5)/n
+qN <- qnorm(p,  mean = fit_qv_norm$estimate["mean"],    sd    = fit_qv_norm$estimate["sd"])
+qL <- qlnorm(p, meanlog = fit_qv_logn$estimate["meanlog"], sdlog = fit_qv_logn$estimate["sdlog"])
+qG <- qgamma(p, shape = fit_qv_gamma$estimate["shape"], rate = fit_qv_gamma$estimate["rate"])
+plot(qN, x, xlab="Theoretical quantiles", ylab="Empirical quantiles", main="QV Melbourne",
+     pch=1, col="red"); points(qL, x, pch=1, col="forestgreen"); points(qG, x, pch=1, col="blue"); abline(0,1)
+
+par(mfrow = c(1,1))
+
+```
+
+### Adequacy checks and assumptions
+Adequacy was assessed with  Q–Q plots. For Southern Cross, points lie close to the 45° line under a Normal reference; for Flinders and QV, log(count) aligns well with a Normal reference (supporting Lognormal on the count scale), with only small upper-tail deviations. Alternative count models (e.g., Poisson/Negative Binomial) were considered; Poisson was rejected due to over-dispersion, and although a Negative Binomial can also fit over-dispersed counts, the large counts make continuous approximations (Normal/Lognormal) adequate and visually superior here. Assumptions: observations are independent across days within a site; the fitted family (Normal or Lognormal) is a reasonable approximation for lunchtime variability.
+
+### Summary for the manager (plain language)
+In short, **QV Melbourne** is by far the busiest and most variable crossing at lunchtime, typically handling **well over 2,000** people per hour, whereas **Flinders Street** and **Southern Cross** each handle **around 900–950** on average with tighter day-to-day variation. The simple statistical models above accurately capture these patterns and will be used in Task 2 to estimate “busy-day thresholds” (the level we must design for so flow is smooth 90% of the time).
