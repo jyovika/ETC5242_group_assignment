@@ -290,6 +290,8 @@ tt
 qqnorm(scale(d), main = "QQ of differences: SC − FL"); abline(0,1)
 ```
 
+The analysis compared the mean pedestrian counts between Southern Cross and Flinders Street to determine whether a single crossing design could accommodate both sites. A paired t-test was used to estimate a 95 percent confidence interval for the mean difference in pedestrian counts (Southern Cross minus Flinders Street). The mean difference was approximately 49 people per hour, with a 95 percent confidence interval from 21 to 77. The QQ plot of the paired differences indicated that the data were approximately normal, supporting the validity of the Central Limit Theorem and the t-based confidence interval. Although the difference is statistically significant (p = 0.0008), it is not practically large enough to exceed the engineering threshold of 80 people per hour. Therefore, the engineers can confidently use the same design and materials for both crossings while maintaining safe pedestrian flow and cost efficiency.
+
 
 ## Task 4
 
@@ -351,6 +353,8 @@ ci_table
 
 
 ```{r}
+#| label: fig-trafficCI
+#| fig-cap: "Pedestrian traffic with 95% confidence intervals at each location."
 ggplot(ci_table, aes(x = Location, y = estimate)) +
   geom_segment(aes(xend = Location, y = 0, yend = estimate), color = "grey60") +
   geom_point(size = 4, color = "tomato") +
@@ -363,3 +367,9 @@ ggplot(ci_table, aes(x = Location, y = estimate)) +
   theme_minimal(base_size = 14)
 
 ```
+
+
+The analysis estimated the average hourly pedestrian count at each crossing to inform the marketing team about potential advertising value. One-sample t-tests produced 95 percent confidence intervals for the mean number of pedestrians at Southern Cross, Flinders Street, and QV Melbourne. The mean counts were approximately 942, 893, and 2 337 people per hour, respectively. The corresponding confidence intervals showed that QV Melbourne experiences substantially higher pedestrian traffic than the two station crossings, whose intervals overlap, indicating comparable average flow. The visual summary ( @fig-trafficCI) highlights the wide gap between QV Melbourne and the other locations. Based on these results, QV Melbourne offers the greatest exposure and advertising potential, while Southern Cross and Flinders Street represent similar mid-range opportunities.
+
+
+The confidence intervals were constructed using the one-sample t-distribution, which is appropriate because the true population standard deviations are unknown and the sample sizes are reasonably large. The t-interval method relies on the assumption that the pedestrian counts are approximately normally distributed or that the Central Limit Theorem applies. Since each site includes around 97 observations, the CLT ensures that the sampling distribution of the sample mean is approximately normal even if the original data show mild skewness. Therefore, the 95 percent confidence intervals provide valid and reliable estimates of the average pedestrian traffic at each location. The relatively narrow intervals at Southern Cross and Flinders Street indicate stable traffic levels, while the wider but clearly higher interval at QV Melbourne reflects its substantially greater footfall.

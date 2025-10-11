@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.42">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -64,10 +64,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="report_files/libs/quarto-html/tippy.umd.min.js"></script>
 <script src="report_files/libs/quarto-html/anchor.min.js"></script>
 <link href="report_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="report_files/libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="report_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="report_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="report_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="report_files/libs/bootstrap/bootstrap-1bc8a17f135ab3d594c857e9f48e611b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="report_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
 
 </head>
@@ -103,18 +103,469 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pedestrian_df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/pedestrians.csv"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pedestrian_df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/pedestrians.csv"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pedestrian_long <span class="ot">&lt;-</span> pedestrian_df <span class="sc">%&gt;%</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">obs =</span> <span class="fu">row_number</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>obs, <span class="at">names_to =</span> <span class="st">"crossing"</span>, <span class="at">values_to =</span> <span class="st">"count"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">crossing =</span> <span class="fu">factor</span>(crossing,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                           <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"southern_cross"</span>,<span class="st">"flinders_street"</span>,<span class="st">"qv_melbourne"</span>)))</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(pedestrian_long, <span class="fu">aes</span>(<span class="at">x =</span> crossing, <span class="at">y =</span> count, <span class="at">fill =</span> crossing)) <span class="sc">+</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">outlier.shape =</span> <span class="cn">NA</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="fl">0.15</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="fl">1.6</span>) <span class="sc">+</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Pedestrian counts by crossing"</span>, <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Count per interval"</span>) <span class="sc">+</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="report_files/figure-html/EDA_plots-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1200"></p>
+</figure>
 </div>
-<pre><code></code></pre>
-<pre><code></code></pre>
-<pre><code></code></pre>
-<pre><code></code></pre>
-<pre><code></code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(pedestrian_long, <span class="fu">aes</span>(<span class="at">x =</span> count, <span class="at">fill =</span> crossing)) <span class="sc">+</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.35</span>) <span class="sc">+</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> crossing, <span class="at">scales =</span> <span class="st">"fixed"</span>) <span class="sc">+</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribution (density) per crossing"</span>, <span class="at">x =</span> <span class="st">"Count"</span>, <span class="at">y =</span> <span class="st">"Density"</span>) <span class="sc">+</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="report_files/figure-html/EDA_plots-2.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1200"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>desc <span class="ot">&lt;-</span> pedestrian_long <span class="sc">|&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(crossing) <span class="sc">|&gt;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">n     =</span> <span class="fu">n</span>(),</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean  =</span> <span class="fu">mean</span>(count),</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">median=</span> <span class="fu">median</span>(count),</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">sd    =</span> <span class="fu">sd</span>(count),</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">min   =</span> <span class="fu">min</span>(count),</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">max   =</span> <span class="fu">max</span>(count),</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">iqr   =</span> <span class="fu">IQR</span>(count),</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="task-1" class="level2">
+<h2 class="anchored" data-anchor-id="task-1">task 1</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Southern Cross</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>sc <span class="ot">&lt;-</span> pedestrian_df<span class="sc">$</span>southern_cross</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>fit_sc_norm  <span class="ot">&lt;-</span> <span class="fu">fitdistr</span>(sc, <span class="st">"normal"</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>fit_sc_logn  <span class="ot">&lt;-</span> <span class="fu">fitdistr</span>(sc, <span class="st">"lognormal"</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>fit_sc_gamma <span class="ot">&lt;-</span> <span class="fu">fitdistr</span>(sc, <span class="st">"gamma"</span>)   </span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>sc_models <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">crossing =</span> <span class="st">"southern_cross"</span>,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">model    =</span> <span class="fu">c</span>(<span class="st">"normal"</span>,<span class="st">"lognormal"</span>,<span class="st">"gamma"</span>),</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">logLik   =</span> <span class="fu">c</span>(<span class="fu">logLik</span>(fit_sc_norm)[<span class="dv">1</span>],  <span class="fu">logLik</span>(fit_sc_logn)[<span class="dv">1</span>],  <span class="fu">logLik</span>(fit_sc_gamma)[<span class="dv">1</span>]),</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">AIC      =</span> <span class="fu">c</span>(<span class="fu">AIC</span>(fit_sc_norm),        <span class="fu">AIC</span>(fit_sc_logn),        <span class="fu">AIC</span>(fit_sc_gamma)),</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">mean_est =</span> <span class="fu">c</span>(</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unname</span>(fit_sc_norm<span class="sc">$</span>estimate[<span class="st">"mean"</span>]),</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">exp</span>(fit_sc_logn<span class="sc">$</span>estimate[<span class="st">"meanlog"</span>] <span class="sc">+</span> <span class="fl">0.5</span><span class="sc">*</span>fit_sc_logn<span class="sc">$</span>estimate[<span class="st">"sdlog"</span>]<span class="sc">^</span><span class="dv">2</span>),</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unname</span>(fit_sc_gamma<span class="sc">$</span>estimate[<span class="st">"shape"</span>] <span class="sc">/</span> fit_sc_gamma<span class="sc">$</span>estimate[<span class="st">"rate"</span>])),</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">sd_est   =</span> <span class="fu">c</span>(</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unname</span>(fit_sc_norm<span class="sc">$</span>estimate[<span class="st">"sd"</span>]),</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sqrt</span>((<span class="fu">exp</span>(fit_sc_logn<span class="sc">$</span>estimate[<span class="st">"sdlog"</span>]<span class="sc">^</span><span class="dv">2</span>) <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>         <span class="fu">exp</span>(<span class="dv">2</span><span class="sc">*</span>fit_sc_logn<span class="sc">$</span>estimate[<span class="st">"meanlog"</span>] <span class="sc">+</span> fit_sc_logn<span class="sc">$</span>estimate[<span class="st">"sdlog"</span>]<span class="sc">^</span><span class="dv">2</span>)),</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sqrt</span>(<span class="fu">unname</span>(fit_sc_gamma<span class="sc">$</span>estimate[<span class="st">"shape"</span>]) <span class="sc">/</span> (<span class="fu">unname</span>(fit_sc_gamma<span class="sc">$</span>estimate[<span class="st">"rate"</span>])<span class="sc">^</span><span class="dv">2</span>))))</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Flinders Street</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>fl <span class="ot">&lt;-</span> pedestrian_df<span class="sc">$</span>flinders_street</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>fit_fl_norm  <span class="ot">&lt;-</span> <span class="fu">fitdistr</span>(fl, <span class="st">"normal"</span>)</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>fit_fl_logn  <span class="ot">&lt;-</span> <span class="fu">fitdistr</span>(fl, <span class="st">"lognormal"</span>)</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>fit_fl_gamma <span class="ot">&lt;-</span> <span class="fu">fitdistr</span>(fl, <span class="st">"gamma"</span>)</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>fl_models <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">crossing =</span> <span class="st">"flinders_street"</span>,</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">model    =</span> <span class="fu">c</span>(<span class="st">"normal"</span>,<span class="st">"lognormal"</span>,<span class="st">"gamma"</span>),</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">logLik   =</span> <span class="fu">c</span>(<span class="fu">logLik</span>(fit_fl_norm)[<span class="dv">1</span>],  <span class="fu">logLik</span>(fit_fl_logn)[<span class="dv">1</span>],  <span class="fu">logLik</span>(fit_fl_gamma)[<span class="dv">1</span>]),</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">AIC      =</span> <span class="fu">c</span>(<span class="fu">AIC</span>(fit_fl_norm),        <span class="fu">AIC</span>(fit_fl_logn),        <span class="fu">AIC</span>(fit_fl_gamma)),</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>  <span class="at">mean_est =</span> <span class="fu">c</span>(</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unname</span>(fit_fl_norm<span class="sc">$</span>estimate[<span class="st">"mean"</span>]),</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>    <span class="fu">exp</span>(fit_fl_logn<span class="sc">$</span>estimate[<span class="st">"meanlog"</span>] <span class="sc">+</span> <span class="fl">0.5</span><span class="sc">*</span>fit_fl_logn<span class="sc">$</span>estimate[<span class="st">"sdlog"</span>]<span class="sc">^</span><span class="dv">2</span>),</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unname</span>(fit_fl_gamma<span class="sc">$</span>estimate[<span class="st">"shape"</span>] <span class="sc">/</span> fit_fl_gamma<span class="sc">$</span>estimate[<span class="st">"rate"</span>])),</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>  <span class="at">sd_est   =</span> <span class="fu">c</span>(</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unname</span>(fit_fl_norm<span class="sc">$</span>estimate[<span class="st">"sd"</span>]),</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sqrt</span>((<span class="fu">exp</span>(fit_fl_logn<span class="sc">$</span>estimate[<span class="st">"sdlog"</span>]<span class="sc">^</span><span class="dv">2</span>) <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span></span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>         <span class="fu">exp</span>(<span class="dv">2</span><span class="sc">*</span>fit_fl_logn<span class="sc">$</span>estimate[<span class="st">"meanlog"</span>] <span class="sc">+</span> fit_fl_logn<span class="sc">$</span>estimate[<span class="st">"sdlog"</span>]<span class="sc">^</span><span class="dv">2</span>)),</span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sqrt</span>(<span class="fu">unname</span>(fit_fl_gamma<span class="sc">$</span>estimate[<span class="st">"shape"</span>]) <span class="sc">/</span> (<span class="fu">unname</span>(fit_fl_gamma<span class="sc">$</span>estimate[<span class="st">"rate"</span>])<span class="sc">^</span><span class="dv">2</span>))))</span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a><span class="co"># QV Melbourne</span></span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>qv <span class="ot">&lt;-</span> pedestrian_df<span class="sc">$</span>qv_melbourne</span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>fit_qv_norm  <span class="ot">&lt;-</span> <span class="fu">fitdistr</span>(qv, <span class="st">"normal"</span>)</span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>fit_qv_logn  <span class="ot">&lt;-</span> <span class="fu">fitdistr</span>(qv, <span class="st">"lognormal"</span>)</span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>fit_qv_gamma <span class="ot">&lt;-</span> <span class="fu">fitdistr</span>(qv, <span class="st">"gamma"</span>)</span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>qv_models <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>  <span class="at">crossing =</span> <span class="st">"qv_melbourne"</span>,</span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>  <span class="at">model    =</span> <span class="fu">c</span>(<span class="st">"normal"</span>,<span class="st">"lognormal"</span>,<span class="st">"gamma"</span>),</span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a>  <span class="at">logLik   =</span> <span class="fu">c</span>(<span class="fu">logLik</span>(fit_qv_norm)[<span class="dv">1</span>],  <span class="fu">logLik</span>(fit_qv_logn)[<span class="dv">1</span>],  <span class="fu">logLik</span>(fit_qv_gamma)[<span class="dv">1</span>]),</span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>  <span class="at">AIC      =</span> <span class="fu">c</span>(<span class="fu">AIC</span>(fit_qv_norm),        <span class="fu">AIC</span>(fit_qv_logn),        <span class="fu">AIC</span>(fit_qv_gamma)),</span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a>  <span class="at">mean_est =</span> <span class="fu">c</span>(</span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unname</span>(fit_qv_norm<span class="sc">$</span>estimate[<span class="st">"mean"</span>]),</span>
+<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a>    <span class="fu">exp</span>(fit_qv_logn<span class="sc">$</span>estimate[<span class="st">"meanlog"</span>] <span class="sc">+</span> <span class="fl">0.5</span><span class="sc">*</span>fit_qv_logn<span class="sc">$</span>estimate[<span class="st">"sdlog"</span>]<span class="sc">^</span><span class="dv">2</span>),</span>
+<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unname</span>(fit_qv_gamma<span class="sc">$</span>estimate[<span class="st">"shape"</span>] <span class="sc">/</span> fit_qv_gamma<span class="sc">$</span>estimate[<span class="st">"rate"</span>])),</span>
+<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a>  <span class="at">sd_est   =</span> <span class="fu">c</span>(</span>
+<span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unname</span>(fit_qv_norm<span class="sc">$</span>estimate[<span class="st">"sd"</span>]),</span>
+<span id="cb5-66"><a href="#cb5-66" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sqrt</span>((<span class="fu">exp</span>(fit_qv_logn<span class="sc">$</span>estimate[<span class="st">"sdlog"</span>]<span class="sc">^</span><span class="dv">2</span>) <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span></span>
+<span id="cb5-67"><a href="#cb5-67" aria-hidden="true" tabindex="-1"></a>         <span class="fu">exp</span>(<span class="dv">2</span><span class="sc">*</span>fit_qv_logn<span class="sc">$</span>estimate[<span class="st">"meanlog"</span>] <span class="sc">+</span> fit_qv_logn<span class="sc">$</span>estimate[<span class="st">"sdlog"</span>]<span class="sc">^</span><span class="dv">2</span>)),</span>
+<span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sqrt</span>(<span class="fu">unname</span>(fit_qv_gamma<span class="sc">$</span>estimate[<span class="st">"shape"</span>]) <span class="sc">/</span> (<span class="fu">unname</span>(fit_qv_gamma<span class="sc">$</span>estimate[<span class="st">"rate"</span>])<span class="sc">^</span><span class="dv">2</span>))))</span>
+<span id="cb5-69"><a href="#cb5-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-70"><a href="#cb5-70" aria-hidden="true" tabindex="-1"></a>mle_fits <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(sc_models, fl_models, qv_models) <span class="sc">|&gt;</span></span>
+<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(crossing, AIC)</span>
+<span id="cb5-72"><a href="#cb5-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-73"><a href="#cb5-73" aria-hidden="true" tabindex="-1"></a>mle_fits</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 9 × 6
+  crossing        model     logLik   AIC mean_est sd_est
+  &lt;chr&gt;           &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;
+1 flinders_street lognormal  -620. 1243.     893.   147.
+2 flinders_street gamma      -620. 1244.     893.   146.
+3 flinders_street normal     -622. 1248.     893.   147.
+4 qv_melbourne    lognormal  -690. 1384.    2337.   301.
+5 qv_melbourne    gamma      -690. 1385.    2337.   300.
+6 qv_melbourne    normal     -692. 1388.    2337.   303.
+7 southern_cross  normal     -612. 1227.     942.   132.
+8 southern_cross  gamma      -615. 1233.     942.   138.
+9 southern_cross  lognormal  -617. 1238.     942.   142.</code></pre>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">4</span>,<span class="dv">2</span>,<span class="dv">1</span>))</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Southern Cross </span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">sort</span>(sc); n <span class="ot">&lt;-</span> <span class="fu">length</span>(x); p <span class="ot">&lt;-</span> (<span class="fu">seq_len</span>(n)<span class="sc">-</span><span class="fl">0.5</span>)<span class="sc">/</span>n</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>qN <span class="ot">&lt;-</span> <span class="fu">qnorm</span>(p,  <span class="at">mean =</span> fit_sc_norm<span class="sc">$</span>estimate[<span class="st">"mean"</span>],    <span class="at">sd    =</span> fit_sc_norm<span class="sc">$</span>estimate[<span class="st">"sd"</span>])</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>qL <span class="ot">&lt;-</span> <span class="fu">qlnorm</span>(p, <span class="at">meanlog =</span> fit_sc_logn<span class="sc">$</span>estimate[<span class="st">"meanlog"</span>], <span class="at">sdlog =</span> fit_sc_logn<span class="sc">$</span>estimate[<span class="st">"sdlog"</span>])</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>qG <span class="ot">&lt;-</span> <span class="fu">qgamma</span>(p, <span class="at">shape =</span> fit_sc_gamma<span class="sc">$</span>estimate[<span class="st">"shape"</span>], <span class="at">rate =</span> fit_sc_gamma<span class="sc">$</span>estimate[<span class="st">"rate"</span>])</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(qN, x, <span class="at">xlab=</span><span class="st">"Theoretical quantiles"</span>, <span class="at">ylab=</span><span class="st">"Empirical quantiles"</span>, <span class="at">main=</span><span class="st">"Southern Cross"</span>,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">pch=</span><span class="dv">1</span>, <span class="at">col=</span><span class="st">"red"</span>); <span class="fu">points</span>(qL, x, <span class="at">pch=</span><span class="dv">1</span>, <span class="at">col=</span><span class="st">"forestgreen"</span>); <span class="fu">points</span>(qG, x, <span class="at">pch=</span><span class="dv">1</span>, <span class="at">col=</span><span class="st">"blue"</span>); <span class="fu">abline</span>(<span class="dv">0</span>,<span class="dv">1</span>)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Flinders Street</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">sort</span>(fl); n <span class="ot">&lt;-</span> <span class="fu">length</span>(x); p <span class="ot">&lt;-</span> (<span class="fu">seq_len</span>(n)<span class="sc">-</span><span class="fl">0.5</span>)<span class="sc">/</span>n</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>qN <span class="ot">&lt;-</span> <span class="fu">qnorm</span>(p,  <span class="at">mean =</span> fit_fl_norm<span class="sc">$</span>estimate[<span class="st">"mean"</span>],    <span class="at">sd    =</span> fit_fl_norm<span class="sc">$</span>estimate[<span class="st">"sd"</span>])</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>qL <span class="ot">&lt;-</span> <span class="fu">qlnorm</span>(p, <span class="at">meanlog =</span> fit_fl_logn<span class="sc">$</span>estimate[<span class="st">"meanlog"</span>], <span class="at">sdlog =</span> fit_fl_logn<span class="sc">$</span>estimate[<span class="st">"sdlog"</span>])</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>qG <span class="ot">&lt;-</span> <span class="fu">qgamma</span>(p, <span class="at">shape =</span> fit_fl_gamma<span class="sc">$</span>estimate[<span class="st">"shape"</span>], <span class="at">rate =</span> fit_fl_gamma<span class="sc">$</span>estimate[<span class="st">"rate"</span>])</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(qN, x, <span class="at">xlab=</span><span class="st">"Theoretical quantiles"</span>, <span class="at">ylab=</span><span class="st">"Empirical quantiles"</span>, <span class="at">main=</span><span class="st">"Flinders Street"</span>,</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>     <span class="at">pch=</span><span class="dv">1</span>, <span class="at">col=</span><span class="st">"red"</span>); <span class="fu">points</span>(qL, x, <span class="at">pch=</span><span class="dv">1</span>, <span class="at">col=</span><span class="st">"forestgreen"</span>); <span class="fu">points</span>(qG, x, <span class="at">pch=</span><span class="dv">1</span>, <span class="at">col=</span><span class="st">"blue"</span>); <span class="fu">abline</span>(<span class="dv">0</span>,<span class="dv">1</span>)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co"># QV Melbourne </span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">sort</span>(qv); n <span class="ot">&lt;-</span> <span class="fu">length</span>(x); p <span class="ot">&lt;-</span> (<span class="fu">seq_len</span>(n)<span class="sc">-</span><span class="fl">0.5</span>)<span class="sc">/</span>n</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>qN <span class="ot">&lt;-</span> <span class="fu">qnorm</span>(p,  <span class="at">mean =</span> fit_qv_norm<span class="sc">$</span>estimate[<span class="st">"mean"</span>],    <span class="at">sd    =</span> fit_qv_norm<span class="sc">$</span>estimate[<span class="st">"sd"</span>])</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>qL <span class="ot">&lt;-</span> <span class="fu">qlnorm</span>(p, <span class="at">meanlog =</span> fit_qv_logn<span class="sc">$</span>estimate[<span class="st">"meanlog"</span>], <span class="at">sdlog =</span> fit_qv_logn<span class="sc">$</span>estimate[<span class="st">"sdlog"</span>])</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>qG <span class="ot">&lt;-</span> <span class="fu">qgamma</span>(p, <span class="at">shape =</span> fit_qv_gamma<span class="sc">$</span>estimate[<span class="st">"shape"</span>], <span class="at">rate =</span> fit_qv_gamma<span class="sc">$</span>estimate[<span class="st">"rate"</span>])</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(qN, x, <span class="at">xlab=</span><span class="st">"Theoretical quantiles"</span>, <span class="at">ylab=</span><span class="st">"Empirical quantiles"</span>, <span class="at">main=</span><span class="st">"QV Melbourne"</span>,</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>     <span class="at">pch=</span><span class="dv">1</span>, <span class="at">col=</span><span class="st">"red"</span>); <span class="fu">points</span>(qL, x, <span class="at">pch=</span><span class="dv">1</span>, <span class="at">col=</span><span class="st">"forestgreen"</span>); <span class="fu">points</span>(qG, x, <span class="at">pch=</span><span class="dv">1</span>, <span class="at">col=</span><span class="st">"blue"</span>); <span class="fu">abline</span>(<span class="dv">0</span>,<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="report_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1200"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="task-2" class="level2">
+<h2 class="anchored" data-anchor-id="task-2">task 2</h2>
+<section id="appraoch-1" class="level3">
+<h3 class="anchored" data-anchor-id="appraoch-1">appraoch 1</h3>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>pedestrian_long <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(crossing) <span class="sc">%&gt;%</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">q90 =</span> <span class="fu">quantile</span>(count, <span class="fl">0.9</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 2
+  crossing          q90
+  &lt;fct&gt;           &lt;dbl&gt;
+1 southern_cross  1090 
+2 flinders_street 1061.
+3 qv_melbourne    2704 </code></pre>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># function to calculate 90th percentile</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>q90_fn <span class="ot">&lt;-</span> <span class="cf">function</span>(data, i) <span class="fu">quantile</span>(data[i], <span class="fl">0.9</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># example for Flinders</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>fl_boot <span class="ot">&lt;-</span> <span class="fu">boot</span>(pedestrian_df<span class="sc">$</span>flinders_street, q90_fn, <span class="at">R =</span> <span class="dv">1000</span>)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>ci_fl <span class="ot">&lt;-</span> <span class="fu">boot.ci</span>(fl_boot, <span class="at">type =</span> <span class="st">"perc"</span>)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(ci_fl<span class="sc">$</span>percent[<span class="dv">4</span><span class="sc">:</span><span class="dv">5</span>], <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1038.64 1157.14</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Southern Cross</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>sc_boot <span class="ot">&lt;-</span> <span class="fu">boot</span>(pedestrian_df<span class="sc">$</span>southern_cross, q90_fn, <span class="at">R =</span> <span class="dv">1000</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>ci_sc <span class="ot">&lt;-</span> <span class="fu">boot.ci</span>(sc_boot, <span class="at">type =</span> <span class="st">"perc"</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(ci_sc<span class="sc">$</span>percent[<span class="dv">4</span><span class="sc">:</span><span class="dv">5</span>], <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1057.23 1128.00</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># QV</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>qv_boot <span class="ot">&lt;-</span> <span class="fu">boot</span>(pedestrian_df<span class="sc">$</span>qv, q90_fn, <span class="at">R =</span> <span class="dv">1000</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>ci_qv <span class="ot">&lt;-</span> <span class="fu">boot.ci</span>(qv_boot, <span class="at">type =</span> <span class="st">"perc"</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(ci_qv<span class="sc">$</span>percent[<span class="dv">4</span><span class="sc">:</span><span class="dv">5</span>], <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2624 2939</code></pre>
+</div>
+</div>
+<p><strong>justify this method choice</strong></p>
+</section>
+<section id="approach-2" class="level3">
+<h3 class="anchored" data-anchor-id="approach-2">Approach 2</h3>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fitdistrplus)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: survival</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'survival'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:boot':
+
+    aml</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">30</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>n_fl <span class="ot">&lt;-</span> <span class="fu">length</span>(pedestrian_df<span class="sc">$</span>flinders_street)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>n_sc <span class="ot">&lt;-</span> <span class="fu">length</span>(pedestrian_df<span class="sc">$</span>southern_cross)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>n_qv <span class="ot">&lt;-</span> <span class="fu">length</span>(pedestrian_df<span class="sc">$</span>qv)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Flinders &amp; QV: Lognormal</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>fl_fit <span class="ot">&lt;-</span> <span class="fu">fitdist</span>(pedestrian_df<span class="sc">$</span>flinders_street, <span class="st">"lnorm"</span>)</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>qv_fit <span class="ot">&lt;-</span> <span class="fu">fitdist</span>(pedestrian_df<span class="sc">$</span>qv, <span class="st">"lnorm"</span>)</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Southern Cross: Normal</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>sc_fit <span class="ot">&lt;-</span> <span class="fu">fitdist</span>(pedestrian_df<span class="sc">$</span>southern_cross, <span class="st">"norm"</span>)</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>fl_fit<span class="sc">$</span>estimate; sc_fit<span class="sc">$</span>estimate; qv_fit<span class="sc">$</span>estimate</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  meanlog     sdlog 
+6.7812521 0.1632967 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    mean       sd 
+941.7835 132.3357 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  meanlog     sdlog 
+7.7482295 0.1283099 </code></pre>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>q90_model_ci <span class="ot">&lt;-</span> <span class="cf">function</span>(fit, dist, n, <span class="at">B =</span> <span class="dv">2000</span>) {</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Point estimate from the fitted distribution</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  q90_hat <span class="ot">&lt;-</span> <span class="cf">switch</span>(</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    dist,</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"lnorm"</span> <span class="ot">=</span> <span class="fu">qlnorm</span>(<span class="fl">0.9</span>,</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>                     <span class="at">meanlog =</span> fit<span class="sc">$</span>estimate[<span class="st">"meanlog"</span>],</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>                     <span class="at">sdlog   =</span> fit<span class="sc">$</span>estimate[<span class="st">"sdlog"</span>]),</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"norm"</span>  <span class="ot">=</span> <span class="fu">qnorm</span>(<span class="fl">0.9</span>,</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>                    <span class="at">mean =</span> fit<span class="sc">$</span>estimate[<span class="st">"mean"</span>],</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>                    <span class="at">sd   =</span> fit<span class="sc">$</span>estimate[<span class="st">"sd"</span>])</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Parametric bootstrap: simulate datasets of size n from the fitted model</span></span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>  boot_q90 <span class="ot">&lt;-</span> <span class="fu">replicate</span>(B, {</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>    sim <span class="ot">&lt;-</span> <span class="cf">switch</span>(</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>      dist,</span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>      <span class="st">"lnorm"</span> <span class="ot">=</span> <span class="fu">rlnorm</span>(n,</span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>                       <span class="at">meanlog =</span> fit<span class="sc">$</span>estimate[<span class="st">"meanlog"</span>],</span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>                       <span class="at">sdlog   =</span> fit<span class="sc">$</span>estimate[<span class="st">"sdlog"</span>]),</span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>      <span class="st">"norm"</span>  <span class="ot">=</span> <span class="fu">rnorm</span>(n,</span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>                      <span class="at">mean =</span> fit<span class="sc">$</span>estimate[<span class="st">"mean"</span>],</span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>                      <span class="at">sd   =</span> fit<span class="sc">$</span>estimate[<span class="st">"sd"</span>])</span>
+<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.numeric</span>(<span class="fu">quantile</span>(sim, <span class="fl">0.9</span>))</span>
+<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a>  ci <span class="ot">&lt;-</span> <span class="fu">quantile</span>(boot_q90, <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>))</span>
+<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
+<span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">q90_model =</span> <span class="fu">round</span>(q90_hat, <span class="dv">2</span>),</span>
+<span id="cb25-30"><a href="#cb25-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">ci_low    =</span> <span class="fu">round</span>(ci[<span class="dv">1</span>], <span class="dv">2</span>),</span>
+<span id="cb25-31"><a href="#cb25-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">ci_high   =</span> <span class="fu">round</span>(ci[<span class="dv">2</span>], <span class="dv">2</span>)</span>
+<span id="cb25-32"><a href="#cb25-32" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb25-33"><a href="#cb25-33" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="task-3" class="level2">
+<h2 class="anchored" data-anchor-id="task-3">Task 3</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>df  <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(pedestrian_df[, <span class="fu">c</span>(<span class="st">"southern_cross"</span>,<span class="st">"flinders_street"</span>)])</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>sc  <span class="ot">&lt;-</span> df<span class="sc">$</span>southern_cross</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>fl  <span class="ot">&lt;-</span> df<span class="sc">$</span>flinders_street</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>d   <span class="ot">&lt;-</span> sc <span class="sc">-</span> fl                 </span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 95% CI for the mean difference </span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>tt <span class="ot">&lt;-</span> <span class="fu">t.test</span>(sc, fl, <span class="at">paired =</span> <span class="cn">TRUE</span>, <span class="at">conf.level =</span> <span class="fl">0.95</span>)</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>tt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Paired t-test
+
+data:  sc and fl
+t = 3.4698, df = 96, p-value = 0.0007817
+alternative hypothesis: true mean difference is not equal to 0
+95 percent confidence interval:
+ 20.86279 76.64237
+sample estimates:
+mean difference 
+       48.75258 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(<span class="fu">scale</span>(d), <span class="at">main =</span> <span class="st">"QQ of differences: SC − FL"</span>); <span class="fu">abline</span>(<span class="dv">0</span>,<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="report_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1200"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The analysis compared the mean pedestrian counts between Southern Cross and Flinders Street to determine whether a single crossing design could accommodate both sites. A paired t-test was used to estimate a 95 percent confidence interval for the mean difference in pedestrian counts (Southern Cross minus Flinders Street). The mean difference was approximately 49 people per hour, with a 95 percent confidence interval from 21 to 77. The QQ plot of the paired differences indicated that the data were approximately normal, supporting the validity of the Central Limit Theorem and the t-based confidence interval. Although the difference is statistically significant (p = 0.0008), it is not practically large enough to exceed the engineering threshold of 80 people per hour. Therefore, the engineers can confidently use the same design and materials for both crossings while maintaining safe pedestrian flow and cost efficiency.</p>
+</section>
+<section id="task-4" class="level2">
+<h2 class="anchored" data-anchor-id="task-4">Task 4</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>mean_ci <span class="ot">&lt;-</span> pedestrian_long <span class="sc">|&gt;</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(crossing) <span class="sc">|&gt;</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">n    =</span> <span class="fu">n</span>(),</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean =</span> <span class="fu">mean</span>(count, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">sd   =</span> <span class="fu">sd</span>(count,   <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">se    =</span> sd <span class="sc">/</span> <span class="fu">sqrt</span>(n),</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">tcrit =</span> <span class="fu">qt</span>(<span class="fl">0.975</span>, <span class="at">df =</span> n <span class="sc">-</span> <span class="dv">1</span>),</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">lo    =</span> mean <span class="sc">-</span> tcrit <span class="sc">*</span> se,</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">hi    =</span> mean <span class="sc">+</span> tcrit <span class="sc">*</span> se</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(mean))</span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>mean_ci</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 8
+  crossing            n  mean    sd    se tcrit    lo    hi
+  &lt;fct&gt;           &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1 qv_melbourne       97 2337.  305.  31.0  1.98 2275. 2398.
+2 southern_cross     97  942.  133.  13.5  1.98  915.  969.
+3 flinders_street    97  893.  148.  15.0  1.98  863.  923.</code></pre>
+</div>
+</div>
+</section>
+<section id="sia-task-4" class="level2">
+<h2 class="anchored" data-anchor-id="sia-task-4">Sia task 4</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Southern Cross</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(pedestrian_df<span class="sc">$</span>southern_cross, <span class="at">conf.level =</span> <span class="fl">0.95</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    One Sample t-test
+
+data:  pedestrian_df$southern_cross
+t = 69.728, df = 96, p-value &lt; 2.2e-16
+alternative hypothesis: true mean is not equal to 0
+95 percent confidence interval:
+ 914.9734 968.5936
+sample estimates:
+mean of x 
+ 941.7835 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Flinders Street</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(pedestrian_df<span class="sc">$</span>flinders_street, <span class="at">conf.level =</span> <span class="fl">0.95</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    One Sample t-test
+
+data:  pedestrian_df$flinders_street
+t = 59.479, df = 96, p-value &lt; 2.2e-16
+alternative hypothesis: true mean is not equal to 0
+95 percent confidence interval:
+ 863.2280 922.8338
+sample estimates:
+mean of x 
+ 893.0309 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># QV</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(pedestrian_df<span class="sc">$</span>qv, <span class="at">conf.level =</span> <span class="fl">0.95</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    One Sample t-test
+
+data:  pedestrian_df$qv
+t = 75.484, df = 96, p-value &lt; 2.2e-16
+alternative hypothesis: true mean is not equal to 0
+95 percent confidence interval:
+ 2275.284 2398.180
+sample estimates:
+mean of x 
+ 2336.732 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(purrr)</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>ci_table <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Southern Cross"</span> <span class="ot">=</span> <span class="fu">t.test</span>(pedestrian_df<span class="sc">$</span>southern_cross),</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Flinders Street"</span> <span class="ot">=</span> <span class="fu">t.test</span>(pedestrian_df<span class="sc">$</span>flinders_street),</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"QV"</span> <span class="ot">=</span> <span class="fu">t.test</span>(pedestrian_df<span class="sc">$</span>qv)</span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map_dfr</span>(<span class="sc">~</span> <span class="fu">tidy</span>(.x), <span class="at">.id =</span> <span class="st">"Location"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Location, estimate, conf.low, conf.high)</span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>ci_table</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 4
+  Location        estimate conf.low conf.high
+  &lt;chr&gt;              &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1 Southern Cross      942.     915.      969.
+2 Flinders Street     893.     863.      923.
+3 QV                 2337.    2275.     2398.</code></pre>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(ci_table, <span class="fu">aes</span>(<span class="at">x =</span> Location, <span class="at">y =</span> estimate)) <span class="sc">+</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">xend =</span> Location, <span class="at">y =</span> <span class="dv">0</span>, <span class="at">yend =</span> estimate), <span class="at">color =</span> <span class="st">"grey60"</span>) <span class="sc">+</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">4</span>, <span class="at">color =</span> <span class="st">"tomato"</span>) <span class="sc">+</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> conf.low, <span class="at">ymax =</span> conf.high), <span class="at">width =</span> <span class="fl">0.15</span>, <span class="at">color =</span> <span class="st">"tomato"</span>) <span class="sc">+</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Pedestrian Traffic with 95% Confidence Intervals"</span>,</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Mean pedestrians per hour"</span>,</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Location"</span></span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-trafficCI" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-trafficCI-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="report_files/figure-html/fig-trafficCI-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1200">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-trafficCI-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Pedestrian traffic with 95% confidence intervals at each location.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The analysis estimated the average hourly pedestrian count at each crossing to inform the marketing team about potential advertising value. One-sample t-tests produced 95 percent confidence intervals for the mean number of pedestrians at Southern Cross, Flinders Street, and QV Melbourne. The mean counts were approximately 942, 893, and 2 337 people per hour, respectively. The corresponding confidence intervals showed that QV Melbourne experiences substantially higher pedestrian traffic than the two station crossings, whose intervals overlap, indicating comparable average flow. The visual summary ( <a href="#fig-trafficCI" class="quarto-xref">Figure&nbsp;1</a>) highlights the wide gap between QV Melbourne and the other locations. Based on these results, QV Melbourne offers the greatest exposure and advertising potential, while Southern Cross and Flinders Street represent similar mid-range opportunities.</p>
+<p>The confidence intervals were constructed using the one-sample t-distribution, which is appropriate because the true population standard deviations are unknown and the sample sizes are reasonably large. The t-interval method relies on the assumption that the pedestrian counts are approximately normally distributed or that the Central Limit Theorem applies. Since each site includes around 97 observations, the CLT ensures that the sampling distribution of the sample mean is approximately normal even if the original data show mild skewness. Therefore, the 95 percent confidence intervals provide valid and reliable estimates of the average pedestrian traffic at each location. The relatively narrow intervals at Southern Cross and Flinders Street indicate stable traffic levels, while the wider but clearly higher interval at QV Melbourne reflects its substantially greater footfall.</p>
+</section>
 
 </main>
 <!-- /main column -->
@@ -200,6 +651,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -310,6 +763,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
+      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {
