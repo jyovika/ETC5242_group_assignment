@@ -597,7 +597,6 @@ ggplot(rev_ci, aes(x = reorder(crossing, rev_hat), y = rev_hat)) +
   coord_flip() +
   labs(
     title = "Expected revenue under bank offer",
-    subtitle = "Revenue = $10,000 + $5,000 × θ;  θ = P(count > 1,000)\n95% CI via Wilson (prop.test, continuity corrected)",
     x = NULL, y = "Expected revenue"
   ) +
   theme_minimal(base_size = 12) +
