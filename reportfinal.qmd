@@ -68,11 +68,11 @@ ggplot(pedestrian_long, aes(x = count, fill = crossing)) +
 
 ```
 
-As shown in @fig:EDA_plots, pedestrian activity differs clearly across the three crossings. The boxplots indicate that QV Melbourne consistently records the highest pedestrian counts, with a median around 2.3–2.5 k per interval and the widest spread—showing both heavy usage and large fluctuations. Southern Cross and Flinders Street have lower medians (roughly 900–1,000 and 800–900 respectively) and narrower boxes, suggesting steadier, lighter flows.
+As shown in @fig:EDA_plots, pedestrian activity differs clearly across the three crossings. The boxplots indicate that QV Melbourne consistently records the highest pedestrian counts, with a median around 2.3–2.5 k per interval and the widest spread-showing both heavy usage and large fluctuations. Southern Cross and Flinders Street have lower medians (roughly 900–1,000 and 800–900 respectively) and narrower boxes, suggesting steadier, lighter flows.
 
 The density curves in @fig:EDA_plots confirm that all three distributions are unimodal and right-skewed, reflecting occasional high-traffic bursts. QV Melbourne’s distribution sits furthest to the right, while Southern Cross and Flinders overlap slightly, with Flinders trending marginally lower.
 
-Overall, @fig:EDA_plots highlights that QV Melbourne is the busiest and most variable crossing—prioritise it for any infrastructure or timing upgrades—while Southern Cross and Flinders Street appear relatively stable and would need only minor adjustments.
+Overall, @fig:EDA_plots highlights that QV Melbourne is the busiest and most variable crossing-prioritise it for any infrastructure or timing upgrades-while Southern Cross and Flinders Street appear relatively stable and would need only minor adjustments.
 
 ```{r, EDA_summaries, tbl:crossing_summary}
 pedestrian_long %>%
@@ -523,7 +523,7 @@ QV Melbourne recorded the highest average pedestrian flow of about 2300 people p
 
 The confidence intervals were computed using one-sample t-tests, which are appropriate when the population standard deviation is unknown. With 97 observations at each location, the Central Limit Theorem ensures that the sampling distribution of the mean is approximately normal, even if the underlying data are slightly skewed. The narrower intervals at the two station crossings indicate stable and predictable pedestrian traffic, while the wider interval at QV Melbourne reflects greater variability that naturally accompanies higher volumes.
 
-## Task 5 — Billboard Revenue Estimate
+## Task 5 - Billboard Revenue Estimate
 
 ### Purpose
 
