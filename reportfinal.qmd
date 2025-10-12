@@ -28,9 +28,9 @@ set.seed(355435)
 B <- 5000
 
 cross_cols <- c(
-  flinders_street = "#766153",
-  qv_melbourne    = "#718f94",
-  southern_cross  = "#717744")
+  "Flinders Street" = "#766153",
+  "QV Melbourne" = "#718f94",
+  "Southern Cross"  = "#717744")
 ```
 
 ## Task 1 - Distribution and Models
@@ -43,30 +43,45 @@ pedestrian_df <- read.csv(here::here("data/pedestrians.csv"))
 
 The aim was to describe how lunchtime pedestrian counts vary at the three crossings (Flinders Street, Southern Cross, QV Melbourne) and to fit probability models that summarise these patterns for design and planning. I began with exploratory graphics (histograms/densities and boxplots; see Figures X–Y) and computed descriptive statistics per site (mean, median, sd, min–max, variance; see Table A). These summaries show QV Melbourne has the largest flows and greater day-to-day variation, while Flinders Street and Southern Cross have lower, tighter distributions.
 
-```{r, EDA_plots,fig:EDA_plots}
+```{r, EDA_plots}
 pedestrian_long <- pedestrian_df %>%
   mutate(obs = row_number()) %>%
   pivot_longer(-obs, names_to = "crossing", values_to = "count") %>%
-  mutate(crossing = factor(crossing,
-                           levels = c("southern_cross","flinders_street","qv_melbourne")))
+  mutate(crossing = recode(
+    crossing,
+    "flinders_street" = "Flinders Street",
+    "qv_melbourne"    = "QV Melbourne",
+    "southern_cross"  = "Southern Cross")) %>%
+  mutate(crossing = factor(
+    crossing,
+    levels = c("Southern Cross", "Flinders Street", "QV Melbourne")))
 
-# Boxplot
+```
+::: {.columns}
+::: {.column width="50%"}
+
+```{r,boxplot}
 ggplot(pedestrian_long, aes(x = crossing, y = count, fill = crossing)) +
   geom_boxplot(outlier.shape = NA, alpha = 0.8) +
-  scale_fill_manual(values = cross_cols) +
+  scale_fill_manual(values = cross_cols) + 
   labs(title = "Pedestrian counts by crossing", x = NULL, y = "Count per interval") +
-  theme_minimal() +
+  theme_minimal() + 
   theme(legend.position = "none")
+```
+:::
+::: {.column width="50%"}
 
-# Density (faceted)
+```{r, density_plot}
 ggplot(pedestrian_long, aes(x = count, fill = crossing)) +
   geom_density(alpha = 0.35) +
   facet_wrap(~ crossing, scales = "fixed") +
-  scale_fill_manual(values = cross_cols, guide = "none") +
+  scale_fill_manual(values = cross_cols) + 
   labs(title = "Distribution (density) per crossing", x = "Count", y = "Density") +
-  theme_minimal()
-
+  theme_minimal() +
+  theme(legend.position = "none")
 ```
+:::
+:::
 
 As shown in @fig:EDA_plots, pedestrian activity differs clearly across the three crossings. The boxplots indicate that QV Melbourne consistently records the highest pedestrian counts, with a median around 2.3–2.5 k per interval and the widest spread-showing both heavy usage and large fluctuations. Southern Cross and Flinders Street have lower medians (roughly 900–1,000 and 800–900 respectively) and narrower boxes, suggesting steadier, lighter flows.
 
@@ -125,7 +140,7 @@ fit_sc_logn  <- fitdistr(sc, "lognormal")
 fit_sc_gamma <- fitdistr(sc, "gamma")   
 
 sc_models <- tibble(
-  crossing = "southern_cross",
+  crossing = "Southern Cross",
   model    = c("normal","lognormal","gamma"),
   logLik   = c(logLik(fit_sc_norm)[1],  logLik(fit_sc_logn)[1],  logLik(fit_sc_gamma)[1]),
   AIC      = c(AIC(fit_sc_norm),        AIC(fit_sc_logn),        AIC(fit_sc_gamma)),
@@ -148,7 +163,7 @@ fit_fl_logn  <- fitdistr(fl, "lognormal")
 fit_fl_gamma <- fitdistr(fl, "gamma")
 
 fl_models <- tibble(
-  crossing = "flinders_street",
+  crossing = "Flinders Street",
   model    = c("normal","lognormal","gamma"),
   logLik   = c(logLik(fit_fl_norm)[1],  logLik(fit_fl_logn)[1],  logLik(fit_fl_gamma)[1]),
   AIC      = c(AIC(fit_fl_norm),        AIC(fit_fl_logn),        AIC(fit_fl_gamma)),
@@ -171,7 +186,7 @@ fit_qv_logn  <- fitdistr(qv, "lognormal")
 fit_qv_gamma <- fitdistr(qv, "gamma")
 
 qv_models <- tibble(
-  crossing = "qv_melbourne",
+  crossing = "QV Melbourne",
   model    = c("normal","lognormal","gamma"),
   logLik   = c(logLik(fit_qv_norm)[1],  logLik(fit_qv_logn)[1],  logLik(fit_qv_gamma)[1]),
   AIC      = c(AIC(fit_qv_norm),        AIC(fit_qv_logn),        AIC(fit_qv_gamma)),
@@ -265,10 +280,6 @@ par(mfrow = c(1,1))
 
 Adequacy was assessed with Q–Q plots. For Southern Cross, points lie close to the 45° line under a Normal reference; for Flinders and QV, log(count) aligns well with a Normal reference (supporting Lognormal on the count scale), with only small upper-tail deviations. Alternative count models (e.g., Poisson/Negative Binomial) were considered; Poisson was rejected due to over-dispersion, and although a Negative Binomial can also fit over-dispersed counts, the large counts make continuous approximations (Normal/Lognormal) adequate and visually superior here. Assumptions: observations are independent across days within a site; the fitted family (Normal or Lognormal) is a reasonable approximation for lunchtime variability.
 
-### Summary for the manager (plain language)
-
-In short, **QV Melbourne** is by far the busiest and most variable crossing at lunchtime, typically handling **well over 2,000** people per hour, whereas **Flinders Street** and **Southern Cross** each handle **around 900–950** on average with tighter day-to-day variation. The simple statistical models above accurately capture these patterns and will be used in Task 2 to estimate “busy-day thresholds” (the level we must design for so flow is smooth 90% of the time).
-
 ## Task 2 - 90th Percentile Flow
 
 ### Purpose
@@ -279,7 +290,7 @@ The purpose of this task was to estimate the 90th percentile pedestrian flow for
 
 In the first approach, the 90th percentile was calculated directly from the observed data using the quantile() function. To account for sampling uncertainty, 95 percent bootstrap confidence intervals were constructed using 1,000 resamples. The bootstrap method was chosen because it does not assume any particular distributional form and is appropriate for moderately sized datasets.
 
-```{r}
+```{r, sample_quantile}
 pedestrian_long %>%
   group_by(crossing) %>%
   summarise(q90 = quantile(count, 0.9)) %>%
@@ -308,7 +319,7 @@ qv_boot <- boot(pedestrian_df$qv_melbourne, q90_fn, R = 1000)
 ci_qv <- boot.ci(qv_boot, type = "perc")
 
 sample_tbl <- tibble(
-  crossing        = c("flinders_street","southern_cross","qv_melbourne"),
+  crossing        = c("Flinders Street","Southern Cross","QV Melbourne"),
   q90_sample      = round(c(
     quantile(pedestrian_df$flinders_street, 0.9),
     quantile(pedestrian_df$southern_cross, 0.9),
@@ -326,7 +337,7 @@ These results indicate that the busiest 10 percent of days have counts exceeding
 
 In the second approach, the fitted probability models from Task 1 were used to estimate theoretical 90th percentiles. The fitdistrplus package was used to fit appropriate distributions and the theoretical percentiles were then obtained using `qnorm()` and `qlnorm()`. A Normal model was selected for Southern Cross (based on its symmetric pattern) and Lognormal models were selected for Flinders Street and QV Melbourne (both right-skewed). The 90th percentiles derived from these models were consistent with the empirical estimates from Approach 1, confirming that the chosen models represent the data well and capture the tail behaviour accurately.
 
-```{r}
+```{r, estimation}
 # Compute the theoretical 90th percentile from each fitted model
 q90_model_point <- list(
   fl = qlnorm(0.9, meanlog = fit_fl_logn$estimate["meanlog"], sdlog = fit_fl_logn$estimate["sdlog"]),
@@ -355,7 +366,7 @@ ci_sc_m <- q90_model_ci(fit_sc_norm, "normal", n_sc)
 ci_qv_m <- q90_model_ci(fit_qv_logn, "lognormal", n_qv)
 
 model_tbl <- tibble(
-  crossing       = c("flinders_street","southern_cross","qv_melbourne"),
+  crossing       = c("Flinders Street","Southern Cross","QV Melbourne"),
   model          = c("lognormal","normal","lognormal"),
   q90_model      = round(c(q90_model_point$fl, q90_model_point$sc, q90_model_point$qv), 2),
   q90_model_low  = round(c(ci_fl_m[1], ci_sc_m[1], ci_qv_m[1]), 2),
@@ -366,7 +377,7 @@ model_tbl <- tibble(
 
 #### Discussion and Recommendation
 
-```{r}
+```{r, task2_discussion}
 final_tbl <- sample_tbl %>%
   left_join(model_tbl, by = "crossing")
 
@@ -393,7 +404,7 @@ The purpose of this analysis was to determine whether the Flinders Street and So
 
 To test this, a paired t-test was used to compare hourly pedestrian counts recorded simultaneously at both sites. This method was chosen because it accounts for shared conditions such as time of day and weather, which could affect pedestrian flow. A 95% confidence interval for the mean difference in pedestrian counts between Southern Cross and Flinders Street was calculated. The assumption of approximate normality required for the paired t-test was checked using a QQ plot of the differences. The points on the plot closely followed a straight line, confirming that the distribution of differences was approximately normal. Given the relatively large sample size of 97 paired observations, the Central Limit Theorem ensures that the sampling distribution of the mean difference is approximately normal, even if the underlying data are not perfectly so. Therefore, it is valid to use the CLT in this context, and the paired t-test provides a reliable confidence interval.
 
-```{r}
+```{r, task3_meandiff}
 df  <- na.omit(pedestrian_df[, c("southern_cross","flinders_street")])
 sc  <- df$southern_cross
 fl  <- df$flinders_street
@@ -407,11 +418,11 @@ qqnorm(
   scale(d),
   main = "QQ of differences: Southern Cross − Flinders",
   pch  = 16,
-  col  = adjustcolor(cross_cols["southern_cross"], alpha.f = 0.5) 
+  col  = adjustcolor("#3a405a", alpha.f = 0.5) 
 )
 qqline(
   scale(d),
-  col  = adjustcolor(cross_cols["flinders_street"], alpha.f = 0.9), 
+  col  = adjustcolor(cross_cols["Flinders Street"], alpha.f = 0.9), 
   lwd  = 2,
   lty  = 2
 )
@@ -419,7 +430,7 @@ qqline(
 
 The analysis found that Southern Cross had, on average, 48.75 more pedestrians per hour than Flinders Street, with a 95% confidence interval ranging from approximately 21 to 77 people per hour. This range lies entirely within the ±80 threshold defined by the engineering team. The QQ plot supported the reliability of the interval estimate by confirming that the differences were approximately normally distributed.
 
-```{r}
+```{r, task3_plot}
 ci <- tibble(
   estimate = tt$estimate, 
   lower = tt$conf.int[1],
@@ -428,12 +439,12 @@ ci <- tibble(
 
 ggplot(ci) +
   geom_rect(aes(xmin = -Inf, xmax = Inf, ymin = -80, ymax = 80),
-            fill = cross_cols["qv_melbourne"], alpha = 0.15) +
+            fill = cross_cols["QV Melbourne"], alpha = 0.15) +
   geom_errorbar(aes(x = 1, ymin = lower, ymax = upper),
                 width = 0.08, linewidth = 1,
-                colour = cross_cols["southern_cross"]) +
+                colour = cross_cols["Southern Cross"]) +
   geom_point(aes(x = 1, y = estimate),
-             size = 3, colour = cross_cols["flinders_street"]) +
+             size = 3, colour = cross_cols["Flinders Street"]) +
   geom_hline(yintercept = 0, linetype = "dashed",
              colour = "#444444") +
   coord_cartesian(ylim = c(-120, 120)) +
@@ -445,8 +456,8 @@ ggplot(ci) +
   ) +
   theme_minimal(base_size = 13) +
   theme(
-    plot.title = element_text(colour = cross_cols["southern_cross"], face = "bold"),
-    plot.subtitle = element_text(colour = cross_cols["flinders_street"])
+    plot.title = element_text(colour = cross_cols["Southern Cross"], face = "bold"),
+    plot.subtitle = element_text(colour = cross_cols["Flinders Street"])
   )
 
 ```
@@ -459,7 +470,7 @@ Based on these results, we can be 95% confident that the true mean difference in
 
 The purpose of this task was to estimate and compare the average hourly pedestrian counts at three major Melbourne crossings: Southern Cross, Flinders Street, and QV Melbourne. The aim was to help the marketing team evaluate which locations offer the highest advertising value for billboard placements. Pedestrian flow directly represents potential audience exposure, so understanding the mean number of people passing through each site is crucial for assessing advertising reach. Constructing 95 percent confidence intervals around these means provides insight into both the central tendency and the uncertainty of the estimates. This information allows the marketing team to make data-driven decisions about which sites are most likely to deliver the best visibility and return on investment for advertising campaigns.
 
-```{r, results='hide'}
+```{r, results='hide', task4_tt}
 # Southern Cross
 tt_sc <- t.test(pedestrian_df$southern_cross, conf.level = 0.95)
 
@@ -471,7 +482,7 @@ tt_qv <- t.test(pedestrian_df$qv, conf.level = 0.95)
 
 ```
 
-```{r}
+```{r, task4_results}
 tt_table <- tibble(
   Location = c("Southern Cross", "Flinders Street", "QV Melbourne"),
   Mean     = c(tt_sc$estimate, tt_fl$estimate, tt_qv$estimate),
@@ -501,11 +512,11 @@ The table shows that QV Melbourne has a much higher mean pedestrian count than t
 
 A lolipop plot with 95 percent confidence intervals (@fig-trafficCI) was created to visually compare the mean pedestrian traffic at each site. Each dot represents the estimated mean, and the vertical error bars show the confidence intervals for those estimates. The intervals for Southern Cross and Flinders Street overlap considerably, suggesting that their mean pedestrian flows are statistically similar. The interval for QV Melbourne, however, is clearly separated from the others and positioned much higher, indicating that this site consistently experiences greater pedestrian movement. The visualisation provides an immediate and intuitive comparison, helping the marketing team to identify the most valuable advertising locations based on both the magnitude and the reliability of foot traffic estimates.
 
-```{r}
-ggplot(ci_table, aes(x = Location, y = estimate, color = Location)) +
+```{r, task4_plot}
+ggplot(tt_table, aes(x = Location, y = Mean, color = Location)) +
   geom_point(size = 4) +
-  geom_errorbar(aes(ymin = conf.low, ymax = conf.high), width = 0.15, linewidth = 1) +
-  geom_segment(aes(xend = Location, y = 0, yend = estimate), color = "grey80") +
+  geom_errorbar(aes(ymin = `95% CI (Low)`, ymax = `95% CI (High)`), width = 0.15, linewidth = 1) +
+  geom_segment(aes(xend = Location, y = 0, yend = Mean), color = "grey80") +
   scale_color_manual(values = cross_cols) +
   labs(
     title = "Pedestrian Traffic with 95% Confidence Intervals",
@@ -542,7 +553,7 @@ Revenue = 10,000 + 5,000 × θ
 
 The same transformation was applied to the lower and upper bounds of the confidence intervals for θ to obtain the revenue intervals. This approach allowed both the average expected revenue and its uncertainty to be represented for each location.
 
-```{r}
+```{r, task5_calc}
 THRESH  <- 1000
 BASE    <- 10000
 BONUS   <- 5000
@@ -596,7 +607,7 @@ The results show that QV Melbourne consistently exceeds 1,000 pedestrians per ho
 
 A horizontal bar chart with 95 percent confidence intervals (@fig-task5) was produced to visually compare the expected revenues for the three locations. Each bar represents the average expected revenue, and the error bars display the range of uncertainty based on the Wilson confidence intervals. The plot shows that QV Melbourne achieves the highest and most stable revenue at approximately \$15,000, with its interval tightly concentrated at the maximum bonus limit. Southern Cross and Flinders Street appear close together on the chart, indicating similar revenue potential of around \$11,000. The relatively narrow intervals for these two sites suggest consistent performance, but their mean revenues are notably below that of QV Melbourne. This visual comparison provides an intuitive summary of which sites are most profitable and how confident we can be in those estimates.
 
-```{r}
+```{r, task5_plot}
 ggplot(rev_ci, aes(x = reorder(crossing, rev_hat), y = rev_hat)) +
   geom_col(aes(fill = crossing), width = 0.6) +
   geom_errorbar(aes(ymin = rev_lo, ymax = rev_hi), width = 0.2) +
