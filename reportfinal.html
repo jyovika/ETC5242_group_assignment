@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.42">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -64,10 +64,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="reportfinal_files/libs/quarto-html/tippy.umd.min.js"></script>
 <script src="reportfinal_files/libs/quarto-html/anchor.min.js"></script>
 <link href="reportfinal_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="reportfinal_files/libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="reportfinal_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="reportfinal_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="reportfinal_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="reportfinal_files/libs/bootstrap/bootstrap-c0367b04c37547644fece4185067e4a7.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="reportfinal_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script src="reportfinal_files/libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="reportfinal_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
 
@@ -112,7 +112,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <section id="purpose-and-approach" class="level3">
 <h3 class="anchored" data-anchor-id="purpose-and-approach">Purpose and approach</h3>
-<p>The aim was to describe how lunchtime pedestrian counts vary at the three crossings (Flinders Street, Southern Cross, QV Melbourne) and to fit probability models that summarise these patterns for design and planning. I began with exploratory graphics (histograms/densities and boxplots; see Figures X–Y) and computed descriptive statistics per site (mean, median, sd, min–max, variance; see Table A). These summaries show QV Melbourne has the largest flows and greater day-to-day variation, while Flinders Street and Southern Cross have lower, tighter distributions.</p>
+<p>The aim was to describe how lunchtime pedestrian counts vary at the three crossings (Flinders Street, Southern Cross, QV Melbourne) and to fit probability models that summarise these patterns for design and planning. We began with exploratory graphics; histograms, densities and boxplots (<a href="#fig-boxplot" class="quarto-xref">Figure&nbsp;1</a> and <a href="#fig-density" class="quarto-xref">Figure&nbsp;2</a>) and computed descriptive statistics for each site (mean, median, standard deviation, minimum–maximum and variance <a href="#tbl-crossing-summary" class="quarto-xref">Table&nbsp;1</a>). These summaries show that QV Melbourne has the largest flows and greater day-to-day variation, while Flinders Street and Southern Cross have lower, tighter distributions.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pedestrian_long <span class="ot">&lt;-</span> pedestrian_df <span class="sc">%&gt;%</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">obs =</span> <span class="fu">row_number</span>()) <span class="sc">%&gt;%</span></span>
@@ -131,14 +131,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(pedestrian_long, <span class="fu">aes</span>(<span class="at">x =</span> crossing, <span class="at">y =</span> count, <span class="at">fill =</span> crossing)) <span class="sc">+</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">outlier.shape =</span> <span class="cn">NA</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> cross_cols) <span class="sc">+</span> </span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Pedestrian counts by crossing"</span>, <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Count per interval"</span>) <span class="sc">+</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> cross_cols) <span class="sc">+</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Count per interval"</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="reportfinal_files/figure-html/boxplot-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1200"></p>
+<div id="fig-boxplot" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-boxplot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="reportfinal_files/figure-html/fig-boxplot-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1200">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-boxplot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Pedestrian counts by crossing.
+</figcaption>
 </figure>
 </div>
 </div>
@@ -148,23 +156,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(pedestrian_long, <span class="fu">aes</span>(<span class="at">x =</span> count, <span class="at">fill =</span> crossing)) <span class="sc">+</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.35</span>) <span class="sc">+</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> crossing, <span class="at">scales =</span> <span class="st">"fixed"</span>) <span class="sc">+</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> cross_cols) <span class="sc">+</span> </span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distribution (density) per crossing"</span>, <span class="at">x =</span> <span class="st">"Count"</span>, <span class="at">y =</span> <span class="st">"Density"</span>) <span class="sc">+</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> cross_cols) <span class="sc">+</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Count"</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Density"</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="reportfinal_files/figure-html/density_plot-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1200"></p>
+<div id="fig-density" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="reportfinal_files/figure-html/fig-density-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1200">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Distribution of pedestrian counts by crossing (density curves).
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
 </div>
 </div>
-<p>As shown in <span class="citation" data-cites="fig:EDA_plots">@fig:EDA_plots</span>, pedestrian activity differs clearly across the three crossings. The boxplots indicate that QV Melbourne consistently records the highest pedestrian counts, with a median around 2.3–2.5 k per interval and the widest spread-showing both heavy usage and large fluctuations. Southern Cross and Flinders Street have lower medians (roughly 900–1,000 and 800–900 respectively) and narrower boxes, suggesting steadier, lighter flows.</p>
-<p>The density curves in <span class="citation" data-cites="fig:EDA_plots">@fig:EDA_plots</span> confirm that all three distributions are unimodal and right-skewed, reflecting occasional high-traffic bursts. QV Melbourne’s distribution sits furthest to the right, while Southern Cross and Flinders overlap slightly, with Flinders trending marginally lower.</p>
-<p>Overall, <span class="citation" data-cites="fig:EDA_plots">@fig:EDA_plots</span> highlights that QV Melbourne is the busiest and most variable crossing-prioritise it for any infrastructure or timing upgrades-while Southern Cross and Flinders Street appear relatively stable and would need only minor adjustments.</p>
+<p>As shown in <a href="#fig-boxplot" class="quarto-xref">Figure&nbsp;1</a> and <a href="#fig-density" class="quarto-xref">Figure&nbsp;2</a>, pedestrian activity differs clearly across the three crossings. The boxplots indicate that QV Melbourne consistently records the highest pedestrian counts, with a median around 2.3 to 2.5 thousand per interval and the widest spread, showing both heavy usage and large fluctuations. Southern Cross and Flinders Street have lower medians (roughly 900 to 1,000 and 800 to 900 respectively) and narrower boxes, suggesting steadier, lighter flows.</p>
+<p>The density curves in <a href="#fig-density" class="quarto-xref">Figure&nbsp;2</a> confirm that all three distributions are unimodal and right-skewed, reflecting occasional high-traffic bursts. QV Melbourne’s distribution sits furthest to the right, while Southern Cross and Flinders overlap slightly, with Flinders trending marginally lower.</p>
+<p>Overall, <a href="#fig-boxplot" class="quarto-xref">Figure&nbsp;1</a> and <a href="#fig-density" class="quarto-xref">Figure&nbsp;2</a> highlight that QV Melbourne is the busiest and most variable crossing. We would prioritise it for infrastructure or timing upgrades, while Southern Cross and Flinders Street appear relatively stable and would need only minor adjustments.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>pedestrian_long <span class="sc">%&gt;%</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(crossing) <span class="sc">%&gt;%</span></span>
@@ -178,7 +194,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">iqr   =</span> <span class="fu">IQR</span>(count),</span>
 <span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">"Younger vs Older: Average Per-capita Online Leisure Minutes"</span>,</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(</span>
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">digits =</span> <span class="dv">1</span>, <span class="at">align =</span> <span class="fu">c</span>(<span class="st">"l"</span>,<span class="st">"r"</span>)) <span class="sc">%&gt;%</span></span>
 <span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(</span>
 <span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>, <span class="st">"responsive"</span>),</span>
@@ -186,10 +202,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
 <span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">"#FFFFFF"</span>, <span class="at">background =</span> <span class="st">"#598392"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">1</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">"#004D40"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="tbl-crossing-summary" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-layout-align="center">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-crossing-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Descriptive statistics for pedestrian counts at each crossing.
+</figcaption>
+<div aria-describedby="tbl-crossing-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
 <div class="table-responsive">
-<table class="table table-striped table-hover table-condensed caption-top table-sm small" data-quarto-postprocess="true">
-<caption>Younger vs Older: Average Per-capita Online Leisure Minutes</caption>
+<table class="table table-striped table-hover table-condensed do-not-create-environment cell caption-top table-sm small" data-quarto-postprocess="true">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: rgba(255, 255, 255, 255) !important; background-color: rgba(89, 131, 146, 255) !important;">crossing</th>
@@ -240,17 +261,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </div>
 </div>
-<p>Table <span class="citation" data-cites="tbl:crossing_summary">@tbl:crossing_summary</span> provides summary statistics for pedestrian counts at each crossing (n = 97 per site). Results align with the distributional patterns in <span class="citation" data-cites="fig:EDA_plots">@fig:EDA_plots</span>.</p>
-<p><strong>QV Melbourne.</strong> Mean 2,336.7 and median 2,310 indicate the highest sustained demand. Dispersion is largest in absolute terms (sd ≈305, IQR 462; range 1,773–3,122), confirming substantial variability and frequent high-traffic intervals.</p>
-<p><strong>Southern Cross.</strong> Central tendency is lower (mean 941.8, median 955) with comparatively tight spread (sd ≈133, IQR 143; range 494–1,256). This suggests a steady, moderate flow with fewer extreme peaks.</p>
-<p><strong>Flinders Street.</strong> Typical load is slightly below Southern Cross (mean 893.0, median 887), but variability through the middle of the distribution is higher (IQR 202, sd ≈148; range 590–1,282), indicating more fluctuation around a lower centre.</p>
-<p>Skew. For all sites, the mean exceeds the median, consistent with right-skew seen in <span class="citation" data-cites="fig:EDA_plots">@fig:EDA_plots</span>, i.e., occasional upper-tail surges.</p>
+</figure>
+</div>
+</div>
+<p>The summary <a href="#tbl-crossing-summary" class="quarto-xref">Table&nbsp;1</a> provides summary statistics for pedestrian counts at each crossing (n ~ 97 per site). The results align with the distributional patterns shown in Figures (<a href="#fig-boxplot" class="quarto-xref">Figure&nbsp;1</a> and <a href="#fig-density" class="quarto-xref">Figure&nbsp;2</a>).</p>
+<p>QV Melbourne. The mean of 2,336.7 and median of 2,310 indicate the highest sustained demand. Dispersion is largest in absolute terms (sd ~ 305, IQR 462, range 1,773–3,122), confirming substantial variability and frequent high-traffic intervals.</p>
+<p>Southern Cross. The mean of 941.8 and median of 955 reflect a steady, moderate flow with relatively tight spread (sd ~ 133, IQR 143, range 494–1,256), indicating stable conditions and fewer extreme peaks.</p>
+<p>Flinders Street. The mean of 893.0 and median of 887 show slightly lighter traffic than Southern Cross. Variability is somewhat higher through the middle of the distribution (sd ~ 148, IQR 202, range 590–1,282), suggesting greater fluctuation around a lower centre.</p>
+<p>Across all sites, the mean exceeds the median, consistent with the right-skew observed in Figures <a href="#fig-boxplot" class="quarto-xref">Figure&nbsp;1</a> and <a href="#fig-density" class="quarto-xref">Figure&nbsp;2</a>, which reflects occasional upper-tail surges.</p>
 <ul>
 <li><p><strong>Implications for design and operations.</strong></p>
 <ul>
-<li><p>Prioritise QV Melbourne for capacity and signal-timing upgrades; plan to the upper percentiles rather than the mean.</p></li>
-<li><p>Southern Cross appears operationally stable; targeted, lighter interventions are likely sufficient.</p></li>
-<li><p>Flinders Street runs slightly lighter than Southern Cross but shows greater mid-spread variability; monitor and manage for intermittent congestion.</p></li>
+<li><p>Prioritise QV Melbourne for capacity and signal-timing upgrades and plan to accommodate upper-percentile traffic volumes rather than just the mean.</p></li>
+<li><p>Southern Cross appears operationally stable, so lighter, targeted interventions are likely sufficient.</p></li>
+<li><p>Flinders Street shows greater variability around a lower centre, so monitoring for intermittent congestion is recommended.</p></li>
 </ul></li>
 </ul>
 </section>
@@ -331,7 +355,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-72"><a href="#cb6-72" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-73"><a href="#cb6-73" aria-hidden="true" tabindex="-1"></a>mle_fits  <span class="sc">%&gt;%</span></span>
 <span id="cb6-74"><a href="#cb6-74" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(</span>
-<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Younger vs Older: Average Per-capita Online Leisure Minutes"</span>,</span>
+<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Maximum-likelihood estimates for Normal, Lognormal and Gamma models across the three crossings."</span>,</span>
 <span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a>    <span class="at">digits =</span> <span class="dv">1</span>,</span>
 <span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a>    <span class="at">align =</span> <span class="fu">rep</span>(<span class="st">"c"</span>)  </span>
 <span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
@@ -342,10 +366,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-83"><a href="#cb6-83" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
 <span id="cb6-84"><a href="#cb6-84" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">"#FFFFFF"</span>, <span class="at">background =</span> <span class="st">"#598392"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb6-85"><a href="#cb6-85" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">1</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">"#004D40"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="tbl-mle" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-layout-align="center">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mle-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Maximum-likelihood estimates for Normal, Lognormal and Gamma models across the three crossings.
+</figcaption>
+<div aria-describedby="tbl-mle-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
 <div class="table-responsive">
-<table class="table table-striped table-hover table-condensed caption-top table-sm small" data-quarto-postprocess="true">
-<caption>Younger vs Older: Average Per-capita Online Leisure Minutes</caption>
+<table class="table table-striped table-hover table-condensed do-not-create-environment cell caption-top table-sm small" data-quarto-postprocess="true">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th" style="text-align: center; font-weight: bold; color: rgba(255, 255, 255, 255) !important; background-color: rgba(89, 131, 146, 255) !important;">crossing</th>
@@ -436,15 +465,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </div>
 </div>
-<p>Guided by the shapes in the graphics and Q–Q diagnostics, I fitted simple parametric models via maximum likelihood. Southern Cross is approximately symmetric on the original scale, so a <strong>Normal</strong> model was used. Flinders Street and QV Melbourne display mild right-skew and near-normality on the log scale, so <strong>Lognormal</strong> models were used. The resulting parameter estimates (estimate ± SE) were:</p>
+</figure>
+</div>
+</div>
+<p>Guided by the shapes in the graphics and the Q–Q diagnostics (<a href="#fig-qqplots" class="quarto-xref">Figure&nbsp;3</a>), we fitted simple parametric models using maximum likelihood estimation. Southern Cross was approximately symmetric on the original scale, so a <strong>Normal</strong> model was selected. Flinders Street and QV Melbourne displayed mild right-skew and near-normality on the log scale, so <strong>Lognormal</strong> models were used. The resulting parameter estimates (estimate ± SE) were:</p>
 <ul>
-<li><strong>Flinders Street (Lognormal):</strong> meanlog = 6.7813 (0.0166), sdlog = 0.1633 (0.0117)<br>
-</li>
-<li><strong>Southern Cross (Normal):</strong> mean = 941.78 (13.44), sd = 132.34 (9.50)<br>
-</li>
-<li><strong>QV Melbourne (Lognormal):</strong> meanlog = 7.7482 (0.0130), sdlog = 0.1283 (0.0092)</li>
+<li><p><strong>Flinders Street</strong> (Lognormal): meanlog = 6.7813 (0.0166), sdlog = 0.1633 (0.0117)</p></li>
+<li><p><strong>Southern Cross</strong> (Normal): mean = 941.78 (13.44), sd = 132.34 (9.50)</p></li>
+<li><p><strong>QV Melbourne</strong> (Lognormal): meanlog = 7.7482 (0.0130), sdlog = 0.1283 (0.0092)</p></li>
 </ul>
-<p>These are the fitted model parameters that mathematically characterise each site’s distribution.</p>
+<p>These fitted parameters describe the statistical characteristics of each site’s distribution and provide a foundation for later estimation tasks.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">4</span>,<span class="dv">2</span>,<span class="dv">1</span>))</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -486,9 +516,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(qG, x, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">col =</span> <span class="st">"#124559"</span>, <span class="at">cex =</span> <span class="fl">0.8</span>)</span>
 <span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="reportfinal_files/figure-html/qqplots-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1200"></p>
+<div id="fig-qqplots" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-qqplots-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="reportfinal_files/figure-html/fig-qqplots-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1200">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-qqplots-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Q–Q plots comparing empirical and theoretical quantiles for the fitted Normal, Lognormal and Gamma models at each crossing.
+</figcaption>
 </figure>
 </div>
 </div>
@@ -496,33 +531,63 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="adequacy-checks-and-assumptions" class="level3">
 <h3 class="anchored" data-anchor-id="adequacy-checks-and-assumptions">Adequacy checks and assumptions</h3>
-<p>Adequacy was assessed with Q–Q plots. For Southern Cross, points lie close to the 45° line under a Normal reference; for Flinders and QV, log(count) aligns well with a Normal reference (supporting Lognormal on the count scale), with only small upper-tail deviations. Alternative count models (e.g., Poisson/Negative Binomial) were considered; Poisson was rejected due to over-dispersion, and although a Negative Binomial can also fit over-dispersed counts, the large counts make continuous approximations (Normal/Lognormal) adequate and visually superior here. Assumptions: observations are independent across days within a site; the fitted family (Normal or Lognormal) is a reasonable approximation for lunchtime variability.</p>
+<p>Adequacy was assessed using Q–Q plots (<a href="#fig-qqplots" class="quarto-xref">Figure&nbsp;3</a>). For Southern Cross, the points lie close to the 45-degree line under a Normal reference, indicating a good fit. For Flinders Street and QV Melbourne, the log-transformed counts align well with a Normal reference, supporting the Lognormal model on the original count scale. Small deviations appear only in the upper tail. We also considered alternative count models such as Poisson and Negative Binomial. The Poisson model was unsuitable because of over-dispersion, and although a Negative Binomial model could handle this, the large counts make continuous models like the Normal and Lognormal more appropriate and visually accurate. We assume that observations are independent across days within each site and that the fitted distribution family provides a reasonable approximation of lunchtime pedestrian variability.</p>
 </section>
 </section>
 <section id="task-2---90th-percentile-flow" class="level2">
 <h2 class="anchored" data-anchor-id="task-2---90th-percentile-flow">Task 2 - 90th Percentile Flow</h2>
 <section id="purpose" class="level3">
 <h3 class="anchored" data-anchor-id="purpose">Purpose</h3>
-<p>The purpose of this task was to estimate the 90th percentile pedestrian flow for each crossing in order to check whether they meet the regulation that crossings should operate with smooth pedestrian flow 90 percent of the time. This means that on 90 percent of the days, the pedestrian count should be below a certain value so that congestion is avoided. The 90th percentile therefore represents the upper limit of typical daily usage and provides an important benchmark for infrastructure design. A crossing that can handle this level of flow without delays can be considered adequately sized</p>
+<p>The purpose of this task was to estimate the 90th percentile pedestrian flow for each crossing to check whether they meet the regulation that crossings should operate with smooth pedestrian flow 90 percent of the time. This means that on 90 percent of the days, the pedestrian count should be below a certain value so that congestion is avoided. The 90th percentile therefore represents the upper limit of typical daily usage and provides an important benchmark for infrastructure design. A crossing that can handle this level of flow without delays can be considered adequately sized.</p>
 <section id="approach-1-sample-quantile" class="level4">
 <h4 class="anchored" data-anchor-id="approach-1-sample-quantile">Approach 1: Sample Quantile</h4>
-<p>In the first approach, the 90th percentile was calculated directly from the observed data using the quantile() function. To account for sampling uncertainty, 95 percent bootstrap confidence intervals were constructed using 1,000 resamples. The bootstrap method was chosen because it does not assume any particular distributional form and is appropriate for moderately sized datasets.</p>
+<p>In the first approach, the 90th percentile was calculated directly from the observed data using the quantile() function. To account for sampling uncertainty, 95 percent bootstrap confidence intervals were constructed using 1000 resamples. The bootstrap method was chosen because it does not assume any particular distributional form and is appropriate for moderately sized datasets.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>pedestrian_long <span class="sc">%&gt;%</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(crossing) <span class="sc">%&gt;%</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">q90 =</span> <span class="fu">quantile</span>(count, <span class="fl">0.9</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">"Younger vs Older: Average Per-capita Online Leisure Minutes"</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">"Empirical 90th percentile estimates and 95% bootstrap confidence intervals for each crossing"</span>,</span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">digits =</span> <span class="dv">1</span>, <span class="at">align =</span> <span class="fu">c</span>(<span class="st">"l"</span>,<span class="st">"r"</span>)) <span class="sc">%&gt;%</span></span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(</span>
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>, <span class="st">"responsive"</span>),</span>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">full_width =</span> <span class="cn">FALSE</span></span>
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">"#FFFFFF"</span>, <span class="at">background =</span> <span class="st">"#598392"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">1</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">"#004D40"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">1</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">"#004D40"</span>)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co"># function to calculate 90th percentile</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>q90_fn <span class="ot">&lt;-</span> <span class="cf">function</span>(data, i) <span class="fu">quantile</span>(data[i], <span class="fl">0.9</span>)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Flinders Street</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>fl_boot <span class="ot">&lt;-</span> <span class="fu">boot</span>(pedestrian_df<span class="sc">$</span>flinders_street, q90_fn, <span class="at">R =</span> <span class="dv">1000</span>)</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>ci_fl <span class="ot">&lt;-</span> <span class="fu">boot.ci</span>(fl_boot, <span class="at">type =</span> <span class="st">"perc"</span>)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Southern Cross</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>sc_boot <span class="ot">&lt;-</span> <span class="fu">boot</span>(pedestrian_df<span class="sc">$</span>southern_cross, q90_fn, <span class="at">R =</span> <span class="dv">1000</span>)</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>ci_sc <span class="ot">&lt;-</span> <span class="fu">boot.ci</span>(sc_boot, <span class="at">type =</span> <span class="st">"perc"</span>)</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="co"># QV Melbourne</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>qv_boot <span class="ot">&lt;-</span> <span class="fu">boot</span>(pedestrian_df<span class="sc">$</span>qv_melbourne, q90_fn, <span class="at">R =</span> <span class="dv">1000</span>)</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>ci_qv <span class="ot">&lt;-</span> <span class="fu">boot.ci</span>(qv_boot, <span class="at">type =</span> <span class="st">"perc"</span>)</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>sample_tbl <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">crossing        =</span> <span class="fu">c</span>(<span class="st">"Flinders Street"</span>,<span class="st">"Southern Cross"</span>,<span class="st">"QV Melbourne"</span>),</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">q90_sample      =</span> <span class="fu">round</span>(<span class="fu">c</span>(</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">quantile</span>(pedestrian_df<span class="sc">$</span>flinders_street, <span class="fl">0.9</span>),</span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">quantile</span>(pedestrian_df<span class="sc">$</span>southern_cross, <span class="fl">0.9</span>),</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">quantile</span>(pedestrian_df<span class="sc">$</span>qv_melbourne, <span class="fl">0.9</span>)</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>  ), <span class="dv">2</span>),</span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">q90_sample_low  =</span> <span class="fu">round</span>(<span class="fu">c</span>(ci_fl<span class="sc">$</span>percent[<span class="dv">4</span>], ci_sc<span class="sc">$</span>percent[<span class="dv">4</span>], ci_qv<span class="sc">$</span>percent[<span class="dv">4</span>]), <span class="dv">2</span>),</span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">q90_sample_high =</span> <span class="fu">round</span>(<span class="fu">c</span>(ci_fl<span class="sc">$</span>percent[<span class="dv">5</span>], ci_sc<span class="sc">$</span>percent[<span class="dv">5</span>], ci_qv<span class="sc">$</span>percent[<span class="dv">5</span>]), <span class="dv">2</span>)</span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="tbl-q90-sample" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-layout-align="center">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-q90-sample-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3: Empirical 90th percentile estimates and 95% bootstrap confidence intervals for each crossing
+</figcaption>
+<div aria-describedby="tbl-q90-sample-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
 <div class="table-responsive">
-<table class="table table-striped table-hover table-condensed caption-top table-sm small" data-quarto-postprocess="true">
-<caption>Younger vs Older: Average Per-capita Online Leisure Minutes</caption>
+<table class="table table-striped table-hover table-condensed do-not-create-environment cell caption-top table-sm small" data-quarto-postprocess="true">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: rgba(255, 255, 255, 255) !important; background-color: rgba(89, 131, 146, 255) !important;">crossing</th>
@@ -548,97 +613,80 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 </div>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># function to calculate 90th percentile</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>q90_fn <span class="ot">&lt;-</span> <span class="cf">function</span>(data, i) <span class="fu">quantile</span>(data[i], <span class="fl">0.9</span>)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Flinders Street</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>fl_boot <span class="ot">&lt;-</span> <span class="fu">boot</span>(pedestrian_df<span class="sc">$</span>flinders_street, q90_fn, <span class="at">R =</span> <span class="dv">1000</span>)</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>ci_fl <span class="ot">&lt;-</span> <span class="fu">boot.ci</span>(fl_boot, <span class="at">type =</span> <span class="st">"perc"</span>)</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Southern Cross</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>sc_boot <span class="ot">&lt;-</span> <span class="fu">boot</span>(pedestrian_df<span class="sc">$</span>southern_cross, q90_fn, <span class="at">R =</span> <span class="dv">1000</span>)</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>ci_sc <span class="ot">&lt;-</span> <span class="fu">boot.ci</span>(sc_boot, <span class="at">type =</span> <span class="st">"perc"</span>)</span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="co"># QV Melbourne</span></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>qv_boot <span class="ot">&lt;-</span> <span class="fu">boot</span>(pedestrian_df<span class="sc">$</span>qv_melbourne, q90_fn, <span class="at">R =</span> <span class="dv">1000</span>)</span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>ci_qv <span class="ot">&lt;-</span> <span class="fu">boot.ci</span>(qv_boot, <span class="at">type =</span> <span class="st">"perc"</span>)</span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>sample_tbl <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">crossing        =</span> <span class="fu">c</span>(<span class="st">"Flinders Street"</span>,<span class="st">"Southern Cross"</span>,<span class="st">"QV Melbourne"</span>),</span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">q90_sample      =</span> <span class="fu">round</span>(<span class="fu">c</span>(</span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">quantile</span>(pedestrian_df<span class="sc">$</span>flinders_street, <span class="fl">0.9</span>),</span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">quantile</span>(pedestrian_df<span class="sc">$</span>southern_cross, <span class="fl">0.9</span>),</span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">quantile</span>(pedestrian_df<span class="sc">$</span>qv_melbourne, <span class="fl">0.9</span>)</span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>  ), <span class="dv">2</span>),</span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">q90_sample_low  =</span> <span class="fu">round</span>(<span class="fu">c</span>(ci_fl<span class="sc">$</span>percent[<span class="dv">4</span>], ci_sc<span class="sc">$</span>percent[<span class="dv">4</span>], ci_qv<span class="sc">$</span>percent[<span class="dv">4</span>]), <span class="dv">2</span>),</span>
-<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">q90_sample_high =</span> <span class="fu">round</span>(<span class="fu">c</span>(ci_fl<span class="sc">$</span>percent[<span class="dv">5</span>], ci_sc<span class="sc">$</span>percent[<span class="dv">5</span>], ci_qv<span class="sc">$</span>percent[<span class="dv">5</span>]), <span class="dv">2</span>)</span>
-<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>These results indicate that the busiest 10 percent of days have counts exceeding approximately 1,000 pedestrians per hour for the two station crossings and around 2,700 for QV Melbourne.</p>
+</figure>
+</div>
+</div>
+<p>The estimates are summarised in <a href="#tbl-q90-sample" class="quarto-xref">Table&nbsp;3</a>, which shows that the busiest 10 percent of days exceed approximately 1000 pedestrians per hour for the two station crossings and around 2700 for QV Melbourne.</p>
 </section>
 <section id="approach-2-model-based-estimation" class="level4">
 <h4 class="anchored" data-anchor-id="approach-2-model-based-estimation">Approach 2: Model-Based Estimation</h4>
-<p>In the second approach, the fitted probability models from Task 1 were used to estimate theoretical 90th percentiles. The fitdistrplus package was used to fit appropriate distributions and the theoretical percentiles were then obtained using <code>qnorm()</code> and <code>qlnorm()</code>. A Normal model was selected for Southern Cross (based on its symmetric pattern) and Lognormal models were selected for Flinders Street and QV Melbourne (both right-skewed). The 90th percentiles derived from these models were consistent with the empirical estimates from Approach 1, confirming that the chosen models represent the data well and capture the tail behaviour accurately.</p>
+<p>In the second approach, the fitted probability models from Task 1 were used to estimate theoretical 90th percentiles. A Normal model was selected for Southern Cross (symmetric data) and Lognormal models for Flinders Street and QV Melbourne (right-skewed). The resulting estimates and 95 percent CIs are presented. The model-based 90th percentiles were consistent with the empirical estimates, confirming that the chosen models adequately represent the tail behaviour.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the theoretical 90th percentile from each fitted model</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>q90_model_point <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fl =</span> <span class="fu">qlnorm</span>(<span class="fl">0.9</span>, <span class="at">meanlog =</span> fit_fl_logn<span class="sc">$</span>estimate[<span class="st">"meanlog"</span>], <span class="at">sdlog =</span> fit_fl_logn<span class="sc">$</span>estimate[<span class="st">"sdlog"</span>]),</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">sc =</span> <span class="fu">qnorm</span> (<span class="fl">0.9</span>, <span class="at">mean    =</span> fit_sc_norm<span class="sc">$</span>estimate[<span class="st">"mean"</span>],     <span class="at">sd    =</span> fit_sc_norm<span class="sc">$</span>estimate[<span class="st">"sd"</span>]),</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">qv =</span> <span class="fu">qlnorm</span>(<span class="fl">0.9</span>, <span class="at">meanlog =</span> fit_qv_logn<span class="sc">$</span>estimate[<span class="st">"meanlog"</span>], <span class="at">sdlog =</span> fit_qv_logn<span class="sc">$</span>estimate[<span class="st">"sdlog"</span>])</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>q90_model_ci <span class="ot">&lt;-</span> <span class="cf">function</span>(fit, dist, n, <span class="at">B =</span> <span class="dv">1000</span>) {</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  boot_q90 <span class="ot">&lt;-</span> <span class="fu">replicate</span>(B, {</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    sim <span class="ot">&lt;-</span> <span class="cf">if</span> (dist <span class="sc">==</span> <span class="st">"normal"</span>) {</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>      <span class="fu">rnorm</span>(n, <span class="at">mean =</span> fit<span class="sc">$</span>estimate[<span class="st">"mean"</span>], <span class="at">sd =</span> fit<span class="sc">$</span>estimate[<span class="st">"sd"</span>])</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">rlnorm</span>(n, <span class="at">meanlog =</span> fit<span class="sc">$</span>estimate[<span class="st">"meanlog"</span>], <span class="at">sdlog =</span> fit<span class="sc">$</span>estimate[<span class="st">"sdlog"</span>])</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">quantile</span>(sim, <span class="fl">0.9</span>)</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  })</span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">quantile</span>(boot_q90, <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>))</span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>n_fl <span class="ot">&lt;-</span> <span class="fu">nrow</span>(pedestrian_df)</span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>n_sc <span class="ot">&lt;-</span> <span class="fu">nrow</span>(pedestrian_df)</span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>n_qv <span class="ot">&lt;-</span> <span class="fu">nrow</span>(pedestrian_df)</span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>ci_fl_m <span class="ot">&lt;-</span> <span class="fu">q90_model_ci</span>(fit_fl_logn, <span class="st">"lognormal"</span>, n_fl)</span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>ci_sc_m <span class="ot">&lt;-</span> <span class="fu">q90_model_ci</span>(fit_sc_norm, <span class="st">"normal"</span>, n_sc)</span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>ci_qv_m <span class="ot">&lt;-</span> <span class="fu">q90_model_ci</span>(fit_qv_logn, <span class="st">"lognormal"</span>, n_qv)</span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>model_tbl <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">crossing       =</span> <span class="fu">c</span>(<span class="st">"Flinders Street"</span>,<span class="st">"Southern Cross"</span>,<span class="st">"QV Melbourne"</span>),</span>
-<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">model          =</span> <span class="fu">c</span>(<span class="st">"lognormal"</span>,<span class="st">"normal"</span>,<span class="st">"lognormal"</span>),</span>
-<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">q90_model      =</span> <span class="fu">round</span>(<span class="fu">c</span>(q90_model_point<span class="sc">$</span>fl, q90_model_point<span class="sc">$</span>sc, q90_model_point<span class="sc">$</span>qv), <span class="dv">2</span>),</span>
-<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">q90_model_low  =</span> <span class="fu">round</span>(<span class="fu">c</span>(ci_fl_m[<span class="dv">1</span>], ci_sc_m[<span class="dv">1</span>], ci_qv_m[<span class="dv">1</span>]), <span class="dv">2</span>),</span>
-<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">q90_model_high =</span> <span class="fu">round</span>(<span class="fu">c</span>(ci_fl_m[<span class="dv">2</span>], ci_sc_m[<span class="dv">2</span>], ci_qv_m[<span class="dv">2</span>]), <span class="dv">2</span>)</span>
-<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the theoretical 90th percentile from each fitted model</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>q90_model_point <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fl =</span> <span class="fu">qlnorm</span>(<span class="fl">0.9</span>, <span class="at">meanlog =</span> fit_fl_logn<span class="sc">$</span>estimate[<span class="st">"meanlog"</span>], <span class="at">sdlog =</span> fit_fl_logn<span class="sc">$</span>estimate[<span class="st">"sdlog"</span>]),</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">sc =</span> <span class="fu">qnorm</span> (<span class="fl">0.9</span>, <span class="at">mean    =</span> fit_sc_norm<span class="sc">$</span>estimate[<span class="st">"mean"</span>],     <span class="at">sd    =</span> fit_sc_norm<span class="sc">$</span>estimate[<span class="st">"sd"</span>]),</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">qv =</span> <span class="fu">qlnorm</span>(<span class="fl">0.9</span>, <span class="at">meanlog =</span> fit_qv_logn<span class="sc">$</span>estimate[<span class="st">"meanlog"</span>], <span class="at">sdlog =</span> fit_qv_logn<span class="sc">$</span>estimate[<span class="st">"sdlog"</span>])</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>q90_model_ci <span class="ot">&lt;-</span> <span class="cf">function</span>(fit, dist, n, <span class="at">B =</span> <span class="dv">1000</span>) {</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  boot_q90 <span class="ot">&lt;-</span> <span class="fu">replicate</span>(B, {</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    sim <span class="ot">&lt;-</span> <span class="cf">if</span> (dist <span class="sc">==</span> <span class="st">"normal"</span>) {</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>      <span class="fu">rnorm</span>(n, <span class="at">mean =</span> fit<span class="sc">$</span>estimate[<span class="st">"mean"</span>], <span class="at">sd =</span> fit<span class="sc">$</span>estimate[<span class="st">"sd"</span>])</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">rlnorm</span>(n, <span class="at">meanlog =</span> fit<span class="sc">$</span>estimate[<span class="st">"meanlog"</span>], <span class="at">sdlog =</span> fit<span class="sc">$</span>estimate[<span class="st">"sdlog"</span>])</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">quantile</span>(sim, <span class="fl">0.9</span>)</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">quantile</span>(boot_q90, <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>))</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>n_fl <span class="ot">&lt;-</span> <span class="fu">nrow</span>(pedestrian_df)</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>n_sc <span class="ot">&lt;-</span> <span class="fu">nrow</span>(pedestrian_df)</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>n_qv <span class="ot">&lt;-</span> <span class="fu">nrow</span>(pedestrian_df)</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>ci_fl_m <span class="ot">&lt;-</span> <span class="fu">q90_model_ci</span>(fit_fl_logn, <span class="st">"lognormal"</span>, n_fl)</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>ci_sc_m <span class="ot">&lt;-</span> <span class="fu">q90_model_ci</span>(fit_sc_norm, <span class="st">"normal"</span>, n_sc)</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>ci_qv_m <span class="ot">&lt;-</span> <span class="fu">q90_model_ci</span>(fit_qv_logn, <span class="st">"lognormal"</span>, n_qv)</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>model_tbl <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">crossing       =</span> <span class="fu">c</span>(<span class="st">"Flinders Street"</span>,<span class="st">"Southern Cross"</span>,<span class="st">"QV Melbourne"</span>),</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">model          =</span> <span class="fu">c</span>(<span class="st">"lognormal"</span>,<span class="st">"normal"</span>,<span class="st">"lognormal"</span>),</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">q90_model      =</span> <span class="fu">round</span>(<span class="fu">c</span>(q90_model_point<span class="sc">$</span>fl, q90_model_point<span class="sc">$</span>sc, q90_model_point<span class="sc">$</span>qv), <span class="dv">2</span>),</span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">q90_model_low  =</span> <span class="fu">round</span>(<span class="fu">c</span>(ci_fl_m[<span class="dv">1</span>], ci_sc_m[<span class="dv">1</span>], ci_qv_m[<span class="dv">1</span>]), <span class="dv">2</span>),</span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">q90_model_high =</span> <span class="fu">round</span>(<span class="fu">c</span>(ci_fl_m[<span class="dv">2</span>], ci_sc_m[<span class="dv">2</span>], ci_qv_m[<span class="dv">2</span>]), <span class="dv">2</span>)</span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="discussion-and-recommendation" class="level4">
 <h4 class="anchored" data-anchor-id="discussion-and-recommendation">Discussion and Recommendation</h4>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>final_tbl <span class="ot">&lt;-</span> sample_tbl <span class="sc">%&gt;%</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(model_tbl, <span class="at">by =</span> <span class="st">"crossing"</span>)</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>final_tbl <span class="sc">%&gt;%</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Younger vs Older: Average Per-capita Online Leisure Minutes"</span>,</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">digits =</span> <span class="dv">1</span>,</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">align =</span> <span class="fu">rep</span>(<span class="st">"c"</span>, <span class="fu">ncol</span>(final_tbl))  </span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>, <span class="st">"responsive"</span>),</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">full_width =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="st">"center"</span></span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">"#FFFFFF"</span>, <span class="at">background =</span> <span class="st">"#598392"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">1</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">"#004D40"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>final_tbl <span class="ot">&lt;-</span> sample_tbl <span class="sc">%&gt;%</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(model_tbl, <span class="at">by =</span> <span class="st">"crossing"</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>final_tbl <span class="sc">%&gt;%</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Comparison of empirical and model-based 90th percentile estimates with 95% confidence intervals for each crossing"</span>,</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">digits =</span> <span class="dv">1</span>,</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">align =</span> <span class="fu">rep</span>(<span class="st">"c"</span>, <span class="fu">ncol</span>(final_tbl))  </span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>, <span class="st">"responsive"</span>),</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">full_width =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="st">"center"</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">"#FFFFFF"</span>, <span class="at">background =</span> <span class="st">"#598392"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">1</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">"#004D40"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="tbl-q90-final" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-layout-align="center">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-q90-final-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;4: Comparison of empirical and model-based 90th percentile estimates with 95% confidence intervals for each crossing
+</figcaption>
+<div aria-describedby="tbl-q90-final-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
 <div class="table-responsive">
-<table class="table table-striped table-hover table-condensed caption-top table-sm small" data-quarto-postprocess="true">
-<caption>Younger vs Older: Average Per-capita Online Leisure Minutes</caption>
+<table class="table table-striped table-hover table-condensed do-not-create-environment cell caption-top table-sm small" data-quarto-postprocess="true">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th" style="text-align: center; font-weight: bold; color: rgba(255, 255, 255, 255) !important; background-color: rgba(89, 131, 146, 255) !important;">crossing</th>
@@ -689,48 +737,57 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </div>
 </div>
-<p>Both the sample based and model based approaches produced very similar estimates of the 90th percentile, showing that the fitted models are appropriate for these datasets. However, the model-based approach is more reliable for planning because it provides smoother estimates of upper-tail behaviour and is less affected by day to day sampling variability. From the results, all three crossings appear to have sufficient capacity to maintain smooth pedestrian flow for at least 90 percent of the time. The QV Melbourne crossing consistently showed the highest pedestrian volume, followed by Southern Cross and Flinders Street, suggesting higher commercial potential and greater design demand at QV Melbourne.</p>
+</figure>
+</div>
+</div>
+<p>Both the sample-based and model-based approaches produced very similar estimates of the 90th percentile, confirming that the fitted models are suitable for these datasets. As shown in <a href="#tbl-q90-final" class="quarto-xref">Table&nbsp;4</a>, the two methods provide nearly identical results, indicating strong agreement between empirical and theoretical approaches. However, the model-based method is more reliable for planning because it provides smoother estimates of upper-tail behaviour and is less affected by daily sampling variability. The results suggest that all three crossings have sufficient capacity to maintain smooth pedestrian flow for at least 90 percent of the time. Among the locations, QV Melbourne consistently recorded the highest pedestrian volume, followed by Southern Cross and Flinders Street, indicating higher commercial potential and greater design demand at QV Melbourne.</p>
 </section>
 </section>
 </section>
-<section id="task-3---engineering-design-comparison" class="level2">
-<h2 class="anchored" data-anchor-id="task-3---engineering-design-comparison">Task 3 - Engineering Design Comparison</h2>
+<section id="task-3-engineering-design-comparison" class="level2">
+<h2 class="anchored" data-anchor-id="task-3-engineering-design-comparison">Task 3 – Engineering Design Comparison</h2>
 <p>The purpose of this analysis was to determine whether the Flinders Street and Southern Cross crossings can use the same design and materials. The engineers specified that the average difference in hourly pedestrian flow between the two locations should not exceed 80 people per hour for the design to be considered interchangeable.</p>
-<p>To test this, a paired t-test was used to compare hourly pedestrian counts recorded simultaneously at both sites. This method was chosen because it accounts for shared conditions such as time of day and weather, which could affect pedestrian flow. A 95% confidence interval for the mean difference in pedestrian counts between Southern Cross and Flinders Street was calculated. The assumption of approximate normality required for the paired t-test was checked using a QQ plot of the differences. The points on the plot closely followed a straight line, confirming that the distribution of differences was approximately normal. Given the relatively large sample size of 97 paired observations, the Central Limit Theorem ensures that the sampling distribution of the mean difference is approximately normal, even if the underlying data are not perfectly so. Therefore, it is valid to use the CLT in this context, and the paired t-test provides a reliable confidence interval.</p>
+<p>To test this, a paired t-test was used to compare hourly pedestrian counts recorded simultaneously at both sites. This method was chosen because it accounts for shared conditions such as time of day and weather, which could affect pedestrian flow. A 95 percent confidence interval for the mean difference in pedestrian counts between Southern Cross and Flinders Street was calculated.</p>
+<p>The assumption of approximate normality required for the paired t-test was checked using a Q–Q plot of the differences (<a href="#fig-task3-qq" class="quarto-xref">Figure&nbsp;4</a>). The points on the plot closely followed a straight line, confirming that the distribution of differences was approximately normal. Given the relatively large sample size of 97 paired observations, the Central Limit Theorem ensures that the sampling distribution of the mean difference is approximately normal even if the underlying data are not perfectly so. Therefore, it is valid to use the CLT in this context, and the paired t-test provides a reliable confidence interval.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>df  <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(pedestrian_df[, <span class="fu">c</span>(<span class="st">"southern_cross"</span>,<span class="st">"flinders_street"</span>)])</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>sc  <span class="ot">&lt;-</span> df<span class="sc">$</span>southern_cross</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>fl  <span class="ot">&lt;-</span> df<span class="sc">$</span>flinders_street</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>d   <span class="ot">&lt;-</span> sc <span class="sc">-</span> fl                 </span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 95% CI for the mean difference </span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>tt <span class="ot">&lt;-</span> <span class="fu">t.test</span>(sc, fl, <span class="at">paired =</span> <span class="cn">TRUE</span>, <span class="at">conf.level =</span> <span class="fl">0.95</span>)</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>paired_tt_tbl <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">Comparison =</span> <span class="st">"Southern Cross − Flinders Street"</span>,</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">Mean_Diff  =</span> tt<span class="sc">$</span>estimate,</span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">95% CI (Low)</span><span class="st">`</span> <span class="ot">=</span> tt<span class="sc">$</span>conf.int[<span class="dv">1</span>],</span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">95% CI (High)</span><span class="st">`</span> <span class="ot">=</span> tt<span class="sc">$</span>conf.int[<span class="dv">2</span>],</span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">t_value =</span> tt<span class="sc">$</span>statistic,</span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">df =</span> tt<span class="sc">$</span>parameter,</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">p_value =</span> tt<span class="sc">$</span>p.value)</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>paired_tt_tbl <span class="sc">%&gt;%</span></span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(</span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Paired t-test: Southern Cross vs Flinders Street (95% confidence interval for mean difference)"</span>,</span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">digits =</span> <span class="dv">2</span>,</span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">align =</span> <span class="fu">rep</span>(<span class="st">"c"</span>, <span class="fu">ncol</span>(.))</span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(</span>
-<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>, <span class="st">"responsive"</span>),</span>
-<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">full_width =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="st">"center"</span></span>
-<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">"#FFFFFF"</span>, <span class="at">background =</span> <span class="st">"#598392"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">1</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">"#004D40"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>df  <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(pedestrian_df[, <span class="fu">c</span>(<span class="st">"southern_cross"</span>,<span class="st">"flinders_street"</span>)])</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>sc  <span class="ot">&lt;-</span> df<span class="sc">$</span>southern_cross</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>fl  <span class="ot">&lt;-</span> df<span class="sc">$</span>flinders_street</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>d   <span class="ot">&lt;-</span> sc <span class="sc">-</span> fl                 </span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>tt <span class="ot">&lt;-</span> <span class="fu">t.test</span>(sc, fl, <span class="at">paired =</span> <span class="cn">TRUE</span>, <span class="at">conf.level =</span> <span class="fl">0.95</span>)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>paired_tt_tbl <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">Comparison =</span> <span class="st">"Southern Cross − Flinders Street"</span>,</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">Mean_Diff  =</span> tt<span class="sc">$</span>estimate,</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">95% CI (Low)</span><span class="st">`</span> <span class="ot">=</span> tt<span class="sc">$</span>conf.int[<span class="dv">1</span>],</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">95% CI (High)</span><span class="st">`</span> <span class="ot">=</span> tt<span class="sc">$</span>conf.int[<span class="dv">2</span>],</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">t_value =</span> tt<span class="sc">$</span>statistic,</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">df =</span> tt<span class="sc">$</span>parameter,</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">p_value =</span> tt<span class="sc">$</span>p.value</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>paired_tt_tbl <span class="sc">%&gt;%</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Paired t-test results comparing Southern Cross and Flinders Street (95% confidence interval for mean difference)."</span>,</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">digits =</span> <span class="dv">2</span>,</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">align =</span> <span class="fu">rep</span>(<span class="st">"c"</span>, <span class="fu">ncol</span>(.))</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>, <span class="st">"responsive"</span>),</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">full_width =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="st">"center"</span></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">"#FFFFFF"</span>, <span class="at">background =</span> <span class="st">"#598392"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">1</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">"#004D40"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="tbl-task3-ttest" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-layout-align="center">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-task3-ttest-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;5: Paired t-test results comparing Southern Cross and Flinders Street (95% confidence interval for mean difference).
+</figcaption>
+<div aria-describedby="tbl-task3-ttest-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
 <div class="table-responsive">
-<table class="table table-striped table-hover table-condensed caption-top table-sm small" data-quarto-postprocess="true">
-<caption>Paired t-test: Southern Cross vs Flinders Street (95% confidence interval for mean difference)</caption>
+<table class="table table-striped table-hover table-condensed do-not-create-environment cell caption-top table-sm small" data-quarto-postprocess="true">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th" style="text-align: center; font-weight: bold; color: rgba(255, 255, 255, 255) !important; background-color: rgba(89, 131, 146, 255) !important;">Comparison</th>
@@ -759,105 +816,114 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </div>
 </div>
+</figure>
+</div>
+</div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale</span>(d),</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">main =</span> <span class="st">"QQ of differences: Southern Cross − Flinders"</span>,</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">pch  =</span> <span class="dv">16</span>,</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">col  =</span> <span class="fu">adjustcolor</span>(<span class="st">"#3a405a"</span>, <span class="at">alpha.f =</span> <span class="fl">0.5</span>))</span>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(<span class="fu">scale</span>(d),</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">main =</span> <span class="st">"Q–Q of differences: Southern Cross − Flinders"</span>,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">pch  =</span> <span class="dv">16</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">col  =</span> <span class="fu">adjustcolor</span>(<span class="st">"#3a405a"</span>, <span class="at">alpha.f =</span> <span class="fl">0.5</span>))</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(<span class="fu">scale</span>(d),</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">col  =</span> <span class="st">"#598392"</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">lwd  =</span> <span class="dv">2</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">lty  =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-task3-qq" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-task3-qq-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="reportfinal_files/figure-html/fig-task3-qq-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1200">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-task3-qq-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Q–Q plot of paired differences (Southern Cross − Flinders Street) showing approximate normality.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>As shown in <a href="#tbl-task3-ttest" class="quarto-xref">Table&nbsp;5</a>, Southern Cross had, on average, about 49 more pedestrians per hour than Flinders Street, with a 95 percent confidence interval ranging from approximately 21 to 77 people per hour. This range lies entirely within the +-80 threshold defined by the engineering team. The Q–Q plot in <a href="#fig-task3-qq" class="quarto-xref">Figure&nbsp;4</a> confirmed that the paired differences were approximately normally distributed, supporting the reliability of this result.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>ci <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">estimate =</span> tt<span class="sc">$</span>estimate,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">lower =</span> tt<span class="sc">$</span>conf.int[<span class="dv">1</span>],</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">upper =</span> tt<span class="sc">$</span>conf.int[<span class="dv">2</span>]</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale</span>(d),</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">col  =</span> <span class="fu">adjustcolor</span>(cross_cols[<span class="st">"Flinders Street"</span>], <span class="at">alpha.f =</span> <span class="fl">0.9</span>), </span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">lwd  =</span> <span class="dv">2</span>,</span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">lty  =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(ci) <span class="sc">+</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_rect</span>(<span class="fu">aes</span>(<span class="at">xmin =</span> <span class="sc">-</span><span class="cn">Inf</span>, <span class="at">xmax =</span> <span class="cn">Inf</span>, <span class="at">ymin =</span> <span class="sc">-</span><span class="dv">80</span>, <span class="at">ymax =</span> <span class="dv">80</span>),</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">fill =</span> <span class="st">"#b5cda3"</span>, <span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="dv">1</span>, <span class="at">ymin =</span> lower, <span class="at">ymax =</span> upper),</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>                <span class="at">width =</span> <span class="fl">0.08</span>, <span class="at">linewidth =</span> <span class="dv">1</span>,</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>                <span class="at">colour =</span> <span class="st">"#3a405a"</span>) <span class="sc">+</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="dv">1</span>, <span class="at">y =</span> estimate),</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="dv">3</span>, <span class="at">colour =</span> <span class="st">"#124559"</span>) <span class="sc">+</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">colour =</span> <span class="st">"#444444"</span>) <span class="sc">+</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">120</span>, <span class="dv">120</span>)) <span class="sc">+</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">1.5</span>), <span class="at">breaks =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"95% CI for Mean Difference: Southern Cross-Flinders"</span>,</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Shaded zone = +-80 people/hour (design tolerance)"</span>,</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Difference in mean counts (SC-FL)"</span>,</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span></span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">13</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="reportfinal_files/figure-html/task3_qq-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1200"></p>
+<div id="fig-task3-ci" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-task3-ci-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="reportfinal_files/figure-html/fig-task3-ci-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1200">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-task3-ci-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: 95% confidence interval for the mean difference between Southern Cross and Flinders Street. Shaded area shows +-80 people/hour design tolerance.
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>The analysis found that Southern Cross had, on average, 48.75 more pedestrians per hour than Flinders Street, with a 95% confidence interval ranging from approximately 21 to 77 people per hour. This range lies entirely within the ±80 threshold defined by the engineering team. The QQ plot supported the reliability of the interval estimate by confirming that the differences were approximately normally distributed.</p>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>ci <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">estimate =</span> tt<span class="sc">$</span>estimate, </span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">lower =</span> tt<span class="sc">$</span>conf.int[<span class="dv">1</span>],</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">upper =</span> tt<span class="sc">$</span>conf.int[<span class="dv">2</span>]</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(ci) <span class="sc">+</span></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_rect</span>(<span class="fu">aes</span>(<span class="at">xmin =</span> <span class="sc">-</span><span class="cn">Inf</span>, <span class="at">xmax =</span> <span class="cn">Inf</span>, <span class="at">ymin =</span> <span class="sc">-</span><span class="dv">80</span>, <span class="at">ymax =</span> <span class="dv">80</span>),</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">fill =</span> cross_cols[<span class="st">"QV Melbourne"</span>], <span class="at">alpha =</span> <span class="fl">0.15</span>) <span class="sc">+</span></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="dv">1</span>, <span class="at">ymin =</span> lower, <span class="at">ymax =</span> upper),</span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>                <span class="at">width =</span> <span class="fl">0.08</span>, <span class="at">linewidth =</span> <span class="dv">1</span>,</span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>                <span class="at">colour =</span> cross_cols[<span class="st">"Southern Cross"</span>]) <span class="sc">+</span></span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="dv">1</span>, <span class="at">y =</span> estimate),</span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="dv">3</span>, <span class="at">colour =</span> cross_cols[<span class="st">"Flinders Street"</span>]) <span class="sc">+</span></span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>,</span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="st">"#444444"</span>) <span class="sc">+</span></span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">120</span>, <span class="dv">120</span>)) <span class="sc">+</span></span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">1.5</span>), <span class="at">breaks =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"95% CI for Mean Difference: Southern Cross − Flinders (paired)"</span>,</span>
-<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Shaded zone = ±80 people/hour (design tolerance)"</span>,</span>
-<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Difference in mean counts (SC − FL)"</span>, <span class="at">x =</span> <span class="cn">NULL</span></span>
-<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">13</span>) <span class="sc">+</span></span>
-<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> cross_cols[<span class="st">"Southern Cross"</span>], <span class="at">face =</span> <span class="st">"bold"</span>),</span>
-<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> cross_cols[<span class="st">"Flinders Street"</span>])</span>
-<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="reportfinal_files/figure-html/task3_plot-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1200"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>Based on these results, we can be 95% confident that the true mean difference in pedestrian counts between the two crossings is less than 80 people per hour. This indicates that while Southern Cross tends to be slightly busier, the difference is not large enough to justify separate designs. Therefore, the engineers can safely use the same design and materials for both crossings, achieving cost savings without compromising on performance or pedestrian safety. The analysis and results are statistically sound and provide a clear, evidence-based recommendation for the engineering team.</p>
+<p>Based on these results, we can be 95 percent confident that the true mean difference in pedestrian counts between the two crossings is less than 80 people per hour. This indicates that although Southern Cross tends to be slightly busier, the difference is not large enough to justify separate designs. Therefore, the engineers can confidently use the same design and materials for both crossings, achieving cost savings without compromising performance or pedestrian safety. The analysis is statistically sound and provides a clear, evidence-based recommendation for the engineering team.</p>
 </section>
 <section id="task-4---marketing-value-comparison" class="level2">
 <h2 class="anchored" data-anchor-id="task-4---marketing-value-comparison">Task 4 - Marketing Value Comparison</h2>
-<section id="purpose-1" class="level3">
-<h3 class="anchored" data-anchor-id="purpose-1">Purpose</h3>
 <p>The purpose of this task was to estimate and compare the average hourly pedestrian counts at three major Melbourne crossings: Southern Cross, Flinders Street, and QV Melbourne. The aim was to help the marketing team evaluate which locations offer the highest advertising value for billboard placements. Pedestrian flow directly represents potential audience exposure, so understanding the mean number of people passing through each site is crucial for assessing advertising reach. Constructing 95 percent confidence intervals around these means provides insight into both the central tendency and the uncertainty of the estimates. This information allows the marketing team to make data-driven decisions about which sites are most likely to deliver the best visibility and return on investment for advertising campaigns.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Southern Cross</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>tt_sc <span class="ot">&lt;-</span> <span class="fu">t.test</span>(pedestrian_df<span class="sc">$</span>southern_cross, <span class="at">conf.level =</span> <span class="fl">0.95</span>)</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Flinders Street</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>tt_fl <span class="ot">&lt;-</span> <span class="fu">t.test</span>(pedestrian_df<span class="sc">$</span>flinders_street, <span class="at">conf.level =</span> <span class="fl">0.95</span>)</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co"># QV</span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>tt_qv <span class="ot">&lt;-</span> <span class="fu">t.test</span>(pedestrian_df<span class="sc">$</span>qv, <span class="at">conf.level =</span> <span class="fl">0.95</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Southern Cross</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>tt_sc <span class="ot">&lt;-</span> <span class="fu">t.test</span>(pedestrian_df<span class="sc">$</span>southern_cross, <span class="at">conf.level =</span> <span class="fl">0.95</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Flinders Street</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>tt_fl <span class="ot">&lt;-</span> <span class="fu">t.test</span>(pedestrian_df<span class="sc">$</span>flinders_street, <span class="at">conf.level =</span> <span class="fl">0.95</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co"># QV</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>tt_qv <span class="ot">&lt;-</span> <span class="fu">t.test</span>(pedestrian_df<span class="sc">$</span>qv, <span class="at">conf.level =</span> <span class="fl">0.95</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>tt_table <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Location =</span> <span class="fu">c</span>(<span class="st">"Southern Cross"</span>, <span class="st">"Flinders Street"</span>, <span class="st">"QV Melbourne"</span>),</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Mean     =</span> <span class="fu">c</span>(tt_sc<span class="sc">$</span>estimate, tt_fl<span class="sc">$</span>estimate, tt_qv<span class="sc">$</span>estimate),</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">95% CI (Low)</span><span class="st">`</span>  <span class="ot">=</span> <span class="fu">c</span>(tt_sc<span class="sc">$</span>conf.int[<span class="dv">1</span>], tt_fl<span class="sc">$</span>conf.int[<span class="dv">1</span>], tt_qv<span class="sc">$</span>conf.int[<span class="dv">1</span>]),</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">95% CI (High)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(tt_sc<span class="sc">$</span>conf.int[<span class="dv">2</span>], tt_fl<span class="sc">$</span>conf.int[<span class="dv">2</span>], tt_qv<span class="sc">$</span>conf.int[<span class="dv">2</span>]))</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>tt_table <span class="sc">%&gt;%</span></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(</span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Mean pedestrian counts with 95% confidence intervals (one-sample t-tests)"</span>,</span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">digits =</span> <span class="dv">1</span>,</span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">align =</span> <span class="fu">rep</span>(<span class="st">"c"</span>, <span class="fu">ncol</span>(.))</span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(</span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>, <span class="st">"responsive"</span>),</span>
-<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">full_width =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="st">"center"</span></span>
-<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">"#FFFFFF"</span>, <span class="at">background =</span> <span class="st">"#598392"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">1</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">"#004D40"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>tt_table <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Location =</span> <span class="fu">c</span>(<span class="st">"Southern Cross"</span>, <span class="st">"Flinders Street"</span>, <span class="st">"QV Melbourne"</span>),</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Mean     =</span> <span class="fu">c</span>(tt_sc<span class="sc">$</span>estimate, tt_fl<span class="sc">$</span>estimate, tt_qv<span class="sc">$</span>estimate),</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">95% CI (Low)</span><span class="st">`</span>  <span class="ot">=</span> <span class="fu">c</span>(tt_sc<span class="sc">$</span>conf.int[<span class="dv">1</span>], tt_fl<span class="sc">$</span>conf.int[<span class="dv">1</span>], tt_qv<span class="sc">$</span>conf.int[<span class="dv">1</span>]),</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">95% CI (High)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(tt_sc<span class="sc">$</span>conf.int[<span class="dv">2</span>], tt_fl<span class="sc">$</span>conf.int[<span class="dv">2</span>], tt_qv<span class="sc">$</span>conf.int[<span class="dv">2</span>]))</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>tt_table <span class="sc">%&gt;%</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Mean pedestrian counts and 95% confidence intervals for each crossing (one-sample t-tests)"</span>,</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">digits =</span> <span class="dv">1</span>,</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">align =</span> <span class="fu">rep</span>(<span class="st">"c"</span>, <span class="fu">ncol</span>(.))</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>, <span class="st">"responsive"</span>),</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">full_width =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="st">"center"</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">"#FFFFFF"</span>, <span class="at">background =</span> <span class="st">"#598392"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">1</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">"#004D40"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="tbl-task4-means" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-layout-align="center">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-task4-means-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;6: Mean pedestrian counts and 95% confidence intervals for each crossing (one-sample t-tests)
+</figcaption>
+<div aria-describedby="tbl-task4-means-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
 <div class="table-responsive">
-<table class="table table-striped table-hover table-condensed caption-top table-sm small" data-quarto-postprocess="true">
-<caption>Mean pedestrian counts with 95% confidence intervals (one-sample t-tests)</caption>
+<table class="table table-striped table-hover table-condensed do-not-create-environment cell caption-top table-sm small" data-quarto-postprocess="true">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th" style="text-align: center; font-weight: bold; color: rgba(255, 255, 255, 255) !important; background-color: rgba(89, 131, 146, 255) !important;">Location</th>
@@ -892,53 +958,45 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </div>
 </div>
-</section>
-<section id="results-table" class="level3">
-<h3 class="anchored" data-anchor-id="results-table">Results Table</h3>
-<p>The table shows that QV Melbourne has a much higher mean pedestrian count than the other two locations, while Southern Cross and Flinders Street have similar average flows.</p>
-</section>
-<section id="visualisation" class="level3">
-<h3 class="anchored" data-anchor-id="visualisation">Visualisation</h3>
-<p>A lolipop plot with 95 percent confidence intervals (<strong>?@fig-trafficCI</strong>) was created to visually compare the mean pedestrian traffic at each site. Each dot represents the estimated mean, and the vertical error bars show the confidence intervals for those estimates. The intervals for Southern Cross and Flinders Street overlap considerably, suggesting that their mean pedestrian flows are statistically similar. The interval for QV Melbourne, however, is clearly separated from the others and positioned much higher, indicating that this site consistently experiences greater pedestrian movement. The visualisation provides an immediate and intuitive comparison, helping the marketing team to identify the most valuable advertising locations based on both the magnitude and the reliability of foot traffic estimates.</p>
+</figure>
+</div>
+</div>
+<p>As shown in <a href="#tbl-task4-means" class="quarto-xref">Table&nbsp;6</a>, QV Melbourne has a much higher mean pedestrian count than the other two crossings, while Southern Cross and Flinders Street have similar average flows.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(tt_table, <span class="fu">aes</span>(<span class="at">x =</span> Location, <span class="at">y =</span> Mean, <span class="at">color =</span> Location)) <span class="sc">+</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> <span class="st">`</span><span class="at">95% CI (Low)</span><span class="st">`</span>, <span class="at">ymax =</span> <span class="st">`</span><span class="at">95% CI (High)</span><span class="st">`</span>), <span class="at">width =</span> <span class="fl">0.15</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">xend =</span> Location, <span class="at">y =</span> <span class="dv">0</span>, <span class="at">yend =</span> Mean), <span class="at">color =</span> <span class="st">"grey80"</span>) <span class="sc">+</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> cross_cols) <span class="sc">+</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Pedestrian Traffic with 95% Confidence Intervals"</span>,</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Mean pedestrians per hour"</span>,</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Location"</span></span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(tt_table, <span class="fu">aes</span>(<span class="at">x =</span> Location, <span class="at">y =</span> Mean, <span class="at">color =</span> Location)) <span class="sc">+</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> <span class="st">`</span><span class="at">95% CI (Low)</span><span class="st">`</span>, <span class="at">ymax =</span> <span class="st">`</span><span class="at">95% CI (High)</span><span class="st">`</span>), <span class="at">width =</span> <span class="fl">0.15</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">xend =</span> Location, <span class="at">y =</span> <span class="dv">0</span>, <span class="at">yend =</span> Mean), <span class="at">color =</span> <span class="st">"grey80"</span>) <span class="sc">+</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> cross_cols) <span class="sc">+</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Pedestrian Traffic with 95% Confidence Intervals"</span>,</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Mean pedestrians per hour"</span>,</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Location"</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="reportfinal_files/figure-html/task4_plot-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1200"></p>
+<div id="fig-task4-traffic" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-task4-traffic-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="reportfinal_files/figure-html/fig-task4-traffic-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1200">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-task4-traffic-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6: Lollipop plot showing mean pedestrian counts with 95% confidence intervals at each crossing.
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-</section>
-<section id="interpretation" class="level3">
-<h3 class="anchored" data-anchor-id="interpretation">Interpretation</h3>
-<p>QV Melbourne recorded the highest average pedestrian flow of about 2300 people per hour, approximately double that of Southern Cross and Flinders Street. This indicates that QV Melbourne offers the strongest advertising potential and the highest likelihood of exposure for billboard campaigns. Southern Cross and Flinders Street have mean flows below 1000 people per hour and are therefore suited for mid-level advertising opportunities.</p>
-<p>The confidence intervals were computed using one-sample t-tests, which are appropriate when the population standard deviation is unknown. With 97 observations at each location, the Central Limit Theorem ensures that the sampling distribution of the mean is approximately normal, even if the underlying data are slightly skewed. The narrower intervals at the two station crossings indicate stable and predictable pedestrian traffic, while the wider interval at QV Melbourne reflects greater variability that naturally accompanies higher volumes.</p>
-</section>
+<p>The lollipop plot in <a href="#fig-task4-traffic" class="quarto-xref">Figure&nbsp;6</a> visually compares the mean pedestrian flows across the three crossings. Each dot represents the estimated mean and the error bars display the 95 percent confidence intervals. Southern Cross and Flinders Street show overlapping intervals, indicating statistically similar traffic levels, while QV Melbourne’s interval sits far higher, reflecting consistently greater pedestrian flow and higher variability.</p>
+<p>QV Melbourne recorded the highest average pedestrian flow of about 2300 people per hour approximately twice that of Southern Cross and Flinders Street. This indicates that QV Melbourne offers the strongest advertising potential and the highest expected exposure for billboard campaigns. Southern Cross and Flinders Street both have mean flows below 1000 people per hour and therefore represent moderate advertising opportunities.</p>
+<p>The confidence intervals were computed using one-sample t-tests, which are appropriate when the population standard deviation is unknown. With 97 observations at each site, the Central Limit Theorem justifies using the t-distribution even for slightly skewed data. The narrower intervals at the two station crossings suggest more stable pedestrian levels, whereas QV Melbourne’s wider interval reflects naturally higher variability accompanying larger volumes.</p>
 </section>
 <section id="task-5---billboard-revenue-estimate" class="level2">
 <h2 class="anchored" data-anchor-id="task-5---billboard-revenue-estimate">Task 5 - Billboard Revenue Estimate</h2>
-<section id="purpose-2" class="level3">
-<h3 class="anchored" data-anchor-id="purpose-2">Purpose</h3>
-<p>The purpose of this task was to estimate the expected billboard revenue that could be earned under the bank’s proposed offer at each of the three pedestrian crossings: Southern Cross, Flinders Street, and QV Melbourne. According to the offer, the bank pays a base amount of $10,000 for each billboard and provides a bonus of $5,000 multiplied by the proportion of days when pedestrian counts exceed 1,000 people per hour. Estimating this proportion and its associated uncertainty allows the marketing and finance teams to forecast expected earnings and to identify which sites provide the greatest commercial value. The results help quantify how consistent and reliable each location is in attracting high pedestrian traffic and therefore advertising exposure</p>
-</section>
-</section>
-<section id="method" class="level2">
-<h2 class="anchored" data-anchor-id="method">Method</h2>
-<p>The analysis was conducted in two main steps. First, for each crossing, the proportion of days where pedestrian counts were greater than 1,000 per hour was calculated empirically from the observed data. This proportion represents the probability θ = P(count &gt; 1,000), indicating how frequently the threshold was surpassed.</p>
-<p>Second, a 95 percent confidence interval for this probability was computed using the Wilson score interval from the prop.test() function in R. The Wilson method was chosen because it performs well even for small or extreme proportions, and it includes a continuity correction to produce accurate bounds when the probability is close to 0 or 1.</p>
+<p>The purpose of this task was to estimate the expected billboard revenue that could be earned under the bank’s proposed offer at each of the three pedestrian crossings: Southern Cross, Flinders Street, and QV Melbourne. According to the offer, the bank pays a base amount of $10,000 for each billboard and provides a bonus of $5,000 multiplied by the proportion of days when pedestrian counts exceed 1,000 people per hour. Estimating this proportion and its associated uncertainty allows the marketing and finance teams to forecast expected earnings and identify which sites provide the greatest commercial value. The results quantify how consistent and reliable each location is in attracting high pedestrian traffic and therefore advertising exposure.</p>
+<p>The analysis was conducted in two main steps. First, for each crossing, the proportion of days where pedestrian counts exceeded 1,000 people per hour was calculated empirically from the observed data. This proportion represents the probability θ = P(count &gt; 1,000), indicating how frequently the threshold was surpassed.</p>
+<p>Second, a 95 percent confidence interval for this probability was computed using the Wilson score interval from the prop.test() function in R. The Wilson method was chosen because it performs well even for small or extreme proportions and includes a continuity correction to improve accuracy when the probability is near 0 or 1.</p>
 <p>The expected revenue was then calculated using the formula:</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Formula for expected billboard revenue">
 <div class="callout-header d-flex align-content-center">
@@ -953,53 +1011,58 @@ Formula for expected billboard revenue
 <p>Revenue = 10,000 + 5,000 × θ</p>
 </div>
 </div>
-<p>The same transformation was applied to the lower and upper bounds of the confidence intervals for θ to obtain the revenue intervals. This approach allowed both the average expected revenue and its uncertainty to be represented for each location.</p>
+<p>The same transformation was applied to the lower and upper bounds of the confidence intervals for θ to obtain revenue intervals. This approach produced both the average expected revenue and its uncertainty for each location.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>THRESH  <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>BASE    <span class="ot">&lt;-</span> <span class="dv">10000</span></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>BONUS   <span class="ot">&lt;-</span> <span class="dv">5000</span></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>LEVEL   <span class="ot">&lt;-</span> <span class="fl">0.95</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Binomial proportion + Wilson CI via prop.test (built-in)</span></span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>rev_ci <span class="ot">&lt;-</span> pedestrian_long <span class="sc">%&gt;%</span></span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">over_1000 =</span> count <span class="sc">&gt;</span> THRESH) <span class="sc">%&gt;%</span></span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(crossing) <span class="sc">%&gt;%</span></span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="fu">n</span>(),</span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">k =</span> <span class="fu">sum</span>(over_1000),</span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowwise</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">pt   =</span> <span class="fu">list</span>(<span class="fu">prop.test</span>(k, n, <span class="at">conf.level =</span> LEVEL, <span class="at">correct =</span> <span class="cn">TRUE</span>)),</span>
-<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">phat =</span> pt<span class="sc">$</span>estimate[[<span class="dv">1</span>]],</span>
-<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">lo_p =</span> pt<span class="sc">$</span>conf.int[<span class="dv">1</span>],</span>
-<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">hi_p =</span> pt<span class="sc">$</span>conf.int[<span class="dv">2</span>],</span>
-<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">rev_hat =</span> BASE <span class="sc">+</span> BONUS <span class="sc">*</span> phat,</span>
-<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">rev_lo  =</span> BASE <span class="sc">+</span> BONUS <span class="sc">*</span> lo_p,</span>
-<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">rev_hi  =</span> BASE <span class="sc">+</span> BONUS <span class="sc">*</span> hi_p</span>
-<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() </span>
-<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a>rev_ci <span class="ot">&lt;-</span> rev_ci[, <span class="fu">c</span>(<span class="st">"crossing"</span>,<span class="st">"n"</span>, <span class="st">"k"</span>, <span class="st">"phat"</span>, <span class="st">"lo_p"</span>, <span class="st">"hi_p"</span>, <span class="st">"rev_hat"</span>, <span class="st">"rev_lo"</span>, <span class="st">"rev_hi"</span>)]</span>
-<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>rev_ci <span class="sc">%&gt;%</span></span>
-<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(</span>
-<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Younger vs Older: Average Per-capita Online Leisure Minutes"</span>,</span>
-<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">digits =</span> <span class="dv">1</span>,</span>
-<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">align =</span> <span class="fu">rep</span>(<span class="st">"c"</span>, <span class="fu">ncol</span>(final_tbl))  </span>
-<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(</span>
-<span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>, <span class="st">"responsive"</span>),</span>
-<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">full_width =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb18-38"><a href="#cb18-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="st">"center"</span></span>
-<span id="cb18-39"><a href="#cb18-39" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb18-40"><a href="#cb18-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">"#FFFFFF"</span>, <span class="at">background =</span> <span class="st">"#598392"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb18-41"><a href="#cb18-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">1</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">"#004D40"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>THRESH  <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>BASE    <span class="ot">&lt;-</span> <span class="dv">10000</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>BONUS   <span class="ot">&lt;-</span> <span class="dv">5000</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>LEVEL   <span class="ot">&lt;-</span> <span class="fl">0.95</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Binomial proportion + Wilson CI via prop.test (built-in)</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>rev_ci <span class="ot">&lt;-</span> pedestrian_long <span class="sc">%&gt;%</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">over_1000 =</span> count <span class="sc">&gt;</span> THRESH) <span class="sc">%&gt;%</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(crossing) <span class="sc">%&gt;%</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="fu">n</span>(),</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">k =</span> <span class="fu">sum</span>(over_1000),</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowwise</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">pt   =</span> <span class="fu">list</span>(<span class="fu">prop.test</span>(k, n, <span class="at">conf.level =</span> LEVEL, <span class="at">correct =</span> <span class="cn">TRUE</span>)),</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">phat =</span> pt<span class="sc">$</span>estimate[[<span class="dv">1</span>]],</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">lo_p =</span> pt<span class="sc">$</span>conf.int[<span class="dv">1</span>],</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">hi_p =</span> pt<span class="sc">$</span>conf.int[<span class="dv">2</span>],</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">rev_hat =</span> BASE <span class="sc">+</span> BONUS <span class="sc">*</span> phat,</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">rev_lo  =</span> BASE <span class="sc">+</span> BONUS <span class="sc">*</span> lo_p,</span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">rev_hi  =</span> BASE <span class="sc">+</span> BONUS <span class="sc">*</span> hi_p</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() </span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>rev_ci <span class="ot">&lt;-</span> rev_ci[, <span class="fu">c</span>(<span class="st">"crossing"</span>,<span class="st">"n"</span>, <span class="st">"k"</span>, <span class="st">"phat"</span>, <span class="st">"lo_p"</span>, <span class="st">"hi_p"</span>, <span class="st">"rev_hat"</span>, <span class="st">"rev_lo"</span>, <span class="st">"rev_hi"</span>)]</span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>rev_ci <span class="sc">%&gt;%</span></span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(</span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Estimated expected revenue and 95% confidence intervals for each crossing using the Wilson score interval."</span>,</span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">digits =</span> <span class="dv">1</span>,</span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">align =</span> <span class="fu">rep</span>(<span class="st">"c"</span>, <span class="fu">ncol</span>(final_tbl))  </span>
+<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(</span>
+<span id="cb17-36"><a href="#cb17-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>, <span class="st">"responsive"</span>),</span>
+<span id="cb17-37"><a href="#cb17-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">full_width =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb17-38"><a href="#cb17-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="st">"center"</span></span>
+<span id="cb17-39"><a href="#cb17-39" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb17-40"><a href="#cb17-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">"#FFFFFF"</span>, <span class="at">background =</span> <span class="st">"#598392"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb17-41"><a href="#cb17-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">1</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">"#004D40"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="tbl-task5-revenue" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-layout-align="center">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-task5-revenue-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;7: Estimated expected revenue and 95% confidence intervals for each crossing using the Wilson score interval.
+</figcaption>
+<div aria-describedby="tbl-task5-revenue-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
 <div class="table-responsive">
-<table class="table table-striped table-hover table-condensed caption-top table-sm small" data-quarto-postprocess="true">
-<caption>Younger vs Older: Average Per-capita Online Leisure Minutes</caption>
+<table class="table table-striped table-hover table-condensed do-not-create-environment cell caption-top table-sm small" data-quarto-postprocess="true">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th" style="text-align: center; font-weight: bold; color: rgba(255, 255, 255, 255) !important; background-color: rgba(89, 131, 146, 255) !important;">crossing</th>
@@ -1054,45 +1117,70 @@ Formula for expected billboard revenue
 
 </div>
 </div>
+</figure>
+</div>
+</div>
+<p>As shown in <a href="#tbl-task5-revenue" class="quarto-xref">Table&nbsp;7</a>, QV Melbourne consistently exceeded the 1,000 person threshold on every observed day, resulting in the maximum possible revenue under the bank’s structure. Southern Cross and Flinders Street earned lower but similar revenues, reflecting smaller and more variable pedestrian volumes.</p>
 </section>
-<section id="results-table-1" class="level2">
-<h2 class="anchored" data-anchor-id="results-table-1">Results Table</h2>
-<p>The results show that QV Melbourne consistently exceeds 1,000 pedestrians per hour on every observed day, resulting in the maximum possible revenue under the bank’s payment structure. Southern Cross and Flinders Street earn lower but similar expected revenues, reflecting their smaller and more variable pedestrian volumes.</p>
-</section>
-<section id="visualisation-1" class="level2">
-<h2 class="anchored" data-anchor-id="visualisation-1">Visualisation</h2>
+<section id="visualisation" class="level2">
+<h2 class="anchored" data-anchor-id="visualisation">Visualisation</h2>
 <p>A horizontal bar chart with 95 percent confidence intervals (<strong>?@fig-task5</strong>) was produced to visually compare the expected revenues for the three locations. Each bar represents the average expected revenue, and the error bars display the range of uncertainty based on the Wilson confidence intervals. The plot shows that QV Melbourne achieves the highest and most stable revenue at approximately $15,000, with its interval tightly concentrated at the maximum bonus limit. Southern Cross and Flinders Street appear close together on the chart, indicating similar revenue potential of around $11,000. The relatively narrow intervals for these two sites suggest consistent performance, but their mean revenues are notably below that of QV Melbourne. This visual comparison provides an intuitive summary of which sites are most profitable and how confident we can be in those estimates.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(rev_ci, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(crossing, rev_hat), <span class="at">y =</span> rev_hat)) <span class="sc">+</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="fu">aes</span>(<span class="at">fill =</span> crossing), <span class="at">width =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> rev_lo, <span class="at">ymax =</span> rev_hi), <span class="at">width =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> scales<span class="sc">::</span><span class="fu">dollar</span>(rev_hat, <span class="at">accuracy =</span> <span class="dv">1</span>)),</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">size =</span> <span class="fl">3.5</span>) <span class="sc">+</span></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> cross_cols) <span class="sc">+</span></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(</span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_dollar</span>(<span class="at">prefix =</span> <span class="st">"$"</span>, <span class="at">accuracy =</span> <span class="dv">1</span>),</span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.08</span>))</span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Expected revenue under bank offer"</span>,</span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Expected revenue"</span></span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(rev_ci, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(crossing, rev_hat), <span class="at">y =</span> rev_hat)) <span class="sc">+</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="fu">aes</span>(<span class="at">fill =</span> crossing), <span class="at">width =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> rev_lo, <span class="at">ymax =</span> rev_hi), <span class="at">width =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> scales<span class="sc">::</span><span class="fu">dollar</span>(rev_hat, <span class="at">accuracy =</span> <span class="dv">1</span>)),</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">size =</span> <span class="fl">3.5</span>) <span class="sc">+</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> cross_cols) <span class="sc">+</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_dollar</span>(<span class="at">prefix =</span> <span class="st">"$"</span>, <span class="at">accuracy =</span> <span class="dv">1</span>),</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.08</span>))</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Expected Revenue under Bank Offer"</span>,</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Expected revenue"</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="reportfinal_files/figure-html/task5_plot-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1200"></p>
+<div id="fig-task5-revenue" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-task5-revenue-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="reportfinal_files/figure-html/fig-task5-revenue-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1200">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-task5-revenue-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7: Expected billboard revenue with 95% confidence intervals at each crossing.
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
 </section>
-<section id="interpretation-1" class="level2">
-<h2 class="anchored" data-anchor-id="interpretation-1">Interpretation</h2>
+<section id="interpretation" class="level2">
+<h2 class="anchored" data-anchor-id="interpretation">Interpretation</h2>
 <p>The analysis indicates that QV Melbourne would generate the highest expected revenue, reaching the full amount of $15,000, since it consistently experiences pedestrian flows above the 1,000-person threshold. Southern Cross and Flinders Street would yield similar revenues, both around $11,000, due to their lower proportions of days above the threshold.</p>
-<p>These results suggest that QV Melbourne is by far the most attractive location for billboard placement under the bank’s offer, offering both the highest guaranteed visibility and the lowest revenue uncertainty. The two station crossings provide steady but moderate exposure and may still be valuable for lower-cost or secondary advertising campaigns. Overall, the use of the Wilson interval method provides reliable and interpretable confidence bounds that clearly distinguish the three locations in terms of expected financial <code>returns.</code></p>
+<p>These results suggest that QV Melbourne is by far the most attractive location for billboard placement under the bank’s offer, offering both the highest guaranteed visibility and the lowest revenue uncertainty. The two station crossings provide steady but moderate exposure and may still be valuable for lower-cost or secondary advertising campaigns. Overall, the use of the Wilson interval method provides reliable and interpretable confidence bounds that clearly distinguish the three locations in terms of expected financial returns.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<ol type="1">
+<li><p>Angelo Canty and Brian Ripley (2024). boot: Bootstrap R (S-Plus) Functions. R package version 1.3-30.</p></li>
+<li><p>Davison, A. C. &amp; Hinkley, D. V. (1997) Bootstrap Methods and Their Applications. Cambridge University Press, Cambridge. ISBN 0-521-57391-2</p></li>
+<li><p>Venables, W. N. &amp; Ripley, B. D. (2002) Modern Applied Statistics with S. Fourth Edition. Springer, New York. ISBN 0-387-95457-0</p></li>
+<li><p>Wickham H, Averick M, Bryan J, Chang W, McGowan LD, François R, Grolemund G, Hayes A, Henry L, Hester J, Kuhn M, Pedersen TL, Miller E, Bache SM, Müller K, Ooms J, Robinson D, Seidel DP, Spinu V, Takahashi K, Vaughan D, Wilke C, Woo K, Yutani H (2019). “Welcome to the tidyverse.” <em>Journal of Open Source Software</em>, <em>4</em>(43), 1686. doi:10.21105/joss.01686 <a href="https://doi.org/10.21105/joss.01686" class="uri">https://doi.org/10.21105/joss.01686</a>.</p></li>
+<li><p>Xie Y (2025). <em>knitr: A General-Purpose Package for Dynamic Report Generation in R</em>. R package version 1.50, <a href="https://yihui.org/knitr/" class="uri">https://yihui.org/knitr/</a>.</p></li>
+<li><p>Yihui Xie (2015) Dynamic Documents with R and knitr. 2nd edition. Chapman and Hall/CRC. ISBN 978-1498716963</p></li>
+<li><p>Yihui Xie (2014) knitr: A Comprehensive Tool for Reproducible Research in R. In Victoria Stodden, Friedrich Leisch and Roger D. Peng, editors, Implementing Reproducible Computational Research. Chapman and Hall/CRC. ISBN 978-1466561595</p></li>
+<li><p>Zhu H (2024). <em>kableExtra: Construct Complex Table with ‘kable’ and Pipe Syntax</em>. R package version 1.4.0, <a href="https://CRAN.R-project.org/package=kableExtra" class="uri">https://CRAN.R-project.org/package=kableExtra</a>.</p></li>
+<li><p>Robinson D, Hayes A, Couch S (2024). <em>broom: Convert Statistical Objects into Tidy Tibbles</em>. R package version 1.0.6, <a href="https://CRAN.R-project.org/package=broom" class="uri">https://CRAN.R-project.org/package=broom</a>.</p></li>
+<li><p>Wickham H, Henry L (2025). <em>purrr: Functional Programming Tools</em>. R package version 1.0.4, <a href="https://CRAN.R-project.org/package=purrr" class="uri">https://CRAN.R-project.org/package=purrr</a>.</p></li>
+<li><p>Wickham H, Pedersen T, Seidel D (2023). <em>scales: Scale Functions for Visualization</em>. R package version 1.3.0, <a href="https://CRAN.R-project.org/package=scales" class="uri">https://CRAN.R-project.org/package=scales</a>.</p></li>
+<li><p><em>Master Maximum Likelihood Estimation in R: A Step-by-Step Guide.</em> (2018, July 16). Analytics Vidhya. <a href="https://www.analyticsvidhya.com/blog/2018/07/introductory-guide-maximum-likelihood-estimation-case-study-r/" class="uri">https://www.analyticsvidhya.com/blog/2018/07/introductory-guide-maximum-likelihood-estimation-case-study-r/</a></p></li>
+<li><p>Bevans, R. (2020, March 26). <em>Akaike Information Criterion | When &amp; How to Use It (Example).</em> Scribbr. <a href="https://www.scribbr.com/statistics/akaike-information-criterion/" class="uri">https://www.scribbr.com/statistics/akaike-information-criterion/</a></p></li>
+<li><p><em>How to Perform Bootstrapping in R</em> | R-bloggers. (2022, December 17). <a href="https://www.r-bloggers.com/2022/12/how-to-perform-bootstrapping-in-r/" class="uri">https://www.r-bloggers.com/2022/12/how-to-perform-bootstrapping-in-r/</a></p></li>
+<li><p><em>boot.ci function—RDocumentation.</em>, from <a href="https://www.rdocumentation.org/packages/boot/versions/1.3-32/topics/boot.ci?utm_source=chatgpt.com" class="uri">https://www.rdocumentation.org/packages/boot/versions/1.3-32/topics/boot.ci?utm_source=chatgpt.com</a></p></li>
+</ol>
 </section>
 
 </main>
@@ -1179,6 +1267,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -1289,6 +1379,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
+      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {
