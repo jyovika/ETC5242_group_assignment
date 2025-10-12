@@ -21,6 +21,11 @@ library(MASS)
 set.seed(355435)  
 
 B <- 5000
+
+cross_cols <- c(
+  "Flinders Street" = "#766153",
+  "QV Melbourne"    = "#718f94",
+  "Southern ross"  = "#717744")
 ```
 
 ```{r}
@@ -34,19 +39,29 @@ pedestrian_long <- pedestrian_df %>%
   mutate(crossing = factor(crossing,
                            levels = c("southern_cross","flinders_street","qv_melbourne")))
 
+```
+::: {.columns}
+::: {.column width="40%"}
+
+```{r,boxplot}
 ggplot(pedestrian_long, aes(x = crossing, y = count, fill = crossing)) +
   geom_boxplot(outlier.shape = NA, alpha = 0.8) +
   geom_jitter(width = 0.15, alpha = 0.5, size = 1.6) +
   labs(title = "Pedestrian counts by crossing", x = NULL, y = "Count per interval") +
   theme_minimal() + theme(legend.position = "none")
+```
+:::
+::: {.column width="60%"}
 
+```{r, density_plot}
 ggplot(pedestrian_long, aes(x = count, fill = crossing)) +
   geom_density(alpha = 0.35) +
   facet_wrap(~ crossing, scales = "fixed") +
   labs(title = "Distribution (density) per crossing", x = "Count", y = "Density") +
   theme_minimal()
-
 ```
+:::
+:::
 
 ```{r, EDA_summaries}
 desc <- pedestrian_long |>
