@@ -441,7 +441,7 @@ final_tbl %>%
   kable(
     caption = "Comparison of empirical and model-based 90th percentile estimates with 95% confidence intervals for each crossing",
     digits = 1,
-    align = rep("c", ncol(final_tbl))  
+    align = rep("c", ncol(.))  
   ) %>%
   kable_styling(
     bootstrap_options = c("striped", "hover", "condensed", "responsive"),
@@ -682,7 +682,7 @@ rev_ci %>%
   kable(
     caption = "Estimated expected revenue and 95% confidence intervals for each crossing using the Wilson score interval.",
     digits = 1,
-    align = rep("c", ncol(final_tbl))  
+    align = rep("c", ncol(.))  
   ) %>%
   kable_styling(
     bootstrap_options = c("striped", "hover", "condensed", "responsive"),
@@ -708,11 +708,11 @@ A horizontal bar chart with 95 percent confidence intervals (@fig-task5-revenue)
 ggplot(rev_ci, aes(x = reorder(crossing, rev_hat), y = rev_hat)) +
   geom_col(aes(fill = crossing), width = 0.6) +
   geom_errorbar(aes(ymin = rev_lo, ymax = rev_hi), width = 0.2) +
-  geom_text(aes(label = scales::dollar(rev_hat, accuracy = 1)),
+  geom_text(aes(label = dollar(rev_hat, accuracy = 1)),
             vjust = -0.5, size = 3.5) +
   scale_fill_manual(values = cross_cols) +
   scale_y_continuous(
-    labels = scales::label_dollar(prefix = "$", accuracy = 1),
+    labels = label_dollar(prefix = "$", accuracy = 1),
     expand = expansion(mult = c(0, 0.08))
   ) +
   coord_flip() +
