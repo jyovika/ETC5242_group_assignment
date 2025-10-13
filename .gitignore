@@ -48,4 +48,5 @@ po/*~
 # RStudio Connect folder
 rsconnect/
 
-report_files*
+report_files/
+reportfinal_files/
