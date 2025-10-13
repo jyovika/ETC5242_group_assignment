@@ -87,8 +87,7 @@ ggplot(pedestrian_long, aes(x = crossing, y = count, fill = crossing)) +
   scale_fill_manual(values = cross_cols) +
   labs(
     x = NULL,
-    y = "Count per interval"
-  ) +
+    y = "Count per interval") +
   theme_minimal() +
   theme(legend.position = "none")
 
@@ -106,8 +105,7 @@ ggplot(pedestrian_long, aes(x = count, fill = crossing)) +
   scale_fill_manual(values = cross_cols) +
   labs(
     x = "Count",
-    y = "Density"
-  ) +
+    y = "Density") +
   theme_minimal() +
   theme(legend.position = "none")
 
@@ -136,14 +134,12 @@ pedestrian_long %>%
     min   = min(count),
     max   = max(count),
     iqr   = IQR(count),
-    .groups = "drop"
-) %>%
+    .groups = "drop") %>%
   kable(
         digits = 1, align = c("l","r")) %>%
   kable_styling(
     bootstrap_options = c("striped", "hover", "condensed", "responsive"),
-    full_width = FALSE
-  ) %>%
+    full_width = FALSE) %>%
   row_spec(0, bold = TRUE, color = "#FFFFFF", background = "#598392") %>%
   column_spec(1, bold = TRUE, color = "#004D40")
 ```
@@ -248,13 +244,11 @@ mle_fits  %>%
   kable(
     caption = "Maximum-likelihood estimates for Normal, Lognormal and Gamma models across the three crossings.",
     digits = 1,
-    align = rep("c")  
-  ) %>%
+    align = rep("c")) %>%
   kable_styling(
     bootstrap_options = c("striped", "hover", "condensed", "responsive"),
     full_width = FALSE,
-    position = "center"
-  ) %>%
+    position = "center") %>%
   row_spec(0, bold = TRUE, color = "#FFFFFF", background = "#598392") %>%
   column_spec(1, bold = TRUE, color = "#004D40")
 ```
@@ -271,7 +265,7 @@ These fitted parameters describe the statistical characteristics of each site’
 
 ```{r, qqplots}
 #| label: fig-qqplots
-#| fig-cap: "Q–Q plots comparing empirical and theoretical quantiles for the fitted Normal, Lognormal and Gamma models at each crossing."
+#| fig-cap: "QQ plots comparing empirical and theoretical quantiles for the fitted Normal, Lognormal and Gamma models at each crossing."
 #| warning: false
 
 par(mfrow = c(1,3), mar = c(4,4,2,1))
@@ -341,12 +335,10 @@ pedestrian_long %>%
         digits = 1, align = c("l","r")) %>%
   kable_styling(
     bootstrap_options = c("striped", "hover", "condensed", "responsive"),
-    full_width = FALSE
-  ) %>%
+    full_width = FALSE) %>%
   row_spec(0, bold = TRUE, color = "#FFFFFF", background = "#598392") %>%
   column_spec(1, bold = TRUE, color = "#004D40")
   
-# function to calculate 90th percentile
 q90_fn <- function(data, i) quantile(data[i], 0.9)
 
 # Flinders Street
@@ -362,15 +354,14 @@ qv_boot <- boot(pedestrian_df$qv_melbourne, q90_fn, R = 1000)
 ci_qv <- boot.ci(qv_boot, type = "perc")
 
 sample_tbl <- tibble(
-  crossing        = c("Flinders Street","Southern Cross","QV Melbourne"),
-  q90_sample      = round(c(
+  crossing = c("Flinders Street","Southern Cross","QV Melbourne"),
+  q90_sample = round(c(
     quantile(pedestrian_df$flinders_street, 0.9),
     quantile(pedestrian_df$southern_cross, 0.9),
-    quantile(pedestrian_df$qv_melbourne, 0.9)
-  ), 2),
+    quantile(pedestrian_df$qv_melbourne, 0.9)), 
+    2),
   q90_sample_low  = round(c(ci_fl$percent[4], ci_sc$percent[4], ci_qv$percent[4]), 2),
-  q90_sample_high = round(c(ci_fl$percent[5], ci_sc$percent[5], ci_qv$percent[5]), 2)
-)
+  q90_sample_high = round(c(ci_fl$percent[5], ci_sc$percent[5], ci_qv$percent[5]), 2))
 
 ```
 
@@ -391,24 +382,19 @@ The model-based method assumes that the chosen distributions (Normal/Lognormal) 
 ```{r, estimation}
 #| warning: false
 
-# Compute the theoretical 90th percentile from each fitted model
 q90_model_point <- list(
   fl = qlnorm(0.9, meanlog = fit_fl_logn$estimate["meanlog"], sdlog = fit_fl_logn$estimate["sdlog"]),
   sc = qnorm (0.9, mean    = fit_sc_norm$estimate["mean"],     sd    = fit_sc_norm$estimate["sd"]),
-  qv = qlnorm(0.9, meanlog = fit_qv_logn$estimate["meanlog"], sdlog = fit_qv_logn$estimate["sdlog"])
-)
+  qv = qlnorm(0.9, meanlog = fit_qv_logn$estimate["meanlog"], sdlog = fit_qv_logn$estimate["sdlog"]))
 
 q90_model_ci <- function(fit, dist, n, B = 1000) {
   boot_q90 <- replicate(B, {
     sim <- if (dist == "normal") {
-      rnorm(n, mean = fit$estimate["mean"], sd = fit$estimate["sd"])
-    } else {
-      rlnorm(n, meanlog = fit$estimate["meanlog"], sdlog = fit$estimate["sdlog"])
-    }
-    quantile(sim, 0.9)
-  })
-  quantile(boot_q90, c(0.025, 0.975))
-}
+      rnorm(n, mean = fit$estimate["mean"], sd = fit$estimate["sd"])}
+    else {
+      rlnorm(n, meanlog = fit$estimate["meanlog"], sdlog = fit$estimate["sdlog"])}
+    quantile(sim, 0.9)})
+  quantile(boot_q90, c(0.025, 0.975))}
 
 n_fl <- nrow(pedestrian_df)
 n_sc <- nrow(pedestrian_df)
@@ -423,8 +409,7 @@ model_tbl <- tibble(
   model          = c("lognormal","normal","lognormal"),
   q90_model      = round(c(q90_model_point$fl, q90_model_point$sc, q90_model_point$qv), 2),
   q90_model_low  = round(c(ci_fl_m[1], ci_sc_m[1], ci_qv_m[1]), 2),
-  q90_model_high = round(c(ci_fl_m[2], ci_sc_m[2], ci_qv_m[2]), 2)
-)
+  q90_model_high = round(c(ci_fl_m[2], ci_sc_m[2], ci_qv_m[2]), 2))
 
 ```
 
@@ -441,13 +426,11 @@ final_tbl %>%
   kable(
     caption = "Comparison of empirical and model-based 90th percentile estimates with 95% confidence intervals for each crossing",
     digits = 1,
-    align = rep("c", ncol(.))  
-  ) %>%
+    align = rep("c", ncol(.))) %>%
   kable_styling(
     bootstrap_options = c("striped", "hover", "condensed", "responsive"),
     full_width = FALSE,
-    position = "center"
-  ) %>%
+    position = "center") %>%
   row_spec(0, bold = TRUE, color = "#FFFFFF", background = "#598392") %>%
   column_spec(1, bold = TRUE, color = "#004D40")
 ```
@@ -483,20 +466,17 @@ paired_tt_tbl <- tibble(
   `95% CI (High)` = tt$conf.int[2],
   t_value = tt$statistic,
   df = tt$parameter,
-  p_value = tt$p.value
-)
+  p_value = tt$p.value)
 
 paired_tt_tbl %>%
   kable(
     caption = "Paired t-test results comparing Southern Cross and Flinders Street (95% confidence interval for mean difference).",
     digits = 2,
-    align = rep("c", ncol(.))
-  ) %>%
+    align = rep("c", ncol(.))) %>%
   kable_styling(
     bootstrap_options = c("striped", "hover", "condensed", "responsive"),
     full_width = FALSE,
-    position = "center"
-  ) %>%
+    position = "center") %>%
   row_spec(0, bold = TRUE, color = "#FFFFFF", background = "#598392") %>%
   column_spec(1, bold = TRUE, color = "#004D40")
 ```
@@ -510,6 +490,7 @@ qqnorm(scale(d),
        main = "Q–Q of differences: Southern Cross − Flinders",
        pch  = 16,
        col  = adjustcolor("#3a405a", alpha.f = 0.5))
+
 qqline(scale(d),
        col  = "#598392",
        lwd  = 2,
@@ -528,8 +509,7 @@ As shown in @tbl-task3-ttest, Southern Cross had, on average, about 49 more pede
 ci <- tibble(
   estimate = tt$estimate,
   lower = tt$conf.int[1],
-  upper = tt$conf.int[2]
-)
+  upper = tt$conf.int[2])
 
 ggplot(ci) +
   geom_rect(aes(xmin = -Inf, xmax = Inf, ymin = -80, ymax = 80),
@@ -546,8 +526,7 @@ ggplot(ci) +
     title = "95% CI for Mean Difference: Southern Cross-Flinders",
     subtitle = "Shaded zone = +-80 people/hour (design tolerance)",
     y = "Difference in mean counts (SC-FL)",
-    x = NULL
-  ) +
+    x = NULL) +
   theme_minimal(base_size = 13)
 
 ```
@@ -585,13 +564,11 @@ tt_table %>%
   kable(
     caption = "Mean pedestrian counts and 95% confidence intervals for each crossing (one-sample t-tests)",
     digits = 1,
-    align = rep("c", ncol(.))
-  ) %>%
+    align = rep("c", ncol(.))) %>%
   kable_styling(
     bootstrap_options = c("striped", "hover", "condensed", "responsive"),
     full_width = FALSE,
-    position = "center"
-  ) %>%
+    position = "center") %>%
   row_spec(0, bold = TRUE, color = "#FFFFFF", background = "#598392") %>%
   column_spec(1, bold = TRUE, color = "#004D40")
 ```
@@ -612,8 +589,7 @@ ggplot(tt_table, aes(x = Location, y = Mean, color = Location)) +
   labs(
     title = "Pedestrian Traffic with 95% Confidence Intervals",
     y = "Mean pedestrians per hour",
-    x = "Location"
-  ) +
+    x = "Location") +
   theme_minimal(base_size = 14) +
   theme(legend.position = "none")
 ```
@@ -662,8 +638,7 @@ rev_ci <- pedestrian_long %>%
   summarise(
     n = n(),
     k = sum(over_1000),
-    .groups = "drop"
-  ) %>%
+    .groups = "drop") %>%
   rowwise() %>%
   mutate(
     pt   = list(prop.test(k, n, conf.level = LEVEL, correct = TRUE)),
@@ -672,8 +647,7 @@ rev_ci <- pedestrian_long %>%
     hi_p = pt$conf.int[2],
     rev_hat = BASE + BONUS * phat,
     rev_lo  = BASE + BONUS * lo_p,
-    rev_hi  = BASE + BONUS * hi_p
-  ) %>%
+    rev_hi  = BASE + BONUS * hi_p) %>%
   ungroup() 
 
 rev_ci <- rev_ci[, c("crossing","n", "k", "phat", "lo_p", "hi_p", "rev_hat", "rev_lo", "rev_hi")]
@@ -682,13 +656,11 @@ rev_ci %>%
   kable(
     caption = "Estimated expected revenue and 95% confidence intervals for each crossing using the Wilson score interval.",
     digits = 1,
-    align = rep("c", ncol(.))  
-  ) %>%
+    align = rep("c", ncol(.))) %>%
   kable_styling(
     bootstrap_options = c("striped", "hover", "condensed", "responsive"),
     full_width = FALSE,
-    position = "center"
-  ) %>%
+    position = "center") %>%
   row_spec(0, bold = TRUE, color = "#FFFFFF", background = "#598392") %>%
   column_spec(1, bold = TRUE, color = "#004D40")
 
