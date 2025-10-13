@@ -259,7 +259,7 @@ mle_fits  %>%
   column_spec(1, bold = TRUE, color = "#004D40")
 ```
 
-Guided by the shapes in the graphics and the Q–Q diagnostics (@fig-qqplots), we fitted simple parametric models using maximum likelihood estimation. Southern Cross was approximately symmetric on the original scale, so a **Normal** model was selected. Flinders Street and QV Melbourne displayed mild right-skew and near-normality on the log scale, so **Lognormal** models were used. The resulting parameter estimates (estimate ± SE) were:
+Guided by the shapes in the graphics and the Q–Q diagnostics (@fig-qqplots), we fitted simple parametric models using maximum likelihood estimation. Southern Cross was approximately symmetric on the original scale, so a **Normal** model was selected. Flinders Street and QV Melbourne displayed mild right-skew and near-normality on the log scale, so **Lognormal** models were used. The resulting parameter estimates (estimate +- SE) were:
 
 -   **Flinders Street** (Lognormal): meanlog = 6.7813 (0.0166), sdlog = 0.1633 (0.0117)
 
