@@ -2,13 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.57">
+<meta name="generator" content="quarto-1.6.42">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Jyovika Aswale, Sia Chawla, Siddhi Jadhav">
+<meta name="author" content="Jyovika Aswale, Sia Chawla 35373776, Siddhi Jadhav">
 
-<title>Pedestrian Crossings Data Analysis Report (ETC5242 Assignment 2)</title>
+<title>Pedestrian Crossings Data Analysis Report- ETC5242 Assignment 2 Group 30</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -64,12 +64,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="reportfinal_files/libs/quarto-html/tippy.umd.min.js"></script>
 <script src="reportfinal_files/libs/quarto-html/anchor.min.js"></script>
 <link href="reportfinal_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="reportfinal_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="reportfinal_files/libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="reportfinal_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="reportfinal_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="reportfinal_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="reportfinal_files/libs/bootstrap/bootstrap-1bc8a17f135ab3d594c857e9f48e611b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script src="reportfinal_files/libs/kePrint-0.0.1/kePrint.js"></script>
+
 <link href="reportfinal_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
 
 
 </head>
@@ -82,7 +84,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Pedestrian Crossings Data Analysis Report (ETC5242 Assignment 2)</h1>
+<h1 class="title">Pedestrian Crossings Data Analysis Report- ETC5242 Assignment 2 Group 30</h1>
 </div>
 
 
@@ -92,7 +94,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Author</div>
     <div class="quarto-title-meta-contents">
-             <p>Jyovika Aswale, Sia Chawla, Siddhi Jadhav </p>
+             <p>Jyovika Aswale, Sia Chawla 35373776, Siddhi Jadhav </p>
           </div>
   </div>
     
@@ -112,7 +114,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <section id="purpose-and-approach" class="level3">
 <h3 class="anchored" data-anchor-id="purpose-and-approach">Purpose and approach</h3>
-<p>The aim was to describe how lunchtime pedestrian counts vary at the three crossings (Flinders Street, Southern Cross, QV Melbourne) and to fit probability models that summarise these patterns for design and planning. We began with exploratory graphics; histograms, densities and boxplots (<a href="#fig-boxplot" class="quarto-xref">Figure&nbsp;1</a> and <a href="#fig-density" class="quarto-xref">Figure&nbsp;2</a>) and computed descriptive statistics for each site (mean, median, standard deviation, minimum–maximum and variance <a href="#tbl-crossing-summary" class="quarto-xref">Table&nbsp;1</a>). These summaries show that QV Melbourne has the largest flows and greater day-to-day variation, while Flinders Street and Southern Cross have lower, tighter distributions.</p>
+<p>The aim was to describe how pedestrian counts vary at the three crossings (Flinders Street, Southern Cross, QV Melbourne) and to fit probability models that summarise these patterns for design and planning. We began with exploratory graphics; histograms, densities and boxplots (<a href="#fig-boxplot" class="quarto-xref">Figure&nbsp;1</a> and <a href="#fig-density" class="quarto-xref">Figure&nbsp;2</a>) and computed descriptive statistics for each site (mean, median, standard deviation, minimum, maximum and variance <a href="#tbl-crossing-summary" class="quarto-xref">Table&nbsp;1</a>). These summaries show that QV Melbourne has the largest flows and greater day-to-day variation, while Flinders Street and Southern Cross have lower, tighter distributions.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pedestrian_long <span class="ot">&lt;-</span> pedestrian_df <span class="sc">%&gt;%</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">obs =</span> <span class="fu">row_number</span>()) <span class="sc">%&gt;%</span></span>
@@ -265,9 +267,9 @@ Table&nbsp;1: Descriptive statistics for pedestrian counts at each crossing.
 </div>
 </div>
 <p>The summary <a href="#tbl-crossing-summary" class="quarto-xref">Table&nbsp;1</a> provides summary statistics for pedestrian counts at each crossing (n ~ 97 per site). The results align with the distributional patterns shown in Figures (<a href="#fig-boxplot" class="quarto-xref">Figure&nbsp;1</a> and <a href="#fig-density" class="quarto-xref">Figure&nbsp;2</a>).</p>
-<p>QV Melbourne. The mean of 2,336.7 and median of 2,310 indicate the highest sustained demand. Dispersion is largest in absolute terms (sd ~ 305, IQR 462, range 1,773–3,122), confirming substantial variability and frequent high-traffic intervals.</p>
-<p>Southern Cross. The mean of 941.8 and median of 955 reflect a steady, moderate flow with relatively tight spread (sd ~ 133, IQR 143, range 494–1,256), indicating stable conditions and fewer extreme peaks.</p>
-<p>Flinders Street. The mean of 893.0 and median of 887 show slightly lighter traffic than Southern Cross. Variability is somewhat higher through the middle of the distribution (sd ~ 148, IQR 202, range 590–1,282), suggesting greater fluctuation around a lower centre.</p>
+<p><strong>QV Melbourne:</strong> The mean of 2,336.7 and median of 2,310 indicate the highest sustained demand. Dispersion is largest in absolute terms (sd ~ 305, IQR 462, range 1,773–3,122), confirming substantial variability and frequent high-traffic intervals.</p>
+<p><strong>Southern Cross:</strong> The mean of 941.8 and median of 955 reflect a steady, moderate flow with relatively tight spread (sd ~ 133, IQR 143, range 494–1,256), indicating stable conditions and fewer extreme peaks.</p>
+<p><strong>Flinders Street:</strong> The mean of 893.0 and median of 887 show slightly lighter traffic than Southern Cross. Variability is somewhat higher through the middle of the distribution (sd ~ 148, IQR 202, range 590–1,282), suggesting greater fluctuation around a lower centre.</p>
 <p>Across all sites, the mean exceeds the median, consistent with the right-skew observed in Figures <a href="#fig-boxplot" class="quarto-xref">Figure&nbsp;1</a> and <a href="#fig-density" class="quarto-xref">Figure&nbsp;2</a>, which reflects occasional upper-tail surges.</p>
 <ul>
 <li><p><strong>Implications for design and operations.</strong></p>
@@ -531,7 +533,7 @@ Figure&nbsp;3: Q–Q plots comparing empirical and theoretical quantiles for the
 </section>
 <section id="adequacy-checks-and-assumptions" class="level3">
 <h3 class="anchored" data-anchor-id="adequacy-checks-and-assumptions">Adequacy checks and assumptions</h3>
-<p>Adequacy was assessed using Q–Q plots (<a href="#fig-qqplots" class="quarto-xref">Figure&nbsp;3</a>). For Southern Cross, the points lie close to the 45-degree line under a Normal reference, indicating a good fit. For Flinders Street and QV Melbourne, the log-transformed counts align well with a Normal reference, supporting the Lognormal model on the original count scale. Small deviations appear only in the upper tail. We also considered alternative count models such as Poisson and Negative Binomial. The Poisson model was unsuitable because of over-dispersion, and although a Negative Binomial model could handle this, the large counts make continuous models like the Normal and Lognormal more appropriate and visually accurate. We assume that observations are independent across days within each site and that the fitted distribution family provides a reasonable approximation of lunchtime pedestrian variability.</p>
+<p>Adequacy was assessed using Q–Q plots (<a href="#fig-qqplots" class="quarto-xref">Figure&nbsp;3</a>). For Southern Cross, the points lie close to the 45-degree line under a Normal reference, indicating a good fit. For Flinders Street and QV Melbourne, the log-transformed counts align well with a Normal reference, supporting the Lognormal model on the original count scale. Small deviations appear only in the upper tail. We also considered alternative count models such as Poisson and Negative Binomial. The Poisson model was unsuitable because of over-dispersion, and although a Negative Binomial model could handle this, the large counts make continuous models like the Normal and Lognormal more appropriate and visually accurate. We assume that observations are independent across days within each site and that the fitted distribution family provides a reasonable approximation of pedestrian variability.</p>
 </section>
 </section>
 <section id="task-2---90th-percentile-flow" class="level2">
@@ -618,10 +620,16 @@ Table&nbsp;3: Empirical 90th percentile estimates and 95% bootstrap confidence i
 </div>
 </div>
 <p>The estimates are summarised in <a href="#tbl-q90-sample" class="quarto-xref">Table&nbsp;3</a>, which shows that the busiest 10 percent of days exceed approximately 1000 pedestrians per hour for the two station crossings and around 2700 for QV Melbourne.</p>
+<p><em>Assumptions:</em><br>
+</p>
+<p>This non-parametric approach assumes that the observed sample is representative of long-term daily variation and that observations are independent across days. It does not require normality or any specific model shape.</p>
 </section>
 <section id="approach-2-model-based-estimation" class="level4">
 <h4 class="anchored" data-anchor-id="approach-2-model-based-estimation">Approach 2: Model-Based Estimation</h4>
 <p>In the second approach, the fitted probability models from Task 1 were used to estimate theoretical 90th percentiles. A Normal model was selected for Southern Cross (symmetric data) and Lognormal models for Flinders Street and QV Melbourne (right-skewed). The resulting estimates and 95 percent CIs are presented. The model-based 90th percentiles were consistent with the empirical estimates, confirming that the chosen models adequately represent the tail behaviour.</p>
+<p><em>Assumptions:</em><br>
+</p>
+<p>The model-based method assumes that the chosen distributions (Normal/Lognormal) correctly describe the underlying data, with independent and identically distributed observations. These models smooth random variability and extrapolate slightly beyond the sample.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the theoretical 90th percentile from each fitted model</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>q90_model_point <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
@@ -746,7 +754,12 @@ Table&nbsp;4: Comparison of empirical and model-based 90th percentile estimates 
 </section>
 <section id="task-3-engineering-design-comparison" class="level2">
 <h2 class="anchored" data-anchor-id="task-3-engineering-design-comparison">Task 3 – Engineering Design Comparison</h2>
+<section id="purpose-1" class="level3">
+<h3 class="anchored" data-anchor-id="purpose-1">Purpose</h3>
 <p>The purpose of this analysis was to determine whether the Flinders Street and Southern Cross crossings can use the same design and materials. The engineers specified that the average difference in hourly pedestrian flow between the two locations should not exceed 80 people per hour for the design to be considered interchangeable.</p>
+</section>
+<section id="methodology" class="level3">
+<h3 class="anchored" data-anchor-id="methodology">Methodology</h3>
 <p>To test this, a paired t-test was used to compare hourly pedestrian counts recorded simultaneously at both sites. This method was chosen because it accounts for shared conditions such as time of day and weather, which could affect pedestrian flow. A 95 percent confidence interval for the mean difference in pedestrian counts between Southern Cross and Flinders Street was calculated.</p>
 <p>The assumption of approximate normality required for the paired t-test was checked using a Q–Q plot of the differences (<a href="#fig-task3-qq" class="quarto-xref">Figure&nbsp;4</a>). The points on the plot closely followed a straight line, confirming that the distribution of differences was approximately normal. Given the relatively large sample size of 97 paired observations, the Central Limit Theorem ensures that the sampling distribution of the mean difference is approximately normal even if the underlying data are not perfectly so. Therefore, it is valid to use the CLT in this context, and the paired t-test provides a reliable confidence interval.</p>
 <div class="cell" data-layout-align="center">
@@ -841,6 +854,9 @@ Figure&nbsp;4: Q–Q plot of paired differences (Southern Cross − Flinders Str
 </div>
 </div>
 </div>
+</section>
+<section id="results-and-interpretation" class="level3">
+<h3 class="anchored" data-anchor-id="results-and-interpretation">Results and Interpretation</h3>
 <p>As shown in <a href="#tbl-task3-ttest" class="quarto-xref">Table&nbsp;5</a>, Southern Cross had, on average, about 49 more pedestrians per hour than Flinders Street, with a 95 percent confidence interval ranging from approximately 21 to 77 people per hour. This range lies entirely within the +-80 threshold defined by the engineering team. The Q–Q plot in <a href="#fig-task3-qq" class="quarto-xref">Figure&nbsp;4</a> confirmed that the paired differences were approximately normally distributed, supporting the reliability of this result.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>ci <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
@@ -882,8 +898,11 @@ Figure&nbsp;5: 95% confidence interval for the mean difference between Southern 
 </div>
 <p>Based on these results, we can be 95 percent confident that the true mean difference in pedestrian counts between the two crossings is less than 80 people per hour. This indicates that although Southern Cross tends to be slightly busier, the difference is not large enough to justify separate designs. Therefore, the engineers can confidently use the same design and materials for both crossings, achieving cost savings without compromising performance or pedestrian safety. The analysis is statistically sound and provides a clear, evidence-based recommendation for the engineering team.</p>
 </section>
+</section>
 <section id="task-4---marketing-value-comparison" class="level2">
 <h2 class="anchored" data-anchor-id="task-4---marketing-value-comparison">Task 4 - Marketing Value Comparison</h2>
+<section id="purpose-2" class="level3">
+<h3 class="anchored" data-anchor-id="purpose-2">Purpose</h3>
 <p>The purpose of this task was to estimate and compare the average hourly pedestrian counts at three major Melbourne crossings: Southern Cross, Flinders Street, and QV Melbourne. The aim was to help the marketing team evaluate which locations offer the highest advertising value for billboard placements. Pedestrian flow directly represents potential audience exposure, so understanding the mean number of people passing through each site is crucial for assessing advertising reach. Constructing 95 percent confidence intervals around these means provides insight into both the central tendency and the uncertainty of the estimates. This information allows the marketing team to make data-driven decisions about which sites are most likely to deliver the best visibility and return on investment for advertising campaigns.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Southern Cross</span></span>
@@ -961,6 +980,9 @@ Table&nbsp;6: Mean pedestrian counts and 95% confidence intervals for each cross
 </figure>
 </div>
 </div>
+</section>
+<section id="results" class="level3">
+<h3 class="anchored" data-anchor-id="results">Results</h3>
 <p>As shown in <a href="#tbl-task4-means" class="quarto-xref">Table&nbsp;6</a>, QV Melbourne has a much higher mean pedestrian count than the other two crossings, while Southern Cross and Flinders Street have similar average flows.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(tt_table, <span class="fu">aes</span>(<span class="at">x =</span> Location, <span class="at">y =</span> Mean, <span class="at">color =</span> Location)) <span class="sc">+</span></span>
@@ -989,12 +1011,21 @@ Figure&nbsp;6: Lollipop plot showing mean pedestrian counts with 95% confidence 
 </div>
 </div>
 <p>The lollipop plot in <a href="#fig-task4-traffic" class="quarto-xref">Figure&nbsp;6</a> visually compares the mean pedestrian flows across the three crossings. Each dot represents the estimated mean and the error bars display the 95 percent confidence intervals. Southern Cross and Flinders Street show overlapping intervals, indicating statistically similar traffic levels, while QV Melbourne’s interval sits far higher, reflecting consistently greater pedestrian flow and higher variability.</p>
+</section>
+<section id="conclusion" class="level3">
+<h3 class="anchored" data-anchor-id="conclusion">Conclusion</h3>
 <p>QV Melbourne recorded the highest average pedestrian flow of about 2300 people per hour approximately twice that of Southern Cross and Flinders Street. This indicates that QV Melbourne offers the strongest advertising potential and the highest expected exposure for billboard campaigns. Southern Cross and Flinders Street both have mean flows below 1000 people per hour and therefore represent moderate advertising opportunities.</p>
 <p>The confidence intervals were computed using one-sample t-tests, which are appropriate when the population standard deviation is unknown. With 97 observations at each site, the Central Limit Theorem justifies using the t-distribution even for slightly skewed data. The narrower intervals at the two station crossings suggest more stable pedestrian levels, whereas QV Melbourne’s wider interval reflects naturally higher variability accompanying larger volumes.</p>
 </section>
+</section>
 <section id="task-5---billboard-revenue-estimate" class="level2">
 <h2 class="anchored" data-anchor-id="task-5---billboard-revenue-estimate">Task 5 - Billboard Revenue Estimate</h2>
+<section id="purpose-3" class="level3">
+<h3 class="anchored" data-anchor-id="purpose-3">Purpose</h3>
 <p>The purpose of this task was to estimate the expected billboard revenue that could be earned under the bank’s proposed offer at each of the three pedestrian crossings: Southern Cross, Flinders Street, and QV Melbourne. According to the offer, the bank pays a base amount of $10,000 for each billboard and provides a bonus of $5,000 multiplied by the proportion of days when pedestrian counts exceed 1,000 people per hour. Estimating this proportion and its associated uncertainty allows the marketing and finance teams to forecast expected earnings and identify which sites provide the greatest commercial value. The results quantify how consistent and reliable each location is in attracting high pedestrian traffic and therefore advertising exposure.</p>
+</section>
+<section id="methodology-1" class="level3">
+<h3 class="anchored" data-anchor-id="methodology-1">Methodology</h3>
 <p>The analysis was conducted in two main steps. First, for each crossing, the proportion of days where pedestrian counts exceeded 1,000 people per hour was calculated empirically from the observed data. This proportion represents the probability θ = P(count &gt; 1,000), indicating how frequently the threshold was surpassed.</p>
 <p>Second, a 95 percent confidence interval for this probability was computed using the Wilson score interval from the prop.test() function in R. The Wilson method was chosen because it performs well even for small or extreme proportions and includes a continuity correction to improve accuracy when the probability is near 0 or 1.</p>
 <p>The expected revenue was then calculated using the formula:</p>
@@ -1122,9 +1153,9 @@ Table&nbsp;7: Estimated expected revenue and 95% confidence intervals for each c
 </div>
 <p>As shown in <a href="#tbl-task5-revenue" class="quarto-xref">Table&nbsp;7</a>, QV Melbourne consistently exceeded the 1,000 person threshold on every observed day, resulting in the maximum possible revenue under the bank’s structure. Southern Cross and Flinders Street earned lower but similar revenues, reflecting smaller and more variable pedestrian volumes.</p>
 </section>
-<section id="visualisation" class="level2">
-<h2 class="anchored" data-anchor-id="visualisation">Visualisation</h2>
-<p>A horizontal bar chart with 95 percent confidence intervals (<strong>?@fig-task5</strong>) was produced to visually compare the expected revenues for the three locations. Each bar represents the average expected revenue, and the error bars display the range of uncertainty based on the Wilson confidence intervals. The plot shows that QV Melbourne achieves the highest and most stable revenue at approximately $15,000, with its interval tightly concentrated at the maximum bonus limit. Southern Cross and Flinders Street appear close together on the chart, indicating similar revenue potential of around $11,000. The relatively narrow intervals for these two sites suggest consistent performance, but their mean revenues are notably below that of QV Melbourne. This visual comparison provides an intuitive summary of which sites are most profitable and how confident we can be in those estimates.</p>
+<section id="visualisation" class="level3">
+<h3 class="anchored" data-anchor-id="visualisation">Visualisation</h3>
+<p>A horizontal bar chart with 95 percent confidence intervals (<a href="#fig-task5-revenue" class="quarto-xref">Figure&nbsp;7</a>) was produced to visually compare the expected revenues for the three locations. Each bar represents the average expected revenue, and the error bars display the range of uncertainty based on the Wilson confidence intervals. The plot shows that QV Melbourne achieves the highest and most stable revenue at approximately $15,000, with its interval tightly concentrated at the maximum bonus limit. Southern Cross and Flinders Street appear close together on the chart, indicating similar revenue potential of around $11,000. The relatively narrow intervals for these two sites suggest consistent performance, but their mean revenues are notably below that of QV Melbourne. This visual comparison provides an intuitive summary of which sites are most profitable and how confident we can be in those estimates.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(rev_ci, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(crossing, rev_hat), <span class="at">y =</span> rev_hat)) <span class="sc">+</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="fu">aes</span>(<span class="at">fill =</span> crossing), <span class="at">width =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
@@ -1157,30 +1188,11 @@ Figure&nbsp;7: Expected billboard revenue with 95% confidence intervals at each 
 </div>
 </div>
 </section>
-<section id="interpretation" class="level2">
-<h2 class="anchored" data-anchor-id="interpretation">Interpretation</h2>
+<section id="interpretation" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation">Interpretation</h3>
 <p>The analysis indicates that QV Melbourne would generate the highest expected revenue, reaching the full amount of $15,000, since it consistently experiences pedestrian flows above the 1,000-person threshold. Southern Cross and Flinders Street would yield similar revenues, both around $11,000, due to their lower proportions of days above the threshold.</p>
 <p>These results suggest that QV Melbourne is by far the most attractive location for billboard placement under the bank’s offer, offering both the highest guaranteed visibility and the lowest revenue uncertainty. The two station crossings provide steady but moderate exposure and may still be valuable for lower-cost or secondary advertising campaigns. Overall, the use of the Wilson interval method provides reliable and interpretable confidence bounds that clearly distinguish the three locations in terms of expected financial returns.</p>
 </section>
-<section id="references" class="level2">
-<h2 class="anchored" data-anchor-id="references">References</h2>
-<ol type="1">
-<li><p>Angelo Canty and Brian Ripley (2024). boot: Bootstrap R (S-Plus) Functions. R package version 1.3-30.</p></li>
-<li><p>Davison, A. C. &amp; Hinkley, D. V. (1997) Bootstrap Methods and Their Applications. Cambridge University Press, Cambridge. ISBN 0-521-57391-2</p></li>
-<li><p>Venables, W. N. &amp; Ripley, B. D. (2002) Modern Applied Statistics with S. Fourth Edition. Springer, New York. ISBN 0-387-95457-0</p></li>
-<li><p>Wickham H, Averick M, Bryan J, Chang W, McGowan LD, François R, Grolemund G, Hayes A, Henry L, Hester J, Kuhn M, Pedersen TL, Miller E, Bache SM, Müller K, Ooms J, Robinson D, Seidel DP, Spinu V, Takahashi K, Vaughan D, Wilke C, Woo K, Yutani H (2019). “Welcome to the tidyverse.” <em>Journal of Open Source Software</em>, <em>4</em>(43), 1686. doi:10.21105/joss.01686 <a href="https://doi.org/10.21105/joss.01686" class="uri">https://doi.org/10.21105/joss.01686</a>.</p></li>
-<li><p>Xie Y (2025). <em>knitr: A General-Purpose Package for Dynamic Report Generation in R</em>. R package version 1.50, <a href="https://yihui.org/knitr/" class="uri">https://yihui.org/knitr/</a>.</p></li>
-<li><p>Yihui Xie (2015) Dynamic Documents with R and knitr. 2nd edition. Chapman and Hall/CRC. ISBN 978-1498716963</p></li>
-<li><p>Yihui Xie (2014) knitr: A Comprehensive Tool for Reproducible Research in R. In Victoria Stodden, Friedrich Leisch and Roger D. Peng, editors, Implementing Reproducible Computational Research. Chapman and Hall/CRC. ISBN 978-1466561595</p></li>
-<li><p>Zhu H (2024). <em>kableExtra: Construct Complex Table with ‘kable’ and Pipe Syntax</em>. R package version 1.4.0, <a href="https://CRAN.R-project.org/package=kableExtra" class="uri">https://CRAN.R-project.org/package=kableExtra</a>.</p></li>
-<li><p>Robinson D, Hayes A, Couch S (2024). <em>broom: Convert Statistical Objects into Tidy Tibbles</em>. R package version 1.0.6, <a href="https://CRAN.R-project.org/package=broom" class="uri">https://CRAN.R-project.org/package=broom</a>.</p></li>
-<li><p>Wickham H, Henry L (2025). <em>purrr: Functional Programming Tools</em>. R package version 1.0.4, <a href="https://CRAN.R-project.org/package=purrr" class="uri">https://CRAN.R-project.org/package=purrr</a>.</p></li>
-<li><p>Wickham H, Pedersen T, Seidel D (2023). <em>scales: Scale Functions for Visualization</em>. R package version 1.3.0, <a href="https://CRAN.R-project.org/package=scales" class="uri">https://CRAN.R-project.org/package=scales</a>.</p></li>
-<li><p><em>Master Maximum Likelihood Estimation in R: A Step-by-Step Guide.</em> (2018, July 16). Analytics Vidhya. <a href="https://www.analyticsvidhya.com/blog/2018/07/introductory-guide-maximum-likelihood-estimation-case-study-r/" class="uri">https://www.analyticsvidhya.com/blog/2018/07/introductory-guide-maximum-likelihood-estimation-case-study-r/</a></p></li>
-<li><p>Bevans, R. (2020, March 26). <em>Akaike Information Criterion | When &amp; How to Use It (Example).</em> Scribbr. <a href="https://www.scribbr.com/statistics/akaike-information-criterion/" class="uri">https://www.scribbr.com/statistics/akaike-information-criterion/</a></p></li>
-<li><p><em>How to Perform Bootstrapping in R</em> | R-bloggers. (2022, December 17). <a href="https://www.r-bloggers.com/2022/12/how-to-perform-bootstrapping-in-r/" class="uri">https://www.r-bloggers.com/2022/12/how-to-perform-bootstrapping-in-r/</a></p></li>
-<li><p><em>boot.ci function—RDocumentation.</em>, from <a href="https://www.rdocumentation.org/packages/boot/versions/1.3-32/topics/boot.ci?utm_source=chatgpt.com" class="uri">https://www.rdocumentation.org/packages/boot/versions/1.3-32/topics/boot.ci?utm_source=chatgpt.com</a></p></li>
-</ol>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>
@@ -1287,8 +1299,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -1399,7 +1409,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
-      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {
