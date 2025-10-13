@@ -1,8 +1,10 @@
 ---
 title: "Pedestrian Crossings Data Analysis Report (ETC5242 Assignment 2)"
 author: "Jyovika Aswale, Sia Chawla, Siddhi Jadhav"
-format: html
-editor: visual
+format:
+  html:
+    fig-cap-location: bottom
+    fig-cap-style: small
 ---
 
 ```{r}
